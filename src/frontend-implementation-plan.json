@@ -1,0 +1,77 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Lawfulness & values-aligned support area with non-guarantee disclaimers",
+  "requirements": [
+    {
+      "id": "REQ-14",
+      "summary": "Extend the existing disclaimers UI with explicit non-legal, non-religious-authority, and no-guarantees sections (English-only) wherever disclaimers are shown.",
+      "acceptanceCriteria": [
+        "The disclaimers UI includes separate sections for: (1) Not Legal Advice, (2) Not Religious/Spiritual Authority, and (3) No Guarantees/Limitations (explicitly rejecting “perfect/100%/eternal” compliance promises).",
+        "The new disclaimer sections appear wherever the existing disclaimers component is rendered (e.g., Settings and Crisis/Help pages).",
+        "All new disclaimer strings are written in English."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/safety/Disclaimers.tsx",
+          "operation": "modify",
+          "description": "Add three new disclaimer sections: (1) Not Legal Advice, (2) Not Religious/Spiritual Authority, and (3) No Guarantees/Limitations explicitly rejecting “perfect/100%/eternal” compliance promises; keep all user-facing text in English and ensure the content is displayed alongside the existing safety disclaimers."
+        }
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "summary": "Add a signed-in “Staying Safe & Out of Trouble” page with practical self-management content and a prominent link to Crisis/Help, and wire it into router + main navigation.",
+      "acceptanceCriteria": [
+        "A new route is available in the authenticated app (via TanStack Router) for the new “Staying Safe & Out of Trouble” page.",
+        "The page includes: (a) a short ‘pause’ checklist, (b) grounding steps, and (c) a prominent link/button to the existing /crisis-help page.",
+        "The page text avoids absolute guarantees (e.g., does not promise ‘keeps me out of jail/institutions’ or ‘perfect compliance’).",
+        "The page is discoverable from the main app navigation (AppShell nav)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/StayingSafeOutOfTrouble.tsx",
+          "operation": "create",
+          "description": "Create the authenticated “Staying Safe & Out of Trouble” page with practical, non-judgmental content: a short pause-and-plan checklist, grounding steps, and a prominent link/button navigating to /crisis-help; ensure copy avoids any absolute promises or guarantees and remains English-only."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register a new TanStack Router route for the signed-in “Staying Safe & Out of Trouble” page and include it in the authenticated route tree so it is reachable when signed in."
+        },
+        {
+          "path": "frontend/src/components/layout/AppShell.tsx",
+          "operation": "modify",
+          "description": "Add a new navigation item in the AppShell nav for “Staying Safe & Out of Trouble” so the page is discoverable from the main authenticated navigation."
+        }
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "summary": "Provide an on-page editor for a personal “commitments & boundaries” plan on the Staying Safe page, persisted per-user via existing backend actor calls, with success/failure states and non-guarantee language.",
+      "acceptanceCriteria": [
+        "Backend exposes authenticated, caller-scoped query/update methods to read and write the user’s saved plan data.",
+        "Frontend provides an editor UI on the “Staying Safe & Out of Trouble” page to view/update the saved plan and shows a success/failure state on save.",
+        "Plan data is user-private (only accessible to the signed-in principal) and remains available after reload/sign-out/sign-in.",
+        "No part of the UI or backend describes the plan as guaranteeing outcomes or perfect compliance."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add React Query hooks to load and save the caller-scoped CommitmentsPlan using the existing backend actor methods (getCommitmentsPlan, saveCommitmentsPlan), including cache invalidation for the plan after successful save and surfaced errors for failure UI states."
+        },
+        {
+          "path": "frontend/src/components/safety/CommitmentsPlanEditor.tsx",
+          "operation": "create",
+          "description": "Create a commitments & boundaries plan editor component with fields for personal commitments, things to avoid, and 'when I'm at risk, I will…' actions; include a save action that shows clear success/failure state and ensure all copy is English-only and avoids implying guaranteed outcomes or perfect compliance."
+        },
+        {
+          "path": "frontend/src/pages/StayingSafeOutOfTrouble.tsx",
+          "operation": "modify",
+          "description": "Integrate the CommitmentsPlan editor into the “Staying Safe & Out of Trouble” page: load existing saved plan on page load, allow editing, and persist updates via the new hooks; ensure the surrounding UI text does not promise prevention, compliance, or outcomes guarantees."
+        }
+      ]
+    }
+  ]
+}

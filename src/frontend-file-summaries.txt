@@ -1,0 +1,18 @@
+{
+  "frontend/src/App.tsx": "Main application component with TanStack Router setup, authentication flow, and route definitions including the new /staying-safe route for the Staying Safe & Out of Trouble page.",
+  "frontend/src/pages/Landing.tsx": "Signed-out landing page with hero section, feature cards, login prompt, and crisis help link using generated logo and hero assets.",
+  "frontend/src/pages/Program.tsx": "Recovery program page displaying all steps with progress tracking, completion status badges, and navigation to individual step details.",
+  "frontend/src/pages/Onboarding.tsx": "Multi-step onboarding flow for first-time users to set recovery goals, typical work hours, and preferred check-in time with skip option.",
+  "frontend/src/utils/userScopedStorage.ts": "User settings management utilities for storing and retrieving per-principal preferences in localStorage including onboarding status and reminder settings.",
+  "frontend/src/utils/reminders.ts": "Reminder calculation utilities for determining overdue and upcoming medication doses based on schedule and logged doses.",
+  "frontend/src/utils/exporters.ts": "Data export utilities for generating JSON and human-readable text summaries of user's recovery and medication data with proper type handling for dose status enums.",
+  "frontend/src/components/safety/Disclaimers.tsx": "Reusable disclaimers component displaying important safety notices including medical, emergency, legal, religious authority, no guarantees, personal responsibility, and data privacy disclaimers.",
+  "frontend/src/components/checkins/CheckInTrends.tsx": "Check-in trends component displaying average stress levels, work hours, and completion rates for last 7 and 30 days with trend indicators.",
+  "frontend/src/components/medications/DoseChecklistToday.tsx": "Today's medication dose checklist component allowing users to log doses as Taken, Late, or Skipped with optional notes.",
+  "frontend/src/pages/AdherenceHistory.tsx": "Medication adherence history page showing adherence percentages and detailed dose logs grouped by day.",
+  "frontend/src/index.css": "Global CSS file with Tailwind directives and OKLCH-based color system defining design tokens for light and dark modes.",
+  "frontend/src/pages/StayingSafeOutOfTrouble.tsx": "Authenticated page providing practical self-management tools including pause checklist, grounding techniques, crisis help link, and personal commitments plan editor with non-guarantee language throughout.",
+  "frontend/src/components/safety/CommitmentsPlanEditor.tsx": "Commitments and boundaries plan editor component with fields for personal commitments, things to avoid, and at-risk actions; includes save functionality with success/failure states and avoids implying guaranteed outcomes.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for all backend operations including new hooks for loading and saving the caller-scoped CommitmentsPlan with proper cache invalidation.",
+  "frontend/src/components/layout/AppShell.tsx": "Application shell layout component with header, navigation including new \"Staying Safe\" nav item, main content area, and footer with branding attribution."
+}

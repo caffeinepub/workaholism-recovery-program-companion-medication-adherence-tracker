@@ -1,0 +1,39 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-12T20:55:42.935Z",
+  "summary": "Diff adds a new authenticated “Staying Safe & Out of Trouble” page with a new /staying-safe route and AppShell nav item, introduces a per-user CommitmentsPlan editor UI and corresponding backend persistence (including a migration), and expands the Disclaimers component with new legal/religious/no-guarantees sections. Some acceptance criteria cannot be fully verified from the truncated diff summary (notably where disclaimers are rendered, and whether grounding steps are present on the new page).",
+  "missing_requirements": [
+    {
+      "id": "REQ-14",
+      "requirement": "The new disclaimer sections appear wherever the existing disclaimers component is rendered (e.g., Settings and Crisis/Help pages).",
+      "reason": "The diff shows Disclaimers.tsx updated with the required new sections, but does not show any evidence that Settings and/or CrisisHelp pages render the Disclaimers component (or that those pages were updated to include it). With only the provided diff summary, this cannot be confirmed.",
+      "evidence": [
+        "frontend/src/components/safety/Disclaimers.tsx",
+        "frontend/src/App.tsx (routes include /settings and /crisis-help, but pages not shown rendering disclaimers)"
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "requirement": "The “Staying Safe & Out of Trouble” page includes grounding steps.",
+      "reason": "The new page clearly includes a crisis-help button and a “Pause & Plan Checklist” section, but the provided snippet is truncated before showing any dedicated grounding-steps section. The diff summary text mentions grounding techniques, but the actual code evidence is truncated.",
+      "evidence": [
+        "frontend/src/pages/StayingSafeOutOfTrouble.tsx"
+      ]
+    }
+  ],
+  "hallucinated_features": [],
+  "confidence": 0.62,
+  "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
+    "frontend-file-summaries.txt",
+    "frontend/src/App.tsx",
+    "frontend/src/components/layout/AppShell.tsx",
+    "frontend/src/components/safety/CommitmentsPlanEditor.tsx",
+    "frontend/src/components/safety/Disclaimers.tsx",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/StayingSafeOutOfTrouble.tsx",
+    "project_state.json"
+  ]
+}

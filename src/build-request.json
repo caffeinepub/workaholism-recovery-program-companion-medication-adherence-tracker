@@ -1,0 +1,83 @@
+{
+  "kind": "build_request",
+  "title": "Add lawfulness & values-aligned support area with clear non-guarantee disclaimers",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-14",
+      "text": "Add explicit UI disclaimers stating the app does not provide legal advice, does not provide religious/spiritual rulings, and cannot guarantee perfect compliance with any laws or religious rules; ensure all user-facing disclaimer text is in English and is shown alongside existing safety disclaimers.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "help me follow the laws of the land perfectly, 100% eternally, and the laws of all religions perfectly."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The disclaimers UI includes separate sections for: (1) Not Legal Advice, (2) Not Religious/Spiritual Authority, and (3) No Guarantees/Limitations (explicitly rejecting “perfect/100%/eternal” compliance promises).",
+        "The new disclaimer sections appear wherever the existing disclaimers component is rendered (e.g., Settings and Crisis/Help pages).",
+        "All new disclaimer strings are written in English."
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "text": "Create a new signed-in page for “Staying Safe & Out of Trouble” (lawful + values-aligned decision support) that provides practical, non-judgmental self-management content (e.g., grounding steps, a pause-and-plan checklist, and links to Crisis/Help) without claiming prevention or compliance guarantees.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-6"
+        ],
+        "quotes": [
+          "Creating an app that keeps me out of jail, prison, and baker-act institutions. No institutionalizations. No matter what.",
+          "help me follow the laws of the land perfectly, 100% eternally, and the laws of all religions perfectly."
+        ]
+      },
+      "acceptanceCriteria": [
+        "A new route is available in the authenticated app (via TanStack Router) for the new “Staying Safe & Out of Trouble” page.",
+        "The page includes: (a) a short ‘pause’ checklist, (b) grounding steps, and (c) a prominent link/button to the existing /crisis-help page.",
+        "The page text avoids absolute guarantees (e.g., does not promise ‘keeps me out of jail/institutions’ or ‘perfect compliance’).",
+        "The page is discoverable from the main app navigation (AppShell nav)."
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "text": "Allow the user to save and edit a personal “commitments & boundaries” plan used by the “Staying Safe & Out of Trouble” page (e.g., personal commitments, things to avoid, and ‘when I’m at risk, I will…’ steps) and persist it per-user in the Motoko backend.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-6"
+        ],
+        "quotes": [
+          "keeps me out of jail, prison, and baker-act institutions",
+          "help me follow the laws of the land perfectly, 100% eternally, and the laws of all religions perfectly"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend exposes authenticated, caller-scoped query/update methods to read and write the user’s saved plan data.",
+        "Frontend provides an editor UI on the “Staying Safe & Out of Trouble” page to view/update the saved plan and shows a success/failure state on save.",
+        "Plan data is user-private (only accessible to the signed-in principal) and remains available after reload/sign-out/sign-in.",
+        "No part of the UI or backend describes the plan as guaranteeing outcomes or perfect compliance."
+      ]
+    }
+  ],
+  "constraints": [
+    "Backend must remain a single Motoko actor in backend/main.mo; add backend/migration.mo only if required by persistent state changes.",
+    "Do not edit files under frontend/src/components/ui or other immutablePaths; compose existing UI components instead.",
+    "Do not claim or imply guarantees of perfect legal/religious compliance, avoidance of incarceration/institutionalization, or emergency/crisis intervention.",
+    "Use English for all user-facing text added or modified."
+  ],
+  "nonGoals": [
+    "Providing legal counsel, legal strategy, or jurisdiction-specific legal determinations.",
+    "Providing religious rulings, authoritative interpretation of holy texts, or claiming to enforce/verify religious compliance.",
+    "Any promise of “100%”, “perfect”, “eternal” compliance or outcome guarantees (e.g., ‘no jail’, ‘no institutionalizations’).",
+    "Real-time monitoring, law enforcement integration, or external service integrations (push notifications, SMS, email, third-party auth)."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

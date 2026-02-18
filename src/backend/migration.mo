@@ -1,4 +1,6 @@
 import Map "mo:core/Map";
+import Nat "mo:core/Nat";
+import Time "mo:core/Time";
 import Principal "mo:core/Principal";
 
 module {
@@ -13,7 +15,7 @@ module {
     id : Nat;
     stepId : Nat;
     content : Text;
-    timestamp : Int;
+    timestamp : Time.Time;
   };
 
   type CheckIn = {
@@ -22,15 +24,15 @@ module {
     workHours : Nat;
     intention : Text;
     reflection : Text;
-    timestamp : Int;
+    timestamp : Time.Time;
   };
 
   type Medication = {
     name : Text;
     dose : Text;
     schedule : [Text];
-    startDate : ?Int;
-    endDate : ?Int;
+    startDate : ?Time.Time;
+    endDate : ?Time.Time;
     instructions : Text;
     prescriber : Text;
   };
@@ -38,14 +40,14 @@ module {
   type DoseLog = {
     medicationName : Text;
     scheduledTime : Text;
-    takenTime : ?Int;
+    takenTime : ?Time.Time;
     status : { #Taken; #Skipped; #Late };
     note : ?Text;
-    timestamp : Int;
+    timestamp : Time.Time;
   };
 
   type Meeting = {
-    date : Int;
+    date : Time.Time;
     format : Text;
     notes : Text;
     sponsorContactNotes : Text;
@@ -69,6 +71,32 @@ module {
     name : Text;
   };
 
+  type CombineResult = {
+    id : Nat;
+    athleteName : Text;
+    timestamp : Time.Time;
+    heightInches : ?Nat;
+    weightPounds : ?Nat;
+    wingspanInches : ?Float;
+    handSizeInches : ?Float;
+    dash40yd : ?Float;
+    dash10yd : ?Float;
+    dash20yd : ?Float;
+    verticalJumpInches : ?Float;
+    broadJumpInches : ?Float;
+    benchPressReps : ?Nat;
+    shuttle20yd : ?Float;
+    threeConeDrill : ?Float;
+    creator : Principal;
+    isPublic : Bool;
+  };
+
+  type CombineState = {
+    nextCombineId : Nat;
+    publicCombineEntries : Map.Map<Nat, CombineResult>;
+    userCombines : Map.Map<Principal, [CombineResult]>;
+  };
+
   type OldActor = {
     userProfiles : Map.Map<Principal, UserProfile>;
     checkIns : Map.Map<Principal, [CheckIn]>;
@@ -78,6 +106,7 @@ module {
     recoveryPrograms : Map.Map<Principal, [RecoveryStep]>;
     meetings : Map.Map<Principal, [Meeting]>;
     emergencyContacts : Map.Map<Principal, [EmergencyContact]>;
+    commitmentsPlans : Map.Map<Principal, CommitmentsPlan>;
   };
 
   type NewActor = {
@@ -90,12 +119,17 @@ module {
     meetings : Map.Map<Principal, [Meeting]>;
     emergencyContacts : Map.Map<Principal, [EmergencyContact]>;
     commitmentsPlans : Map.Map<Principal, CommitmentsPlan>;
+    combineState : CombineState;
   };
 
   public func run(old : OldActor) : NewActor {
     {
       old with
-      commitmentsPlans = Map.empty<Principal, CommitmentsPlan>()
+      combineState = {
+        nextCombineId = 1;
+        publicCombineEntries = Map.empty<Nat, CombineResult>();
+        userCombines = Map.empty<Principal, [CombineResult]>();
+      };
     };
   };
 };

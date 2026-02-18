@@ -72,8 +72,14 @@ export default {
                 md: 'calc(var(--radius) - 2px)',
                 sm: 'calc(var(--radius) - 4px)'
             },
+            fontFamily: {
+                sans: ['Inter', 'system-ui', 'sans-serif'],
+                display: ['Outfit', 'Inter', 'system-ui', 'sans-serif']
+            },
             boxShadow: {
-                xs: '0 1px 2px 0 rgba(0,0,0,0.05)'
+                xs: '0 1px 2px 0 rgba(0,0,0,0.05)',
+                'glow-sm': '0 0 15px -3px oklch(var(--primary) / 0.3)',
+                'glow': '0 0 25px -5px oklch(var(--primary) / 0.4)'
             },
             keyframes: {
                 'accordion-down': {

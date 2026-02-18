@@ -18,6 +18,25 @@ export interface CheckIn {
   'workHours' : bigint,
   'intention' : string,
 }
+export interface CombineResult {
+  'id' : bigint,
+  'creator' : Principal,
+  'dash10yd' : [] | [number],
+  'dash20yd' : [] | [number],
+  'dash40yd' : [] | [number],
+  'heightInches' : [] | [bigint],
+  'wingspanInches' : [] | [number],
+  'threeConeDrill' : [] | [number],
+  'handSizeInches' : [] | [number],
+  'weightPounds' : [] | [bigint],
+  'benchPressReps' : [] | [bigint],
+  'broadJumpInches' : [] | [number],
+  'shuttle20yd' : [] | [number],
+  'timestamp' : Time,
+  'isPublic' : boolean,
+  'verticalJumpInches' : [] | [number],
+  'athleteName' : string,
+}
 export interface CommitmentsPlan {
   'thingsToAvoid' : string,
   'atRiskActions' : string,
@@ -78,16 +97,20 @@ export interface _SERVICE {
   'addMedication' : ActorMethod<[Medication], undefined>,
   'addMeeting' : ActorMethod<[Meeting], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'deleteCombineResult' : ActorMethod<[bigint], boolean>,
+  'getAllPublicCombineEntries' : ActorMethod<[], Array<CombineResult>>,
   'getAllRecoverySteps' : ActorMethod<[], Array<RecoveryStep>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCheckIns' : ActorMethod<[], Array<CheckIn>>,
+  'getCombineResultById' : ActorMethod<[bigint], [] | [CombineResult]>,
   'getCommitmentsPlan' : ActorMethod<[], [] | [CommitmentsPlan]>,
   'getDoseLogs' : ActorMethod<[], Array<DoseLog>>,
   'getEmergencyContacts' : ActorMethod<[], Array<EmergencyContact>>,
   'getMedications' : ActorMethod<[], Array<Medication>>,
   'getMeetings' : ActorMethod<[], Array<Meeting>>,
   'getReflections' : ActorMethod<[], Array<Reflection>>,
+  'getUserCombineResults' : ActorMethod<[Principal], Array<CombineResult>>,
   'getUserData' : ActorMethod<
     [],
     {
@@ -106,8 +129,30 @@ export interface _SERVICE {
   'logCheckIn' : ActorMethod<[CheckIn], undefined>,
   'logDose' : ActorMethod<[DoseLog], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'saveCombineResult' : ActorMethod<
+    [
+      {
+        'dash10yd' : [] | [number],
+        'dash20yd' : [] | [number],
+        'dash40yd' : [] | [number],
+        'heightInches' : [] | [bigint],
+        'wingspanInches' : [] | [number],
+        'threeConeDrill' : [] | [number],
+        'handSizeInches' : [] | [number],
+        'weightPounds' : [] | [bigint],
+        'benchPressReps' : [] | [bigint],
+        'broadJumpInches' : [] | [number],
+        'shuttle20yd' : [] | [number],
+        'makePublic' : boolean,
+        'verticalJumpInches' : [] | [number],
+        'athleteName' : string,
+      },
+    ],
+    CombineResult
+  >,
   'saveCommitmentsPlan' : ActorMethod<[CommitmentsPlan], undefined>,
   'saveReflection' : ActorMethod<[Reflection], undefined>,
+  'toggleCombinePublicState' : ActorMethod<[bigint], boolean>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

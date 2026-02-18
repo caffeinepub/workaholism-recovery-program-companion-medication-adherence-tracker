@@ -2,34 +2,24 @@ import { createRouter, RouterProvider, createRoute, createRootRoute, Outlet } fr
 import { useInternetIdentity } from './hooks/useInternetIdentity';
 import { useGetCallerUserProfile } from './hooks/useQueries';
 import Landing from './pages/Landing';
-import Today from './pages/Today';
-import Program from './pages/Program';
-import ProgramStepDetail from './pages/ProgramStepDetail';
-import CheckIns from './pages/CheckIns';
-import Medications from './pages/Medications';
-import MedicationDetail from './pages/MedicationDetail';
-import AdherenceHistory from './pages/AdherenceHistory';
-import Meetings from './pages/Meetings';
-import Settings from './pages/Settings';
-import SettingsDataExport from './pages/SettingsDataExport';
-import CrisisHelp from './pages/CrisisHelp';
-import StayingSafeOutOfTrouble from './pages/StayingSafeOutOfTrouble';
-import Onboarding from './pages/Onboarding';
+import CombineDashboard from './pages/combine/Dashboard';
+import CombineNewEntry from './pages/combine/NewEntry';
+import CombineHistory from './pages/combine/History';
+import CombineEntryDetail from './pages/combine/EntryDetail';
+import CombineShareCard from './pages/combine/ShareCard';
+import CombinePublicEntry from './pages/combine/PublicEntry';
+import CombinePublished from './pages/combine/Published';
 import AppShell from './components/layout/AppShell';
 import ProfileSetupDialog from './components/auth/ProfileSetupDialog';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from 'next-themes';
 
-function AuthenticatedLayout() {
+function Layout() {
   const { identity } = useInternetIdentity();
   const { data: userProfile, isLoading: profileLoading, isFetched } = useGetCallerUserProfile();
 
   const isAuthenticated = !!identity;
   const showProfileSetup = isAuthenticated && !profileLoading && isFetched && userProfile === null;
-
-  if (!isAuthenticated) {
-    return <Landing />;
-  }
 
   if (showProfileSetup) {
     return <ProfileSetupDialog />;
@@ -43,7 +33,7 @@ function AuthenticatedLayout() {
 }
 
 const rootRoute = createRootRoute({
-  component: AuthenticatedLayout,
+  component: Layout,
 });
 
 function IndexComponent() {
@@ -51,7 +41,7 @@ function IndexComponent() {
   if (!identity) {
     return <Landing />;
   }
-  return <Today />;
+  return <CombineDashboard />;
 }
 
 const indexRoute = createRoute({
@@ -60,99 +50,57 @@ const indexRoute = createRoute({
   component: IndexComponent,
 });
 
-const todayRoute = createRoute({
+const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/today',
-  component: Today,
+  path: '/dashboard',
+  component: CombineDashboard,
 });
 
-const onboardingRoute = createRoute({
+const newEntryRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/onboarding',
-  component: Onboarding,
+  path: '/new-entry',
+  component: CombineNewEntry,
 });
 
-const programRoute = createRoute({
+const historyRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/program',
-  component: Program,
+  path: '/history',
+  component: CombineHistory,
 });
 
-const programStepRoute = createRoute({
+const entryDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/program/$stepId',
-  component: ProgramStepDetail,
+  path: '/entry/$entryId',
+  component: CombineEntryDetail,
 });
 
-const checkInsRoute = createRoute({
+const shareCardRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/check-ins',
-  component: CheckIns,
+  path: '/share/$entryId',
+  component: CombineShareCard,
 });
 
-const medicationsRoute = createRoute({
+const publicEntryRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/medications',
-  component: Medications,
+  path: '/public/$entryId',
+  component: CombinePublicEntry,
 });
 
-const medicationDetailRoute = createRoute({
+const publishedRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/medications/$medicationName',
-  component: MedicationDetail,
-});
-
-const adherenceHistoryRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/adherence-history',
-  component: AdherenceHistory,
-});
-
-const meetingsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/meetings',
-  component: Meetings,
-});
-
-const settingsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/settings',
-  component: Settings,
-});
-
-const settingsDataExportRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/settings/data-export',
-  component: SettingsDataExport,
-});
-
-const crisisHelpRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/crisis-help',
-  component: CrisisHelp,
-});
-
-const stayingSafeRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/staying-safe',
-  component: StayingSafeOutOfTrouble,
+  path: '/published',
+  component: CombinePublished,
 });
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  todayRoute,
-  onboardingRoute,
-  programRoute,
-  programStepRoute,
-  checkInsRoute,
-  medicationsRoute,
-  medicationDetailRoute,
-  adherenceHistoryRoute,
-  meetingsRoute,
-  settingsRoute,
-  settingsDataExportRoute,
-  crisisHelpRoute,
-  stayingSafeRoute,
+  dashboardRoute,
+  newEntryRoute,
+  historyRoute,
+  entryDetailRoute,
+  shareCardRoute,
+  publicEntryRoute,
+  publishedRoute,
 ]);
 
 const router = createRouter({ routeTree });

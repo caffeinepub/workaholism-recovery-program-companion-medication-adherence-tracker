@@ -1,31 +1,38 @@
 import LoginButton from '../components/auth/LoginButton';
-import { Link } from '@tanstack/react-router';
-import { Heart, BookOpen, Calendar, Pill, Users, Shield } from 'lucide-react';
+import { useNavigate } from '@tanstack/react-router';
+import { Activity, TrendingUp, Share2, Trophy } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export default function Landing() {
+  const navigate = useNavigate();
+
   const features = [
     {
-      icon: BookOpen,
-      title: 'Recovery Program',
-      description: 'Work through a structured recovery program with guided steps and reflections.',
+      icon: Activity,
+      title: 'Track Performance',
+      description: 'Record all official NFL Combine drills including 40-yard dash, vertical jump, bench press, and more.',
     },
     {
-      icon: Calendar,
-      title: 'Daily Check-ins',
-      description: 'Track your mood, stress levels, and work hours with daily reflections.',
+      icon: TrendingUp,
+      title: 'Monitor Progress',
+      description: 'View your improvement over time with detailed charts and trend analysis for each drill.',
     },
     {
-      icon: Pill,
-      title: 'Medication Tracking',
-      description: 'Manage your medication schedule and log adherence with ease.',
+      icon: Trophy,
+      title: 'Compare Benchmarks',
+      description: 'See how your stats compare to NFL Combine averages and elite athlete performance.',
     },
     {
-      icon: Users,
-      title: 'Meeting Support',
-      description: 'Keep notes from meetings and maintain sponsor contact information.',
+      icon: Share2,
+      title: 'Share Results',
+      description: 'Publish your best performances and share them with coaches, scouts, or friends.',
     },
   ];
+
+  const handleContinueAsGuest = () => {
+    navigate({ to: '/dashboard' });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -34,20 +41,13 @@ export default function Landing() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img
-                src="/assets/generated/wa-logo.dim_512x512.png"
-                alt="Recovery Companion"
-                className="h-10 w-10 rounded-lg"
+                src="/assets/generated/combine-logo.dim_512x512.png"
+                alt="NFL Combine Tracker"
+                className="h-12 w-12 rounded-lg"
               />
-              <h1 className="text-xl font-semibold text-foreground">Recovery Companion</h1>
+              <h1 className="text-xl font-semibold text-foreground">NFL Combine Tracker</h1>
             </div>
-            <div className="flex items-center gap-4">
-              <Link
-                to="/crisis-help"
-                className="text-sm font-medium text-destructive hover:underline flex items-center gap-2"
-              >
-                <Heart className="h-4 w-4" />
-                Crisis Help
-              </Link>
+            <div className="flex items-center gap-3">
               <LoginButton />
             </div>
           </div>
@@ -59,32 +59,30 @@ export default function Landing() {
           <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
             <div className="space-y-6">
               <h2 className="text-4xl md:text-5xl font-bold text-foreground leading-tight">
-                Your Journey to Recovery, Supported Every Step
+                Track Your Athletic Performance Like a Pro
               </h2>
               <p className="text-lg text-muted-foreground">
-                A comprehensive companion for managing workaholism recovery and medication adherence. Track your
-                progress, maintain accountability, and build healthier habits.
+                Record and measure your NFL Combine stats. Track your progress over time, compare against benchmarks, and share your achievements.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
+                <Button onClick={handleContinueAsGuest} size="lg" className="gap-2">
+                  <Activity className="h-5 w-5" />
+                  Continue as Guest
+                </Button>
                 <LoginButton />
-                <Link to="/crisis-help">
-                  <button className="px-6 py-3 rounded-lg border border-border hover:bg-accent transition-colors font-medium">
-                    Learn More
-                  </button>
-                </Link>
               </div>
               <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg border border-border">
-                <Shield className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
-                <p className="text-sm text-muted-foreground">
-                  Your data is private and secure. This app is not medical advice and should not replace professional
-                  care.
-                </p>
+                <Activity className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <p className="font-medium">Guest Mode: Local storage only</p>
+                  <p>Sign in to sync your data across devices and publish results publicly.</p>
+                </div>
               </div>
             </div>
             <div className="relative">
               <img
-                src="/assets/generated/recovery-hero.dim_1600x900.png"
-                alt="Recovery journey illustration"
+                src="/assets/generated/combine-hero.dim_1600x900.png"
+                alt="NFL Combine training"
                 className="w-full rounded-2xl shadow-lg"
               />
             </div>
@@ -107,9 +105,9 @@ export default function Landing() {
       <footer className="border-t border-border bg-card mt-16">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} Recovery Companion. Not medical advice.</p>
+            <p>© {new Date().getFullYear()} NFL Combine Tracker. For informational purposes only.</p>
             <p>
-              Built with <Heart className="inline h-4 w-4 text-destructive" /> using{' '}
+              Built with ❤️ using{' '}
               <a
                 href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
                   window.location.hostname

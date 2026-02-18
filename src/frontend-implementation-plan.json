@@ -1,75 +1,221 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Lawfulness & values-aligned support area with non-guarantee disclaimers",
+  "title": "NFL Combine performance tracker (guest/local + signed-in sync) with benchmarks, trends, and shareable cards",
   "requirements": [
     {
-      "id": "REQ-14",
-      "summary": "Extend the existing disclaimers UI with explicit non-legal, non-religious-authority, and no-guarantees sections (English-only) wherever disclaimers are shown.",
+      "id": "REQ-17",
+      "summary": "Add guest mode (local-only) with clear UI labeling and the ability to use the app immediately without Internet Identity login.",
       "acceptanceCriteria": [
-        "The disclaimers UI includes separate sections for: (1) Not Legal Advice, (2) Not Religious/Spiritual Authority, and (3) No Guarantees/Limitations (explicitly rejecting “perfect/100%/eternal” compliance promises).",
-        "The new disclaimer sections appear wherever the existing disclaimers component is rendered (e.g., Settings and Crisis/Help pages).",
-        "All new disclaimer strings are written in English."
+        "When the user is not authenticated, the Landing page offers a \"Continue as Guest\" action.",
+        "Guest users can create, view, and edit Combine results and history without logging in.",
+        "Guest data persists across page refreshes (localStorage) but is not shared across devices.",
+        "The UI clearly distinguishes Guest mode from signed-in mode."
       ],
       "file_operations": [
-        {
-          "path": "frontend/src/components/safety/Disclaimers.tsx",
-          "operation": "modify",
-          "description": "Add three new disclaimer sections: (1) Not Legal Advice, (2) Not Religious/Spiritual Authority, and (3) No Guarantees/Limitations explicitly rejecting “perfect/100%/eternal” compliance promises; keep all user-facing text in English and ensure the content is displayed alongside the existing safety disclaimers."
-        }
-      ]
-    },
-    {
-      "id": "REQ-15",
-      "summary": "Add a signed-in “Staying Safe & Out of Trouble” page with practical self-management content and a prominent link to Crisis/Help, and wire it into router + main navigation.",
-      "acceptanceCriteria": [
-        "A new route is available in the authenticated app (via TanStack Router) for the new “Staying Safe & Out of Trouble” page.",
-        "The page includes: (a) a short ‘pause’ checklist, (b) grounding steps, and (c) a prominent link/button to the existing /crisis-help page.",
-        "The page text avoids absolute guarantees (e.g., does not promise ‘keeps me out of jail/institutions’ or ‘perfect compliance’).",
-        "The page is discoverable from the main app navigation (AppShell nav)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/StayingSafeOutOfTrouble.tsx",
-          "operation": "create",
-          "description": "Create the authenticated “Staying Safe & Out of Trouble” page with practical, non-judgmental content: a short pause-and-plan checklist, grounding steps, and a prominent link/button navigating to /crisis-help; ensure copy avoids any absolute promises or guarantees and remains English-only."
-        },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Register a new TanStack Router route for the signed-in “Staying Safe & Out of Trouble” page and include it in the authenticated route tree so it is reachable when signed in."
+          "description": "Refactor routing/auth gating so unauthenticated users can proceed into Combine routes in Guest mode (local-only) while still supporting Internet Identity sign-in; ensure default routes work for both signed-in and guest flows."
+        },
+        {
+          "path": "frontend/src/pages/Landing.tsx",
+          "operation": "modify",
+          "description": "Add a \"Continue as Guest\" action that navigates into the Combine experience; update landing copy to explain Guest is \"Guest (local only)\" and not synced across devices."
         },
         {
           "path": "frontend/src/components/layout/AppShell.tsx",
           "operation": "modify",
-          "description": "Add a new navigation item in the AppShell nav for “Staying Safe & Out of Trouble” so the page is discoverable from the main authenticated navigation."
+          "description": "Add a persistent mode indicator in the header that shows \"Guest (local only)\" when not authenticated and a signed-in welcome state when authenticated."
+        },
+        {
+          "path": "frontend/src/utils/combineGuestStorage.ts",
+          "operation": "create",
+          "description": "Implement localStorage persistence helpers for Combine entries in Guest mode (load/list/get/upsert/delete, newest-first sorting, and safe JSON parsing)."
         }
       ]
     },
     {
-      "id": "REQ-16",
-      "summary": "Provide an on-page editor for a personal “commitments & boundaries” plan on the Staying Safe page, persisted per-user via existing backend actor calls, with success/failure states and non-guarantee language.",
+      "id": "REQ-18",
+      "summary": "Implement Combine entry creation/edit flow for standard drills/measurements with validation, timestamp, and optional notes; save to backend when signed in and to localStorage when in guest mode.",
       "acceptanceCriteria": [
-        "Backend exposes authenticated, caller-scoped query/update methods to read and write the user’s saved plan data.",
-        "Frontend provides an editor UI on the “Staying Safe & Out of Trouble” page to view/update the saved plan and shows a success/failure state on save.",
-        "Plan data is user-private (only accessible to the signed-in principal) and remains available after reload/sign-out/sign-in.",
-        "No part of the UI or backend describes the plan as guaranteeing outcomes or perfect compliance."
+        "A signed-in user can create and save a Combine result entry to the backend.",
+        "A guest user can create and save the same Combine result entry locally.",
+        "The entry form validates numeric fields and units (seconds, inches/cm, lbs/kg) and prevents invalid saves.",
+        "Each saved entry includes a timestamp/date and an optional note field."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Add React Query hooks to load and save the caller-scoped CommitmentsPlan using the existing backend actor methods (getCommitmentsPlan, saveCommitmentsPlan), including cache invalidation for the plan after successful save and surfaced errors for failure UI states."
-        },
-        {
-          "path": "frontend/src/components/safety/CommitmentsPlanEditor.tsx",
+          "path": "frontend/src/hooks/useCombine.ts",
           "operation": "create",
-          "description": "Create a commitments & boundaries plan editor component with fields for personal commitments, things to avoid, and 'when I'm at risk, I will…' actions; include a save action that shows clear success/failure state and ensure all copy is English-only and avoids implying guaranteed outcomes or perfect compliance."
+          "description": "Create Combine-specific React Query hooks that unify signed-in (backend actor) and guest (localStorage) data access for create/list/get/update operations, using the current Internet Identity state."
         },
         {
-          "path": "frontend/src/pages/StayingSafeOutOfTrouble.tsx",
+          "path": "frontend/src/utils/combineValidation.ts",
+          "operation": "create",
+          "description": "Add validation/parsing utilities for Combine numeric fields and unit normalization (seconds, inches/cm, lbs/kg) to block invalid saves and provide user-friendly error messages."
+        },
+        {
+          "path": "frontend/src/components/combine/CombineEntryForm.tsx",
+          "operation": "create",
+          "description": "Build the \"latest/official format\" Combine entry form UI covering at minimum: 40-yard dash (with split fields), vertical jump, broad jump, bench reps, 20-yard shuttle, 3-cone drill, and key measurements (height, weight, wingspan/arm length, hand size), plus timestamp/date and optional note."
+        },
+        {
+          "path": "frontend/src/pages/combine/NewEntry.tsx",
+          "operation": "create",
+          "description": "Create a Combine New Entry page that uses CombineEntryForm and saves via the unified Combine hooks (backend for signed-in, localStorage for guest), then navigates to the saved entry detail."
+        },
+        {
+          "path": "frontend/src/pages/combine/Dashboard.tsx",
+          "operation": "create",
+          "description": "Create a Combine Dashboard page summarizing the latest entry and providing primary actions (New Entry, History, Published)."
+        },
+        {
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Integrate the CommitmentsPlan editor into the “Staying Safe & Out of Trouble” page: load existing saved plan on page load, allow editing, and persist updates via the new hooks; ensure the surrounding UI text does not promise prevention, compliance, or outcomes guarantees."
+          "description": "Register Combine routes (Dashboard, New Entry, History, Entry Detail, Published, Share Card, Public Share) and set the default signed-in route to the Combine Dashboard."
+        }
+      ]
+    },
+    {
+      "id": "REQ-19",
+      "summary": "Add Combine history, detail, and progress/trend chart views that work for both guest and signed-in data sources.",
+      "acceptanceCriteria": [
+        "Users can view a history list of Combine entries sorted newest-first.",
+        "Selecting an entry shows a readable detail view of all recorded stats.",
+        "Users can view drill-specific trends over time (at least line charts for 40-yard dash, vertical jump, bench reps).",
+        "History and trends work for both guest (local) and signed-in (backend) data sources."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/combine/History.tsx",
+          "operation": "create",
+          "description": "Implement a Combine History page listing past entries newest-first using the unified Combine hooks, with navigation into entry details."
+        },
+        {
+          "path": "frontend/src/pages/combine/EntryDetail.tsx",
+          "operation": "create",
+          "description": "Implement an Entry Detail page that displays all recorded drills/measurements in a readable layout, includes an Edit action (allowed for guest and signed-in), and links to Share."
+        },
+        {
+          "path": "frontend/src/components/combine/CombineTrendChart.tsx",
+          "operation": "create",
+          "description": "Create a lightweight, accessible line chart component (SVG/canvas) to plot values over time for selected drills (at minimum 40-yard dash, vertical jump, bench reps)."
+        },
+        {
+          "path": "frontend/src/components/combine/CombineTrendsPanel.tsx",
+          "operation": "create",
+          "description": "Add a trends panel that aggregates history into drill-specific series and renders at least the three required line charts using CombineTrendChart."
+        },
+        {
+          "path": "frontend/src/pages/combine/Dashboard.tsx",
+          "operation": "modify",
+          "description": "Wire the trends panel into the Combine Dashboard so users can quickly see progress over time from either guest (local) or signed-in (backend) sources."
+        }
+      ]
+    },
+    {
+      "id": "REQ-20",
+      "summary": "Display benchmark reference values/ranges next to recorded drills and provide accessible Above/Near/Below comparison text (positive, informational framing).",
+      "acceptanceCriteria": [
+        "Each drill shown in the entry detail view includes a benchmark reference value or range.",
+        "The UI indicates comparison state (e.g., Above / Near / Below) using accessible text (not color alone).",
+        "Benchmarks are presented as informational context only, with no absolute claims or insulting/judgmental language."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/combineBenchmarks.ts",
+          "operation": "create",
+          "description": "Define benchmark reference values/ranges per drill/measurement and implement comparison helpers that return accessible states (Above/Near/Below) with neutral, informational copy."
+        },
+        {
+          "path": "frontend/src/components/combine/BenchmarkComparison.tsx",
+          "operation": "create",
+          "description": "Create a UI component that renders benchmark context and an accessible comparison label (text-first; color optional but not sole indicator)."
+        },
+        {
+          "path": "frontend/src/pages/combine/EntryDetail.tsx",
+          "operation": "modify",
+          "description": "Display benchmark reference values and Above/Near/Below comparison text next to each recorded drill/measurement using the benchmark utilities and comparison component."
+        }
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "summary": "Add sharing mode with a shareable Combine Card view and copy-link action; for signed-in users, support publishing to a public view/feed accessible without login.",
+      "acceptanceCriteria": [
+        "A user can open a \"Share\" action from a Combine entry detail page.",
+        "The app renders a clean \"Combine Card\" view suitable for screenshot/sharing.",
+        "For signed-in users, a \"Publish\" toggle creates/updates a publicly readable representation of that entry in the backend and returns a stable share URL.",
+        "Public share pages display only the published entry and do not expose private per-user data."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/combine/ShareCard.tsx",
+          "operation": "create",
+          "description": "Create a clean, print/screenshot-friendly Combine Card page for a selected entry, including a Copy Link action (and explanatory messaging for Guest local-only sharing limitations)."
+        },
+        {
+          "path": "frontend/src/pages/combine/PublicEntry.tsx",
+          "operation": "create",
+          "description": "Create a public, no-login-required share page that renders only a published Combine entry using backend public-read capabilities; ensure it does not attempt to load any private per-user data."
+        },
+        {
+          "path": "frontend/src/pages/combine/Published.tsx",
+          "operation": "create",
+          "description": "Create a simple public feed/browsing page that lists published Combine entries using backend public list capability."
+        },
+        {
+          "path": "frontend/src/pages/combine/EntryDetail.tsx",
+          "operation": "modify",
+          "description": "Add a Share action to navigate to the Combine Card view; for signed-in users, add a Publish toggle that calls the backend publish/unpublish capability and surfaces the stable public share link."
+        },
+        {
+          "path": "frontend/src/hooks/useCombine.ts",
+          "operation": "modify",
+          "description": "Extend Combine hooks to support publishing/unpublishing (signed-in only), fetching published entry for public share pages, and listing all public Combine entries for the public feed."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire Share Card, Public Entry, and Published routes into the router so they are navigable; ensure Public Entry and Published routes remain accessible without login."
+        }
+      ]
+    },
+    {
+      "id": "REQ-22",
+      "summary": "Refocus navigation and landing around the NFL Combine tracker: rename branding/title, update primary routes, and add Combine nav items (Dashboard, New Entry, History, Share/Published) in English.",
+      "acceptanceCriteria": [
+        "App header/title and Landing page describe an NFL Combine performance tracker rather than a recovery/medications app.",
+        "The main navigation includes Combine-focused destinations and the default signed-in route lands on the Combine dashboard.",
+        "Existing recovery-related pages are not presented as primary navigation items.",
+        "All new user-facing strings are in English."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/combine-logo.dim_512x512.png",
+          "operation": "create",
+          "description": "Add the generated logo asset at the exact path: frontend/public/assets/generated/combine-logo.dim_512x512.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/combine-hero.dim_1600x900.png",
+          "operation": "create",
+          "description": "Add the generated hero asset at the exact path: frontend/public/assets/generated/combine-hero.dim_1600x900.png."
+        },
+        {
+          "path": "frontend/src/pages/Landing.tsx",
+          "operation": "modify",
+          "description": "Replace recovery-focused hero/feature copy with Combine tracker messaging, update displayed logo/hero images to frontend/public/assets/generated/combine-logo.dim_512x512.png and frontend/public/assets/generated/combine-hero.dim_1600x900.png, and keep all text in English."
+        },
+        {
+          "path": "frontend/src/components/layout/AppShell.tsx",
+          "operation": "modify",
+          "description": "Update app title/branding to the Combine tracker, replace primary navigation items with Combine: Dashboard, New Entry, History, Share/Published, and remove recovery-related pages from primary navigation (they may remain routable but not highlighted)."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Update primary routes so the default signed-in route lands on the Combine Dashboard; ensure Combine routes are the primary in-app navigation destinations."
         }
       ]
     }

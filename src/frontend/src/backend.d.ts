@@ -34,6 +34,25 @@ export interface Meeting {
     sponsorContactNotes: string;
     format: string;
 }
+export interface CombineResult {
+    id: bigint;
+    creator: Principal;
+    dash10yd?: number;
+    dash20yd?: number;
+    dash40yd?: number;
+    heightInches?: bigint;
+    wingspanInches?: number;
+    threeConeDrill?: number;
+    handSizeInches?: number;
+    weightPounds?: bigint;
+    benchPressReps?: bigint;
+    broadJumpInches?: number;
+    shuttle20yd?: number;
+    timestamp: Time;
+    isPublic: boolean;
+    verticalJumpInches?: number;
+    athleteName: string;
+}
 export interface EmergencyContact {
     relationship: string;
     name: string;
@@ -81,16 +100,20 @@ export interface backendInterface {
     addMedication(medicine: Medication): Promise<void>;
     addMeeting(meeting: Meeting): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    deleteCombineResult(id: bigint): Promise<boolean>;
+    getAllPublicCombineEntries(): Promise<Array<CombineResult>>;
     getAllRecoverySteps(): Promise<Array<RecoveryStep>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getCheckIns(): Promise<Array<CheckIn>>;
+    getCombineResultById(id: bigint): Promise<CombineResult | null>;
     getCommitmentsPlan(): Promise<CommitmentsPlan | null>;
     getDoseLogs(): Promise<Array<DoseLog>>;
     getEmergencyContacts(): Promise<Array<EmergencyContact>>;
     getMedications(): Promise<Array<Medication>>;
     getMeetings(): Promise<Array<Meeting>>;
     getReflections(): Promise<Array<Reflection>>;
+    getUserCombineResults(user: Principal): Promise<Array<CombineResult>>;
     getUserData(): Promise<{
         meetings: Array<Meeting>;
         emergencyContacts: Array<EmergencyContact>;
@@ -106,6 +129,23 @@ export interface backendInterface {
     logCheckIn(checkIn: CheckIn): Promise<void>;
     logDose(doseLog: DoseLog): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    saveCombineResult(resultInput: {
+        dash10yd?: number;
+        dash20yd?: number;
+        dash40yd?: number;
+        heightInches?: bigint;
+        wingspanInches?: number;
+        threeConeDrill?: number;
+        handSizeInches?: number;
+        weightPounds?: bigint;
+        benchPressReps?: bigint;
+        broadJumpInches?: number;
+        shuttle20yd?: number;
+        makePublic: boolean;
+        verticalJumpInches?: number;
+        athleteName: string;
+    }): Promise<CombineResult>;
     saveCommitmentsPlan(plan: CommitmentsPlan): Promise<void>;
     saveReflection(reflection: Reflection): Promise<void>;
+    toggleCombinePublicState(id: bigint): Promise<boolean>;
 }

@@ -36,6 +36,25 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const CombineResult = IDL.Record({
+  'id' : IDL.Nat,
+  'creator' : IDL.Principal,
+  'dash10yd' : IDL.Opt(IDL.Float64),
+  'dash20yd' : IDL.Opt(IDL.Float64),
+  'dash40yd' : IDL.Opt(IDL.Float64),
+  'heightInches' : IDL.Opt(IDL.Nat),
+  'wingspanInches' : IDL.Opt(IDL.Float64),
+  'threeConeDrill' : IDL.Opt(IDL.Float64),
+  'handSizeInches' : IDL.Opt(IDL.Float64),
+  'weightPounds' : IDL.Opt(IDL.Nat),
+  'benchPressReps' : IDL.Opt(IDL.Nat),
+  'broadJumpInches' : IDL.Opt(IDL.Float64),
+  'shuttle20yd' : IDL.Opt(IDL.Float64),
+  'timestamp' : Time,
+  'isPublic' : IDL.Bool,
+  'verticalJumpInches' : IDL.Opt(IDL.Float64),
+  'athleteName' : IDL.Text,
+});
 export const RecoveryStep = IDL.Record({
   'id' : IDL.Nat,
   'title' : IDL.Text,
@@ -81,16 +100,32 @@ export const idlService = IDL.Service({
   'addMedication' : IDL.Func([Medication], [], []),
   'addMeeting' : IDL.Func([Meeting], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'deleteCombineResult' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+  'getAllPublicCombineEntries' : IDL.Func(
+      [],
+      [IDL.Vec(CombineResult)],
+      ['query'],
+    ),
   'getAllRecoverySteps' : IDL.Func([], [IDL.Vec(RecoveryStep)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCheckIns' : IDL.Func([], [IDL.Vec(CheckIn)], ['query']),
+  'getCombineResultById' : IDL.Func(
+      [IDL.Nat],
+      [IDL.Opt(CombineResult)],
+      ['query'],
+    ),
   'getCommitmentsPlan' : IDL.Func([], [IDL.Opt(CommitmentsPlan)], ['query']),
   'getDoseLogs' : IDL.Func([], [IDL.Vec(DoseLog)], ['query']),
   'getEmergencyContacts' : IDL.Func([], [IDL.Vec(EmergencyContact)], ['query']),
   'getMedications' : IDL.Func([], [IDL.Vec(Medication)], ['query']),
   'getMeetings' : IDL.Func([], [IDL.Vec(Meeting)], ['query']),
   'getReflections' : IDL.Func([], [IDL.Vec(Reflection)], ['query']),
+  'getUserCombineResults' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(CombineResult)],
+      ['query'],
+    ),
   'getUserData' : IDL.Func(
       [],
       [
@@ -116,8 +151,31 @@ export const idlService = IDL.Service({
   'logCheckIn' : IDL.Func([CheckIn], [], []),
   'logDose' : IDL.Func([DoseLog], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'saveCombineResult' : IDL.Func(
+      [
+        IDL.Record({
+          'dash10yd' : IDL.Opt(IDL.Float64),
+          'dash20yd' : IDL.Opt(IDL.Float64),
+          'dash40yd' : IDL.Opt(IDL.Float64),
+          'heightInches' : IDL.Opt(IDL.Nat),
+          'wingspanInches' : IDL.Opt(IDL.Float64),
+          'threeConeDrill' : IDL.Opt(IDL.Float64),
+          'handSizeInches' : IDL.Opt(IDL.Float64),
+          'weightPounds' : IDL.Opt(IDL.Nat),
+          'benchPressReps' : IDL.Opt(IDL.Nat),
+          'broadJumpInches' : IDL.Opt(IDL.Float64),
+          'shuttle20yd' : IDL.Opt(IDL.Float64),
+          'makePublic' : IDL.Bool,
+          'verticalJumpInches' : IDL.Opt(IDL.Float64),
+          'athleteName' : IDL.Text,
+        }),
+      ],
+      [CombineResult],
+      [],
+    ),
   'saveCommitmentsPlan' : IDL.Func([CommitmentsPlan], [], []),
   'saveReflection' : IDL.Func([Reflection], [], []),
+  'toggleCombinePublicState' : IDL.Func([IDL.Nat], [IDL.Bool], []),
 });
 
 export const idlInitArgs = [];
@@ -150,6 +208,25 @@ export const idlFactory = ({ IDL }) => {
     'admin' : IDL.Null,
     'user' : IDL.Null,
     'guest' : IDL.Null,
+  });
+  const CombineResult = IDL.Record({
+    'id' : IDL.Nat,
+    'creator' : IDL.Principal,
+    'dash10yd' : IDL.Opt(IDL.Float64),
+    'dash20yd' : IDL.Opt(IDL.Float64),
+    'dash40yd' : IDL.Opt(IDL.Float64),
+    'heightInches' : IDL.Opt(IDL.Nat),
+    'wingspanInches' : IDL.Opt(IDL.Float64),
+    'threeConeDrill' : IDL.Opt(IDL.Float64),
+    'handSizeInches' : IDL.Opt(IDL.Float64),
+    'weightPounds' : IDL.Opt(IDL.Nat),
+    'benchPressReps' : IDL.Opt(IDL.Nat),
+    'broadJumpInches' : IDL.Opt(IDL.Float64),
+    'shuttle20yd' : IDL.Opt(IDL.Float64),
+    'timestamp' : Time,
+    'isPublic' : IDL.Bool,
+    'verticalJumpInches' : IDL.Opt(IDL.Float64),
+    'athleteName' : IDL.Text,
   });
   const RecoveryStep = IDL.Record({
     'id' : IDL.Nat,
@@ -196,10 +273,21 @@ export const idlFactory = ({ IDL }) => {
     'addMedication' : IDL.Func([Medication], [], []),
     'addMeeting' : IDL.Func([Meeting], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'deleteCombineResult' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+    'getAllPublicCombineEntries' : IDL.Func(
+        [],
+        [IDL.Vec(CombineResult)],
+        ['query'],
+      ),
     'getAllRecoverySteps' : IDL.Func([], [IDL.Vec(RecoveryStep)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCheckIns' : IDL.Func([], [IDL.Vec(CheckIn)], ['query']),
+    'getCombineResultById' : IDL.Func(
+        [IDL.Nat],
+        [IDL.Opt(CombineResult)],
+        ['query'],
+      ),
     'getCommitmentsPlan' : IDL.Func([], [IDL.Opt(CommitmentsPlan)], ['query']),
     'getDoseLogs' : IDL.Func([], [IDL.Vec(DoseLog)], ['query']),
     'getEmergencyContacts' : IDL.Func(
@@ -210,6 +298,11 @@ export const idlFactory = ({ IDL }) => {
     'getMedications' : IDL.Func([], [IDL.Vec(Medication)], ['query']),
     'getMeetings' : IDL.Func([], [IDL.Vec(Meeting)], ['query']),
     'getReflections' : IDL.Func([], [IDL.Vec(Reflection)], ['query']),
+    'getUserCombineResults' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(CombineResult)],
+        ['query'],
+      ),
     'getUserData' : IDL.Func(
         [],
         [
@@ -235,8 +328,31 @@ export const idlFactory = ({ IDL }) => {
     'logCheckIn' : IDL.Func([CheckIn], [], []),
     'logDose' : IDL.Func([DoseLog], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'saveCombineResult' : IDL.Func(
+        [
+          IDL.Record({
+            'dash10yd' : IDL.Opt(IDL.Float64),
+            'dash20yd' : IDL.Opt(IDL.Float64),
+            'dash40yd' : IDL.Opt(IDL.Float64),
+            'heightInches' : IDL.Opt(IDL.Nat),
+            'wingspanInches' : IDL.Opt(IDL.Float64),
+            'threeConeDrill' : IDL.Opt(IDL.Float64),
+            'handSizeInches' : IDL.Opt(IDL.Float64),
+            'weightPounds' : IDL.Opt(IDL.Nat),
+            'benchPressReps' : IDL.Opt(IDL.Nat),
+            'broadJumpInches' : IDL.Opt(IDL.Float64),
+            'shuttle20yd' : IDL.Opt(IDL.Float64),
+            'makePublic' : IDL.Bool,
+            'verticalJumpInches' : IDL.Opt(IDL.Float64),
+            'athleteName' : IDL.Text,
+          }),
+        ],
+        [CombineResult],
+        [],
+      ),
     'saveCommitmentsPlan' : IDL.Func([CommitmentsPlan], [], []),
     'saveReflection' : IDL.Func([Reflection], [], []),
+    'toggleCombinePublicState' : IDL.Func([IDL.Nat], [IDL.Bool], []),
   });
 };
 

@@ -1,55 +1,140 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-12T20:55:42.938Z",
+  "generatedAt": "2026-02-13T19:31:07.888Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 3,
+    "total": 8,
+    "implemented": 6,
     "items": [
       {
-        "id": "REQ-14",
-        "summary": "Add explicit UI disclaimers stating the app does not provide legal advice, does not provide religious/spiritual rulings, and cannot guarantee perfect compliance with any laws or religious rules; ensure all user-facing disclaimer text is in English and is shown alongside existing safety disclaimers.",
+        "id": "REQ-17",
+        "summary": "Add a guest mode so the app can be used immediately without requiring Internet Identity login; in guest mode, store Combine entries locally (per-browser) and clearly label the mode as \"Guest (local only)\" in the UI.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/safety/Disclaimers.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/pages/Landing.tsx",
+          "frontend/src/components/layout/AppShell.tsx",
+          "frontend/src/utils/combineGuestStorage.ts"
         ],
         "matchedFiles": [
-          "frontend/src/components/safety/Disclaimers.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/pages/Landing.tsx",
+          "frontend/src/components/layout/AppShell.tsx",
+          "frontend/src/utils/combineGuestStorage.ts"
         ]
       },
       {
-        "id": "REQ-15",
-        "summary": "Create a new signed-in page for “Staying Safe & Out of Trouble” (lawful + values-aligned decision support) that provides practical, non-judgmental self-management content (e.g., grounding steps, a pause-and-plan checklist, and links to Crisis/Help) without claiming prevention or compliance guarantees.",
+        "id": "REQ-18",
+        "summary": "Implement a new Combine module that supports recording all standard NFL Combine drills and measurements in a \"latest/official format\" data entry flow, including at minimum: 40-yard dash (with split fields if provided), vertical jump, broad jump, bench press reps, 20-yard shuttle, 3-cone drill, and key measurements (height, weight, wingspan/arm length, hand size).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/StayingSafeOutOfTrouble.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/layout/AppShell.tsx"
+          "frontend/src/hooks/useCombine.ts",
+          "frontend/src/utils/combineValidation.ts",
+          "frontend/src/components/combine/CombineEntryForm.tsx",
+          "frontend/src/pages/combine/NewEntry.tsx",
+          "frontend/src/pages/combine/Dashboard.tsx",
+          "frontend/src/App.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/StayingSafeOutOfTrouble.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/layout/AppShell.tsx"
+          "frontend/src/hooks/useCombine.ts",
+          "frontend/src/utils/combineValidation.ts",
+          "frontend/src/components/combine/CombineEntryForm.tsx",
+          "frontend/src/pages/combine/NewEntry.tsx",
+          "frontend/src/pages/combine/Dashboard.tsx",
+          "frontend/src/App.tsx"
         ]
       },
       {
-        "id": "REQ-16",
-        "summary": "Allow the user to save and edit a personal “commitments & boundaries” plan used by the “Staying Safe & Out of Trouble” page (e.g., personal commitments, things to avoid, and ‘when I’m at risk, I will…’ steps) and persist it per-user in the Motoko backend.",
+        "id": "REQ-19",
+        "summary": "Add Combine history and progress views that list past entries and provide simple trend charts over time per drill/measurement (e.g., 40 time, vertical, bench reps).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/safety/CommitmentsPlanEditor.tsx",
-          "frontend/src/pages/StayingSafeOutOfTrouble.tsx"
+          "frontend/src/pages/combine/History.tsx",
+          "frontend/src/pages/combine/EntryDetail.tsx",
+          "frontend/src/components/combine/CombineTrendChart.tsx",
+          "frontend/src/components/combine/CombineTrendsPanel.tsx",
+          "frontend/src/pages/combine/Dashboard.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/safety/CommitmentsPlanEditor.tsx",
-          "frontend/src/pages/StayingSafeOutOfTrouble.tsx"
+          "frontend/src/pages/combine/History.tsx",
+          "frontend/src/pages/combine/EntryDetail.tsx",
+          "frontend/src/components/combine/CombineTrendChart.tsx",
+          "frontend/src/components/combine/CombineTrendsPanel.tsx",
+          "frontend/src/pages/combine/Dashboard.tsx"
         ]
+      },
+      {
+        "id": "REQ-20",
+        "summary": "Add comparison against official/typical NFL Combine benchmarks by displaying reference values next to each recorded drill (e.g., average/target ranges) and highlighting whether the user is above/near/below the reference.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/utils/combineBenchmarks.ts",
+          "frontend/src/components/combine/BenchmarkComparison.tsx",
+          "frontend/src/pages/combine/EntryDetail.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/utils/combineBenchmarks.ts",
+          "frontend/src/components/combine/BenchmarkComparison.tsx",
+          "frontend/src/pages/combine/EntryDetail.tsx"
+        ]
+      },
+      {
+        "id": "REQ-21",
+        "summary": "Implement a broadcasting/sharing mode for Combine results: allow a user to generate a shareable \"Combine Card\" view for a selected entry and copy a share link; for signed-in users, support publishing a specific entry to a public list that is viewable without login.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/combine/ShareCard.tsx",
+          "frontend/src/pages/combine/PublicEntry.tsx",
+          "frontend/src/pages/combine/Published.tsx",
+          "frontend/src/pages/combine/EntryDetail.tsx",
+          "frontend/src/hooks/useCombine.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/combine/ShareCard.tsx",
+          "frontend/src/pages/combine/PublicEntry.tsx",
+          "frontend/src/pages/combine/Published.tsx",
+          "frontend/src/pages/combine/EntryDetail.tsx",
+          "frontend/src/hooks/useCombine.ts",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-22",
+        "summary": "Refocus the app’s navigation and landing experience around the NFL Combine tracker (rename title/branding, update primary routes, and add navigation items for Combine: Dashboard, New Entry, History, Share/Published). Keep all user-facing text in English.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/public/assets/generated/combine-logo.dim_512x512.png",
+          "frontend/public/assets/generated/combine-hero.dim_1600x900.png",
+          "frontend/src/pages/Landing.tsx",
+          "frontend/src/components/layout/AppShell.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/public/assets/generated/combine-logo.dim_512x512.png",
+          "frontend/public/assets/generated/combine-hero.dim_1600x900.png",
+          "frontend/src/pages/Landing.tsx",
+          "frontend/src/components/layout/AppShell.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-23",
+        "summary": "Extend the Motoko backend actor to persist Combine entries per user and to store/read published (public) Combine entries needed for share links and a simple public feed.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-24",
+        "summary": "If the backend uses stable state that requires upgrade support, update migration logic to initialize any new Combine-related storage while preserving existing stored data.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       }
     ]
   },
@@ -57,20 +142,60 @@
     "backend/main.mo",
     "backend/migration.mo",
     "build-request.json",
-    "build-template/README.md",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/public/assets/generated/combine-hero.dim_1600x900.png",
+    "frontend/public/assets/generated/combine-logo.dim_512x512.png",
     "frontend/src/App.tsx",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
+    "frontend/src/components/checkins/CheckInEditor.tsx",
+    "frontend/src/components/checkins/CheckInTrends.tsx",
+    "frontend/src/components/combine/BenchmarkComparison.tsx",
+    "frontend/src/components/combine/CombineEntryForm.tsx",
+    "frontend/src/components/combine/CombineTrendChart.tsx",
+    "frontend/src/components/combine/CombineTrendsPanel.tsx",
     "frontend/src/components/layout/AppShell.tsx",
+    "frontend/src/components/medications/DoseChecklistToday.tsx",
+    "frontend/src/components/medications/MedicationForm.tsx",
+    "frontend/src/components/meetings/MeetingForm.tsx",
+    "frontend/src/components/meetings/SponsorNotes.tsx",
     "frontend/src/components/safety/CommitmentsPlanEditor.tsx",
     "frontend/src/components/safety/Disclaimers.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useCombine.ts",
     "frontend/src/hooks/useQueries.ts",
+    "frontend/src/index.css",
+    "frontend/src/pages/AdherenceHistory.tsx",
+    "frontend/src/pages/CheckIns.tsx",
+    "frontend/src/pages/CrisisHelp.tsx",
+    "frontend/src/pages/Landing.tsx",
+    "frontend/src/pages/MedicationDetail.tsx",
+    "frontend/src/pages/Medications.tsx",
+    "frontend/src/pages/Meetings.tsx",
+    "frontend/src/pages/Onboarding.tsx",
+    "frontend/src/pages/Program.tsx",
+    "frontend/src/pages/ProgramStepDetail.tsx",
+    "frontend/src/pages/Settings.tsx",
+    "frontend/src/pages/SettingsDataExport.tsx",
     "frontend/src/pages/StayingSafeOutOfTrouble.tsx",
+    "frontend/src/pages/Today.tsx",
+    "frontend/src/pages/combine/Dashboard.tsx",
+    "frontend/src/pages/combine/EntryDetail.tsx",
+    "frontend/src/pages/combine/History.tsx",
+    "frontend/src/pages/combine/NewEntry.tsx",
+    "frontend/src/pages/combine/PublicEntry.tsx",
+    "frontend/src/pages/combine/Published.tsx",
+    "frontend/src/pages/combine/ShareCard.tsx",
+    "frontend/src/utils/combineBenchmarks.ts",
+    "frontend/src/utils/combineGuestStorage.ts",
+    "frontend/src/utils/combineValidation.ts",
+    "frontend/src/utils/exporters.ts",
+    "frontend/src/utils/reminders.ts",
+    "frontend/src/utils/userScopedStorage.ts",
+    "frontend/tailwind.config.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

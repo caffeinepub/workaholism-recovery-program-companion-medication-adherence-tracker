@@ -2,31 +2,13 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-explicit-ui-disclaimers-stating-the-app-does-not-provide-legal-advice-does-not-provide-religious-spiritual-rulings-and-cannot-guarantee-perfect-compliance-with-any-laws-or-religious-rules-ensure-all-user-facing-disclaimer-text-is-in-english-and-is-shown-alongside-existing-safety-disclaimers",
-      "featureTitle": "Add explicit UI disclaimers stating the app does not provide legal advice, does not provide religious/spiritual rulings, and cannot guarantee perfect compliance with any laws or religious rules; ensure all user-facing disclaimer text is in English and is shown alongside existing safety disclaimers.",
-      "files": [
-        "frontend/src/components/safety/Disclaimers.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-14"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-create-a-new-signed-in-page-for-staying-safe-out-of-trouble-lawful-values-aligned-decision-support-that-provides-practical-non-judgmental-self-management-content-e-g-grounding-steps-a-pause-and-plan-checklist-and-links-to-crisis-help-without-claiming-prevention-or-compliance-guarantees",
-      "featureTitle": "Create a new signed-in page for “Staying Safe & Out of Trouble” (lawful + values-aligned decision support) that provides practical, non-judgmental self-management content (e.g., grounding steps, a pause-and-plan checklist, and links to Crisis/Help) without claiming prevention or compliance guarantees.",
+      "featureId": "feature-add-a-guest-mode-so-the-app-can-be-used-immediately-without-requiring-internet-identity-login-in-guest-mode-store-combine-entries-locally-per-browser-and-clearly-label-the-mode-as-guest-local-only-in-the-ui",
+      "featureTitle": "Add a guest mode so the app can be used immediately without requiring Internet Identity login; in guest mode, store Combine entries locally (per-browser) and clearly label the mode as \"Guest (local only)\" in the UI.",
       "files": [
         "frontend/src/App.tsx",
         "frontend/src/components/layout/AppShell.tsx",
-        "frontend/src/pages/StayingSafeOutOfTrouble.tsx"
+        "frontend/src/pages/Landing.tsx",
+        "frontend/src/utils/combineGuestStorage.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -37,17 +19,20 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-15"
+        "REQ-17"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-allow-the-user-to-save-and-edit-a-personal-commitments-boundaries-plan-used-by-the-staying-safe-out-of-trouble-page-e-g-personal-commitments-things-to-avoid-and-when-i-m-at-risk-i-will-steps-and-persist-it-per-user-in-the-motoko-backend",
-      "featureTitle": "Allow the user to save and edit a personal “commitments & boundaries” plan used by the “Staying Safe & Out of Trouble” page (e.g., personal commitments, things to avoid, and ‘when I’m at risk, I will…’ steps) and persist it per-user in the Motoko backend.",
+      "featureId": "feature-implement-a-new-combine-module-that-supports-recording-all-standard-nfl-combine-drills-and-measurements-in-a-latest-official-format-data-entry-flow-including-at-minimum-40-yard-dash-with-split-fields-if-provided-vertical-jump-broad-jump-bench-press-reps-20-yard-shuttle-3-cone-drill-and-key-measurements-height-weight-wingspan-arm-length-hand-size",
+      "featureTitle": "Implement a new Combine module that supports recording all standard NFL Combine drills and measurements in a \"latest/official format\" data entry flow, including at minimum: 40-yard dash (with split fields if provided), vertical jump, broad jump, bench press reps, 20-yard shuttle, 3-cone drill, and key measurements (height, weight, wingspan/arm length, hand size).",
       "files": [
-        "frontend/src/components/safety/CommitmentsPlanEditor.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/StayingSafeOutOfTrouble.tsx"
+        "frontend/src/App.tsx",
+        "frontend/src/components/combine/CombineEntryForm.tsx",
+        "frontend/src/hooks/useCombine.ts",
+        "frontend/src/pages/combine/Dashboard.tsx",
+        "frontend/src/pages/combine/NewEntry.tsx",
+        "frontend/src/utils/combineValidation.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -58,7 +43,96 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-16"
+        "REQ-18"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-combine-history-and-progress-views-that-list-past-entries-and-provide-simple-trend-charts-over-time-per-drill-measurement-e-g-40-time-vertical-bench-reps",
+      "featureTitle": "Add Combine history and progress views that list past entries and provide simple trend charts over time per drill/measurement (e.g., 40 time, vertical, bench reps).",
+      "files": [
+        "frontend/src/components/combine/CombineTrendChart.tsx",
+        "frontend/src/components/combine/CombineTrendsPanel.tsx",
+        "frontend/src/pages/combine/Dashboard.tsx",
+        "frontend/src/pages/combine/EntryDetail.tsx",
+        "frontend/src/pages/combine/History.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-19"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-comparison-against-official-typical-nfl-combine-benchmarks-by-displaying-reference-values-next-to-each-recorded-drill-e-g-average-target-ranges-and-highlighting-whether-the-user-is-above-near-below-the-reference",
+      "featureTitle": "Add comparison against official/typical NFL Combine benchmarks by displaying reference values next to each recorded drill (e.g., average/target ranges) and highlighting whether the user is above/near/below the reference.",
+      "files": [
+        "frontend/src/components/combine/BenchmarkComparison.tsx",
+        "frontend/src/pages/combine/EntryDetail.tsx",
+        "frontend/src/utils/combineBenchmarks.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-20"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-a-broadcasting-sharing-mode-for-combine-results-allow-a-user-to-generate-a-shareable-combine-card-view-for-a-selected-entry-and-copy-a-share-link-for-signed-in-users-support-publishing-a-specific-entry-to-a-public-list-that-is-viewable-without-login",
+      "featureTitle": "Implement a broadcasting/sharing mode for Combine results: allow a user to generate a shareable \"Combine Card\" view for a selected entry and copy a share link; for signed-in users, support publishing a specific entry to a public list that is viewable without login.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/hooks/useCombine.ts",
+        "frontend/src/pages/combine/EntryDetail.tsx",
+        "frontend/src/pages/combine/PublicEntry.tsx",
+        "frontend/src/pages/combine/Published.tsx",
+        "frontend/src/pages/combine/ShareCard.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-21"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-refocus-the-app-s-navigation-and-landing-experience-around-the-nfl-combine-tracker-rename-title-branding-update-primary-routes-and-add-navigation-items-for-combine-dashboard-new-entry-history-share-published-keep-all-user-facing-text-in-english",
+      "featureTitle": "Refocus the app’s navigation and landing experience around the NFL Combine tracker (rename title/branding, update primary routes, and add navigation items for Combine: Dashboard, New Entry, History, Share/Published). Keep all user-facing text in English.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/layout/AppShell.tsx",
+        "frontend/src/pages/Landing.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-22"
       ],
       "confidence": "high"
     }

@@ -1,83 +1,176 @@
 {
   "kind": "build_request",
-  "title": "Add lawfulness & values-aligned support area with clear non-guarantee disclaimers",
+  "title": "NFL Combine performance tracker with guest mode, drill logging, benchmarks, and shareable results",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-14",
-      "text": "Add explicit UI disclaimers stating the app does not provide legal advice, does not provide religious/spiritual rulings, and cannot guarantee perfect compliance with any laws or religious rules; ensure all user-facing disclaimer text is in English and is shown alongside existing safety disclaimers.",
+      "id": "REQ-17",
+      "text": "Add a guest mode so the app can be used immediately without requiring Internet Identity login; in guest mode, store Combine entries locally (per-browser) and clearly label the mode as \"Guest (local only)\" in the UI.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-20"
         ],
         "quotes": [
-          "help me follow the laws of the land perfectly, 100% eternally, and the laws of all religions perfectly."
+          "Can you build app right now without that please 🙏"
         ]
       },
       "acceptanceCriteria": [
-        "The disclaimers UI includes separate sections for: (1) Not Legal Advice, (2) Not Religious/Spiritual Authority, and (3) No Guarantees/Limitations (explicitly rejecting “perfect/100%/eternal” compliance promises).",
-        "The new disclaimer sections appear wherever the existing disclaimers component is rendered (e.g., Settings and Crisis/Help pages).",
-        "All new disclaimer strings are written in English."
+        "When the user is not authenticated, the Landing page offers a \"Continue as Guest\" action.",
+        "Guest users can create, view, and edit Combine results and history without logging in.",
+        "Guest data persists across page refreshes (localStorage) but is not shared across devices.",
+        "The UI clearly distinguishes Guest mode from signed-in mode."
       ]
     },
     {
-      "id": "REQ-15",
-      "text": "Create a new signed-in page for “Staying Safe & Out of Trouble” (lawful + values-aligned decision support) that provides practical, non-judgmental self-management content (e.g., grounding steps, a pause-and-plan checklist, and links to Crisis/Help) without claiming prevention or compliance guarantees.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-5",
-          "msg-6"
-        ],
-        "quotes": [
-          "Creating an app that keeps me out of jail, prison, and baker-act institutions. No institutionalizations. No matter what.",
-          "help me follow the laws of the land perfectly, 100% eternally, and the laws of all religions perfectly."
-        ]
-      },
-      "acceptanceCriteria": [
-        "A new route is available in the authenticated app (via TanStack Router) for the new “Staying Safe & Out of Trouble” page.",
-        "The page includes: (a) a short ‘pause’ checklist, (b) grounding steps, and (c) a prominent link/button to the existing /crisis-help page.",
-        "The page text avoids absolute guarantees (e.g., does not promise ‘keeps me out of jail/institutions’ or ‘perfect compliance’).",
-        "The page is discoverable from the main app navigation (AppShell nav)."
-      ]
-    },
-    {
-      "id": "REQ-16",
-      "text": "Allow the user to save and edit a personal “commitments & boundaries” plan used by the “Staying Safe & Out of Trouble” page (e.g., personal commitments, things to avoid, and ‘when I’m at risk, I will…’ steps) and persist it per-user in the Motoko backend.",
+      "id": "REQ-18",
+      "text": "Implement a new Combine module that supports recording all standard NFL Combine drills and measurements in a \"latest/official format\" data entry flow, including at minimum: 40-yard dash (with split fields if provided), vertical jump, broad jump, bench press reps, 20-yard shuttle, 3-cone drill, and key measurements (height, weight, wingspan/arm length, hand size).",
       "target": "both",
       "source": {
         "messageIds": [
-          "msg-5",
-          "msg-6"
+          "msg-20"
         ],
         "quotes": [
-          "keeps me out of jail, prison, and baker-act institutions",
-          "help me follow the laws of the land perfectly, 100% eternally, and the laws of all religions perfectly"
+          "Can you build app right now without that please 🙏"
         ]
       },
       "acceptanceCriteria": [
-        "Backend exposes authenticated, caller-scoped query/update methods to read and write the user’s saved plan data.",
-        "Frontend provides an editor UI on the “Staying Safe & Out of Trouble” page to view/update the saved plan and shows a success/failure state on save.",
-        "Plan data is user-private (only accessible to the signed-in principal) and remains available after reload/sign-out/sign-in.",
-        "No part of the UI or backend describes the plan as guaranteeing outcomes or perfect compliance."
+        "A signed-in user can create and save a Combine result entry to the backend.",
+        "A guest user can create and save the same Combine result entry locally.",
+        "The entry form validates numeric fields and units (seconds, inches/cm, lbs/kg) and prevents invalid saves.",
+        "Each saved entry includes a timestamp/date and an optional note field."
+      ]
+    },
+    {
+      "id": "REQ-19",
+      "text": "Add Combine history and progress views that list past entries and provide simple trend charts over time per drill/measurement (e.g., 40 time, vertical, bench reps).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-20"
+        ],
+        "quotes": [
+          "Can you build app right now without that please 🙏"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Users can view a history list of Combine entries sorted newest-first.",
+        "Selecting an entry shows a readable detail view of all recorded stats.",
+        "Users can view drill-specific trends over time (at least line charts for 40-yard dash, vertical jump, bench reps).",
+        "History and trends work for both guest (local) and signed-in (backend) data sources."
+      ]
+    },
+    {
+      "id": "REQ-20",
+      "text": "Add comparison against official/typical NFL Combine benchmarks by displaying reference values next to each recorded drill (e.g., average/target ranges) and highlighting whether the user is above/near/below the reference.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-20"
+        ],
+        "quotes": [
+          "Can you build app right now without that please 🙏"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Each drill shown in the entry detail view includes a benchmark reference value or range.",
+        "The UI indicates comparison state (e.g., Above / Near / Below) using accessible text (not color alone).",
+        "Benchmarks are presented as informational context only, with no absolute claims or insulting/judgmental language."
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "text": "Implement a broadcasting/sharing mode for Combine results: allow a user to generate a shareable \"Combine Card\" view for a selected entry and copy a share link; for signed-in users, support publishing a specific entry to a public list that is viewable without login.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-20"
+        ],
+        "quotes": [
+          "Can you build app right now without that please 🙏"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A user can open a \"Share\" action from a Combine entry detail page.",
+        "The app renders a clean \"Combine Card\" view suitable for screenshot/sharing.",
+        "For signed-in users, a \"Publish\" toggle creates/updates a publicly readable representation of that entry in the backend and returns a stable share URL.",
+        "Public share pages display only the published entry and do not expose private per-user data."
+      ]
+    },
+    {
+      "id": "REQ-22",
+      "text": "Refocus the app’s navigation and landing experience around the NFL Combine tracker (rename title/branding, update primary routes, and add navigation items for Combine: Dashboard, New Entry, History, Share/Published). Keep all user-facing text in English.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-20"
+        ],
+        "quotes": [
+          "Can you build app right now without that please 🙏"
+        ]
+      },
+      "acceptanceCriteria": [
+        "App header/title and Landing page describe an NFL Combine performance tracker rather than a recovery/medications app.",
+        "The main navigation includes Combine-focused destinations and the default signed-in route lands on the Combine dashboard.",
+        "Existing recovery-related pages are not presented as primary navigation items.",
+        "All new user-facing strings are in English."
+      ]
+    },
+    {
+      "id": "REQ-23",
+      "text": "Extend the Motoko backend actor to persist Combine entries per user and to store/read published (public) Combine entries needed for share links and a simple public feed.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-20"
+        ],
+        "quotes": [
+          "Can you build app right now without that please 🙏"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend exposes update/query methods to create/list/get Combine entries scoped to the caller principal.",
+        "Backend exposes methods to publish/unpublish an entry and to fetch a published entry without requiring the caller to be the owner (public read).",
+        "Access control prevents reading/writing another user’s private Combine entries.",
+        "Published entries contain only the fields required for the Combine Card/public view."
+      ]
+    },
+    {
+      "id": "REQ-24",
+      "text": "If the backend uses stable state that requires upgrade support, update migration logic to initialize any new Combine-related storage while preserving existing stored data.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-20"
+        ],
+        "quotes": [
+          "Can you build app right now without that please 🙏"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Upgrading the canister does not break existing stored state.",
+        "New Combine maps/collections are initialized to empty for existing users upon upgrade.",
+        "Existing migration behavior remains correct for previously stored fields."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor in backend/main.mo; add backend/migration.mo only if required by persistent state changes.",
-    "Do not edit files under frontend/src/components/ui or other immutablePaths; compose existing UI components instead.",
-    "Do not claim or imply guarantees of perfect legal/religious compliance, avoidance of incarceration/institutionalization, or emergency/crisis intervention.",
-    "Use English for all user-facing text added or modified."
+    "Backend must remain a single Motoko actor in backend/main.mo.",
+    "Do not edit files under frontend/src/components/ui or any path listed in frontend.immutablePaths.",
+    "Do not implement true 24/7 background recording or device-wide persistence guarantees; only user-entered logging and normal web storage/back-end persistence are in scope.",
+    "No violent/harassing/insulting language in the UI; keep competitive features framed positively and non-judgmentally."
   ],
   "nonGoals": [
-    "Providing legal counsel, legal strategy, or jurisdiction-specific legal determinations.",
-    "Providing religious rulings, authoritative interpretation of holy texts, or claiming to enforce/verify religious compliance.",
-    "Any promise of “100%”, “perfect”, “eternal” compliance or outcome guarantees (e.g., ‘no jail’, ‘no institutionalizations’).",
-    "Real-time monitoring, law enforcement integration, or external service integrations (push notifications, SMS, email, third-party auth)."
+    "Implementing third-party authentication (only Internet Identity is supported).",
+    "Building a real-time global leaderboard of \"all men\" or any demographic-wide ranking.",
+    "Audio/video capture or automatic timing measurement from sensors/camera.",
+    "Push notifications or background services that run when the browser/app is closed."
   ],
   "imageRequirements": {
-    "required": [],
+    "required": [
+      "Modern athletic app logo with a football/combine stopwatch motif (combine-logo.dim_512x512.png)",
+      "Wide hero illustration of an athlete training for combine drills in a clean, modern graphic style (combine-hero.dim_1600x900.png)"
+    ],
     "edits": []
   }
 }

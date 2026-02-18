@@ -1,21 +1,23 @@
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useGetCallerUserProfile } from '../../hooks/useQueries';
+import { useInternetIdentity } from '../../hooks/useInternetIdentity';
 import LoginButton from '../auth/LoginButton';
-import { Home, BookOpen, Calendar, Pill, Users, Settings, Heart, Shield } from 'lucide-react';
+import { Home, Plus, History, Share2, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
+  const { identity } = useInternetIdentity();
   const { data: userProfile } = useGetCallerUserProfile();
   const navigate = useNavigate();
 
+  const isAuthenticated = !!identity;
+
   const navItems = [
-    { path: '/today', label: 'Today', icon: Home },
-    { path: '/program', label: 'Program', icon: BookOpen },
-    { path: '/check-ins', label: 'Check-ins', icon: Calendar },
-    { path: '/medications', label: 'Medications', icon: Pill },
-    { path: '/meetings', label: 'Meetings', icon: Users },
-    { path: '/staying-safe', label: 'Staying Safe', icon: Shield },
-    { path: '/settings', label: 'Settings', icon: Settings },
+    { path: '/dashboard', label: 'Dashboard', icon: Home },
+    { path: '/new-entry', label: 'New Entry', icon: Plus },
+    { path: '/history', label: 'History', icon: History },
+    { path: '/published', label: 'Published', icon: Share2 },
   ];
 
   return (
@@ -26,28 +28,24 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-4">
               <Link to="/" className="flex items-center gap-3">
                 <img
-                  src="/assets/generated/wa-logo.dim_512x512.png"
-                  alt="Recovery Companion"
+                  src="/assets/generated/combine-logo.dim_512x512.png"
+                  alt="NFL Combine Tracker"
                   className="h-10 w-10 rounded-lg"
                 />
                 <div>
-                  <h1 className="text-xl font-semibold text-foreground">Recovery Companion</h1>
-                  {userProfile && (
+                  <h1 className="text-xl font-semibold text-foreground">NFL Combine Tracker</h1>
+                  {isAuthenticated && userProfile && (
                     <p className="text-sm text-muted-foreground">Welcome, {userProfile.name}</p>
+                  )}
+                  {!isAuthenticated && (
+                    <Badge variant="secondary" className="text-xs">
+                      Guest (local only)
+                    </Badge>
                   )}
                 </div>
               </Link>
             </div>
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate({ to: '/crisis-help' })}
-                className="gap-2 text-destructive hover:text-destructive"
-              >
-                <Heart className="h-4 w-4" />
-                Crisis Help
-              </Button>
               <LoginButton />
             </div>
           </div>
@@ -79,9 +77,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <footer className="border-t border-border bg-card mt-auto">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} Recovery Companion. Not medical advice.</p>
+            <p>© {new Date().getFullYear()} NFL Combine Tracker. For informational purposes only.</p>
             <p>
-              Built with <Heart className="inline h-4 w-4 text-destructive" /> using{' '}
+              Built with ❤️ using{' '}
               <a
                 href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
                   window.location.hostname

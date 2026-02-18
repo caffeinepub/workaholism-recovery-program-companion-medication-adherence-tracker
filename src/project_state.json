@@ -1,128 +1,57 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
-  "summary": "App to support workaholism recovery and medication adherence, with additional user-requested focus on avoiding legal/institutional crises and promoting lawful/values-aligned decision-making.",
+  "projectStateVersion": 3,
+  "summary": "Build an NFL Combine performance tracking app that lets a user record all combine-style drills in the latest NFL Combine format, track progress over time, and optionally broadcast/share results while comparing against official averages.",
   "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Modern athletic app logo with a football/combine stopwatch motif (combine-logo.dim_512x512.png)\n- Wide hero illustration of an athlete training for combine drills in a clean, modern graphic style (combine-hero.dim_1600x900.png)",
   "existing_features": [
     {
-      "id": "feature-implement-internet-identity-sign-in-and-gate-all-personal-data-behind-the-signed-in-user-principal-so-each-user-can-only-read-write-their-own-recovery-and-medication-data",
-      "title": "Implement Internet Identity sign-in and gate all personal data behind the signed-in user (principal), so each user can only read/write their own recovery and medication data.",
+      "id": "feature-add-a-guest-mode-so-the-app-can-be-used-immediately-without-requiring-internet-identity-login-in-guest-mode-store-combine-entries-locally-per-browser-and-clearly-label-the-mode-as-guest-local-only-in-the-ui",
+      "title": "Add a guest mode so the app can be used immediately without requiring Internet Identity login; in guest mode, store Combine entries locally (per-browser) and clearly label the mode as \"Guest (local only)\" in the UI.",
       "reqIds": [
-        "REQ-1"
+        "REQ-17"
       ],
       "version": 1
     },
     {
-      "id": "feature-create-a-structured-workaholism-recovery-program-module-that-lets-the-user-work-through-a-full-program-in-an-organized-way-a-list-of-steps-modules-each-with-a-description-reflections-journaling-prompts-and-a-completion-checklist",
-      "title": "Create a structured “Workaholism Recovery Program” module that lets the user work through a full program in an organized way: a list of steps/modules, each with a description, reflections/journaling prompts, and a completion checklist.",
+      "id": "feature-implement-a-new-combine-module-that-supports-recording-all-standard-nfl-combine-drills-and-measurements-in-a-latest-official-format-data-entry-flow-including-at-minimum-40-yard-dash-with-split-fields-if-provided-vertical-jump-broad-jump-bench-press-reps-20-yard-shuttle-3-cone-drill-and-key-measurements-height-weight-wingspan-arm-length-hand-size",
+      "title": "Implement a new Combine module that supports recording all standard NFL Combine drills and measurements in a \"latest/official format\" data entry flow, including at minimum: 40-yard dash (with split fields if provided), vertical jump, broad jump, bench press reps, 20-yard shuttle, 3-cone drill, and key measurements (height, weight, wingspan/arm length, hand size).",
       "reqIds": [
-        "REQ-2"
+        "REQ-18"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-daily-recovery-check-ins-to-support-mastery-of-the-program-mood-stress-slider-s-work-hours-logged-for-the-day-a-brief-reflection-and-a-configurable-daily-intention-related-to-recovery",
-      "title": "Add daily recovery check-ins to support “mastery” of the program: mood/stress slider(s), work-hours logged for the day, a brief reflection, and a configurable daily intention related to recovery.",
+      "id": "feature-add-combine-history-and-progress-views-that-list-past-entries-and-provide-simple-trend-charts-over-time-per-drill-measurement-e-g-40-time-vertical-bench-reps",
+      "title": "Add Combine history and progress views that list past entries and provide simple trend charts over time per drill/measurement (e.g., 40 time, vertical, bench reps).",
       "reqIds": [
-        "REQ-3"
+        "REQ-19"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-a-meetings-sponsor-support-tracker-generic-not-tied-to-any-external-service-record-meetings-attended-date-format-notes-sponsor-contact-notes-and-optional-goals-for-the-next-meeting",
-      "title": "Add a “Meetings & Sponsor Support” tracker (generic, not tied to any external service): record meetings attended (date, format, notes), sponsor contact notes, and optional goals for the next meeting.",
+      "id": "feature-add-comparison-against-official-typical-nfl-combine-benchmarks-by-displaying-reference-values-next-to-each-recorded-drill-e-g-average-target-ranges-and-highlighting-whether-the-user-is-above-near-below-the-reference",
+      "title": "Add comparison against official/typical NFL Combine benchmarks by displaying reference values next to each recorded drill (e.g., average/target ranges) and highlighting whether the user is above/near/below the reference.",
       "reqIds": [
-        "REQ-4"
+        "REQ-20"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-a-medication-plan-manager-that-the-user-can-configure-to-match-their-psychiatric-treatment-plan-medication-name-dose-schedule-times-per-day-start-end-dates-optional-instructions-and-prescriber-clinic-notes",
-      "title": "Implement a medication plan manager that the user can configure to match their psychiatric treatment plan: medication name, dose, schedule (times per day), start/end dates (optional), instructions, and prescriber/clinic notes.",
+      "id": "feature-implement-a-broadcasting-sharing-mode-for-combine-results-allow-a-user-to-generate-a-shareable-combine-card-view-for-a-selected-entry-and-copy-a-share-link-for-signed-in-users-support-publishing-a-specific-entry-to-a-public-list-that-is-viewable-without-login",
+      "title": "Implement a broadcasting/sharing mode for Combine results: allow a user to generate a shareable \"Combine Card\" view for a selected entry and copy a share link; for signed-in users, support publishing a specific entry to a public list that is viewable without login.",
       "reqIds": [
-        "REQ-5"
+        "REQ-21"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-medication-adherence-logging-for-each-scheduled-dose-allow-the-user-to-mark-taken-skipped-late-and-optionally-record-a-note-e-g-side-effect-reason",
-      "title": "Add medication adherence logging: for each scheduled dose, allow the user to mark Taken/Skipped/Late and optionally record a note (e.g., side effect, reason).",
+      "id": "feature-refocus-the-app-s-navigation-and-landing-experience-around-the-nfl-combine-tracker-rename-title-branding-update-primary-routes-and-add-navigation-items-for-combine-dashboard-new-entry-history-share-published-keep-all-user-facing-text-in-english",
+      "title": "Refocus the app’s navigation and landing experience around the NFL Combine tracker (rename title/branding, update primary routes, and add navigation items for Combine: Dashboard, New Entry, History, Share/Published). Keep all user-facing text in English.",
       "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-provide-reminder-support-for-medication-and-daily-check-ins-using-in-app-reminders-and-a-clear-today-dashboard-do-not-rely-on-push-notifications-show-upcoming-doses-overdue-doses-and-an-end-of-day-check-in-prompt",
-      "title": "Provide reminder support for medication and daily check-ins using in-app reminders and a clear “Today” dashboard (do not rely on push notifications): show upcoming doses, overdue doses, and an end-of-day check-in prompt.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-safety-and-scope-disclaimers-in-the-ui-the-app-does-not-provide-medical-advice-does-not-replace-therapy-psychiatry-and-is-not-for-emergencies-include-a-dedicated-crisis-help-page-with-user-editable-emergency-contacts-and-local-guidance-placeholders",
-      "title": "Add safety and scope disclaimers in the UI: the app does not provide medical advice, does not replace therapy/psychiatry, and is not for emergencies; include a dedicated “Crisis/Help” page with user-editable emergency contacts and local guidance placeholders.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-support-export-of-the-user-s-recovery-progress-and-medication-adherence-logs-to-a-downloadable-json-and-a-human-readable-summary-plain-text-suitable-for-sharing-with-a-clinician-or-sponsor",
-      "title": "Support export of the user’s recovery progress and medication adherence logs to a downloadable JSON and a human-readable summary (plain text), suitable for sharing with a clinician or sponsor.",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-a-coherent-calming-visual-theme-and-information-architecture-for-the-app-typography-color-palette-spacing-and-component-styling-that-supports-recovery-focused-daily-use-and-stays-consistent-across-all-pages",
-      "title": "Create a coherent, calming visual theme and information architecture for the app (typography, color palette, spacing, and component styling) that supports recovery-focused daily use and stays consistent across all pages.",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-onboarding-to-set-up-the-user-s-baseline-recovery-goals-typical-work-hours-preferred-check-in-time-and-initial-medication-plan-entry-optional",
-      "title": "Add onboarding to set up the user’s baseline: recovery goals, typical work hours, preferred check-in time, and initial medication plan entry (optional).",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-two-generated-static-images-and-render-them-in-the-ui-as-local-assets-under-frontend-public-assets-generated-an-app-logo-and-a-soft-hero-illustration",
-      "title": "Add two generated static images and render them in the UI as local assets under frontend/public/assets/generated: an app logo and a soft hero illustration.",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-explicit-ui-disclaimers-stating-the-app-does-not-provide-legal-advice-does-not-provide-religious-spiritual-rulings-and-cannot-guarantee-perfect-compliance-with-any-laws-or-religious-rules-ensure-all-user-facing-disclaimer-text-is-in-english-and-is-shown-alongside-existing-safety-disclaimers",
-      "title": "Add explicit UI disclaimers stating the app does not provide legal advice, does not provide religious/spiritual rulings, and cannot guarantee perfect compliance with any laws or religious rules; ensure all user-facing disclaimer text is in English and is shown alongside existing safety disclaimers.",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-a-new-signed-in-page-for-staying-safe-out-of-trouble-lawful-values-aligned-decision-support-that-provides-practical-non-judgmental-self-management-content-e-g-grounding-steps-a-pause-and-plan-checklist-and-links-to-crisis-help-without-claiming-prevention-or-compliance-guarantees",
-      "title": "Create a new signed-in page for “Staying Safe & Out of Trouble” (lawful + values-aligned decision support) that provides practical, non-judgmental self-management content (e.g., grounding steps, a pause-and-plan checklist, and links to Crisis/Help) without claiming prevention or compliance guarantees.",
-      "reqIds": [
-        "REQ-15"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-allow-the-user-to-save-and-edit-a-personal-commitments-boundaries-plan-used-by-the-staying-safe-out-of-trouble-page-e-g-personal-commitments-things-to-avoid-and-when-i-m-at-risk-i-will-steps-and-persist-it-per-user-in-the-motoko-backend",
-      "title": "Allow the user to save and edit a personal “commitments & boundaries” plan used by the “Staying Safe & Out of Trouble” page (e.g., personal commitments, things to avoid, and ‘when I’m at risk, I will…’ steps) and persist it per-user in the Motoko backend.",
-      "reqIds": [
-        "REQ-16"
+        "REQ-22"
       ],
       "version": 1
     }
@@ -130,33 +59,47 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Workaholism recovery program companion to help user fully work through and master the Workaholics Anonymous program",
+      "summary": "Support recording all NFL Combine drills/stats in the newest/official Combine format (e.g., 40-yard dash, vertical, broad, bench reps, shuttle, 3-cone, measurements).",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Medication adherence support (reminders/tracking) aligned with the user’s psychiatric treatment plan",
+      "summary": "Progress tracking: save history and display charts/graphs over time for each drill/stat.",
       "reqIds": [],
       "status": "pending"
     },
     {
-      "id": "AR-14",
-      "summary": "Persist all app data in the Motoko backend with stable data models and query/update methods for: program progress, step reflections, check-ins, meetings/sponsor notes, medication plans, dose logs, emergency contacts, and user settings.",
+      "id": "AR-3",
+      "summary": "Comparison against official NFL Combine averages/benchmarks for context.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Broadcasting/sharing mode to publish or share recorded combine results (\"recording mode and broadcasting\").",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Extend the Motoko backend actor to persist Combine entries per user and to store/read published (public) Combine entries needed for share links and a simple public feed.",
       "reqIds": [
-        "REQ-12"
+        "REQ-23"
       ],
       "status": "pending"
     },
     {
-      "id": "AR-15",
-      "summary": "Add a “staying safe & out of trouble” support area focused on lawful, non-harmful choices and avoiding institutionalization/jail (e.g., practical checklists, grounding steps, crisis plan reminders), without claiming perfect compliance guarantees",
-      "reqIds": [],
+      "id": "AR-12",
+      "summary": "If the backend uses stable state that requires upgrade support, update migration logic to initialize any new Combine-related storage while preserving existing stored data.",
+      "reqIds": [
+        "REQ-24"
+      ],
       "status": "pending"
     }
   ],
   "gameProjectType": "none",
-  "projectName": "Workaholism recovery program companion + medication adherence tracker",
+  "projectName": "NFL Combine performance tracker with guest mode, drill logging, benchmarks, and shareable results",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

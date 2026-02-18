@@ -6,14 +6,14 @@ import Map "mo:core/Map";
 import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
 import Principal "mo:core/Principal";
-import Migration "migration";
+
 
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
 // Use migratable actor pattern to persist data and update logic
 
-(with migration = Migration.run) actor {
+ actor {
   //-----------------------------TYPES---------------------------------
   public type RecoveryStep = {
     id : Nat;

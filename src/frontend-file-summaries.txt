@@ -30,5 +30,9 @@
   "frontend/src/pages/combine/ShareCard.tsx": "Shareable Combine card view optimized for screenshots with copy-link functionality for public entries and visual performance summary.",
   "frontend/src/pages/combine/PublicEntry.tsx": "Public entry view accessible without login displaying published Combine results with benchmark comparisons.",
   "frontend/src/pages/combine/Published.tsx": "Public feed page listing all published Combine entries from all athletes with navigation to public entry views.",
-  "frontend/tailwind.config.js": "Tailwind configuration with extended color palette, custom fonts (Inter, Outfit), border radius, shadows including glow effects, and animation keyframes."
+  "frontend/tailwind.config.js": "Tailwind configuration with extended color palette, custom fonts (Inter, Outfit), border radius, shadows including glow effects, and animation keyframes.",
+  "frontend/public/manifest.json": "PWA manifest file defining app metadata, icons, theme colors, and standalone display mode for installable web app experience.",
+  "frontend/public/sw.js": "Service worker implementing cache-first strategy for static assets and network-first for API calls, enabling offline functionality without interfering with Internet Identity authentication.",
+  "frontend/index.html": "HTML entry point with PWA manifest link, iOS-specific meta tags for standalone mode, and apple-touch-icon for home screen installation.",
+  "frontend/src/main.tsx": "Application entry point with React root, providers, and service worker registration for PWA functionality."
 }

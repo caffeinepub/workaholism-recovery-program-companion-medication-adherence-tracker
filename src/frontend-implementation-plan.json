@@ -1,221 +1,84 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "NFL Combine performance tracker (guest/local + signed-in sync) with benchmarks, trends, and shareable cards",
+  "title": "Convert NFL Combine Tracker to Progressive Web App (PWA)",
   "requirements": [
     {
-      "id": "REQ-17",
-      "summary": "Add guest mode (local-only) with clear UI labeling and the ability to use the app immediately without Internet Identity login.",
+      "id": "REQ-1",
+      "summary": "Add PWA manifest file with app metadata, icons, theme colors, and standalone display mode",
       "acceptanceCriteria": [
-        "When the user is not authenticated, the Landing page offers a \"Continue as Guest\" action.",
-        "Guest users can create, view, and edit Combine results and history without logging in.",
-        "Guest data persists across page refreshes (localStorage) but is not shared across devices.",
-        "The UI clearly distinguishes Guest mode from signed-in mode."
+        "manifest.json exists in frontend/public directory",
+        "Manifest includes name, short_name, description, icons array, theme_color, background_color, display: 'standalone', and start_url fields",
+        "Manifest is linked in index.html via <link rel=\"manifest\">",
+        "App can be installed on iOS Safari via 'Add to Home Screen'"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Refactor routing/auth gating so unauthenticated users can proceed into Combine routes in Guest mode (local-only) while still supporting Internet Identity sign-in; ensure default routes work for both signed-in and guest flows."
-        },
-        {
-          "path": "frontend/src/pages/Landing.tsx",
-          "operation": "modify",
-          "description": "Add a \"Continue as Guest\" action that navigates into the Combine experience; update landing copy to explain Guest is \"Guest (local only)\" and not synced across devices."
-        },
-        {
-          "path": "frontend/src/components/layout/AppShell.tsx",
-          "operation": "modify",
-          "description": "Add a persistent mode indicator in the header that shows \"Guest (local only)\" when not authenticated and a signed-in welcome state when authenticated."
-        },
-        {
-          "path": "frontend/src/utils/combineGuestStorage.ts",
+          "path": "frontend/public/manifest.json",
           "operation": "create",
-          "description": "Implement localStorage persistence helpers for Combine entries in Guest mode (load/list/get/upsert/delete, newest-first sorting, and safe JSON parsing)."
+          "description": "Create PWA manifest with app name 'NFL Combine Tracker', short_name 'Combine Tracker', description about tracking NFL combine performance metrics, theme_color and background_color matching the app's blue theme, display mode 'standalone', start_url '/', and icons array referencing the generated PWA icons at frontend/public/assets/generated/pwa-icon-192.dim_192x192.png and frontend/public/assets/generated/pwa-icon-512.dim_512x512.png with appropriate sizes and types"
+        },
+        {
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Add <link rel=\"manifest\" href=\"/manifest.json\"> in the <head> section to link the PWA manifest file"
         }
       ]
     },
     {
-      "id": "REQ-18",
-      "summary": "Implement Combine entry creation/edit flow for standard drills/measurements with validation, timestamp, and optional notes; save to backend when signed in and to localStorage when in guest mode.",
+      "id": "REQ-2",
+      "summary": "Create service worker to enable offline functionality and caching of static assets",
       "acceptanceCriteria": [
-        "A signed-in user can create and save a Combine result entry to the backend.",
-        "A guest user can create and save the same Combine result entry locally.",
-        "The entry form validates numeric fields and units (seconds, inches/cm, lbs/kg) and prevents invalid saves.",
-        "Each saved entry includes a timestamp/date and an optional note field."
+        "Service worker file exists at frontend/public/sw.js",
+        "Service worker caches shell assets (HTML, CSS, JS) on install",
+        "Service worker serves cached content when offline",
+        "Service worker is registered in main.tsx or index.html"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useCombine.ts",
+          "path": "frontend/public/sw.js",
           "operation": "create",
-          "description": "Create Combine-specific React Query hooks that unify signed-in (backend actor) and guest (localStorage) data access for create/list/get/update operations, using the current Internet Identity state."
+          "description": "Create service worker that caches essential shell assets (index.html, main CSS, main JS bundles, generated images) on install event, serves cached content when offline using cache-first strategy for static assets, and uses network-first strategy for API calls to avoid interfering with Internet Identity authentication flow. Include logic to handle online/offline states gracefully for both authenticated and guest users"
         },
         {
-          "path": "frontend/src/utils/combineValidation.ts",
-          "operation": "create",
-          "description": "Add validation/parsing utilities for Combine numeric fields and unit normalization (seconds, inches/cm, lbs/kg) to block invalid saves and provide user-friendly error messages."
-        },
-        {
-          "path": "frontend/src/components/combine/CombineEntryForm.tsx",
-          "operation": "create",
-          "description": "Build the \"latest/official format\" Combine entry form UI covering at minimum: 40-yard dash (with split fields), vertical jump, broad jump, bench reps, 20-yard shuttle, 3-cone drill, and key measurements (height, weight, wingspan/arm length, hand size), plus timestamp/date and optional note."
-        },
-        {
-          "path": "frontend/src/pages/combine/NewEntry.tsx",
-          "operation": "create",
-          "description": "Create a Combine New Entry page that uses CombineEntryForm and saves via the unified Combine hooks (backend for signed-in, localStorage for guest), then navigates to the saved entry detail."
-        },
-        {
-          "path": "frontend/src/pages/combine/Dashboard.tsx",
-          "operation": "create",
-          "description": "Create a Combine Dashboard page summarizing the latest entry and providing primary actions (New Entry, History, Published)."
-        },
-        {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/main.tsx",
           "operation": "modify",
-          "description": "Register Combine routes (Dashboard, New Entry, History, Entry Detail, Published, Share Card, Public Share) and set the default signed-in route to the Combine Dashboard."
+          "description": "Register the service worker after the React app mounts by adding service worker registration code that checks for navigator.serviceWorker support, registers /sw.js, and handles registration success/failure. Ensure registration happens after authentication initialization to prevent interference with Internet Identity flow"
         }
       ]
     },
     {
-      "id": "REQ-19",
-      "summary": "Add Combine history, detail, and progress/trend chart views that work for both guest and signed-in data sources.",
+      "id": "REQ-3",
+      "summary": "Wire generated PWA icon set into manifest and ensure proper referencing",
       "acceptanceCriteria": [
-        "Users can view a history list of Combine entries sorted newest-first.",
-        "Selecting an entry shows a readable detail view of all recorded stats.",
-        "Users can view drill-specific trends over time (at least line charts for 40-yard dash, vertical jump, bench reps).",
-        "History and trends work for both guest (local) and signed-in (backend) data sources."
+        "Icon files exist in frontend/public/icons directory",
+        "Icons include 192x192 and 512x512 PNG sizes minimum",
+        "Icons are referenced in manifest.json icons array with correct sizes and types",
+        "Icons display correctly when app is installed on home screen"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/combine/History.tsx",
-          "operation": "create",
-          "description": "Implement a Combine History page listing past entries newest-first using the unified Combine hooks, with navigation into entry details."
-        },
-        {
-          "path": "frontend/src/pages/combine/EntryDetail.tsx",
-          "operation": "create",
-          "description": "Implement an Entry Detail page that displays all recorded drills/measurements in a readable layout, includes an Edit action (allowed for guest and signed-in), and links to Share."
-        },
-        {
-          "path": "frontend/src/components/combine/CombineTrendChart.tsx",
-          "operation": "create",
-          "description": "Create a lightweight, accessible line chart component (SVG/canvas) to plot values over time for selected drills (at minimum 40-yard dash, vertical jump, bench reps)."
-        },
-        {
-          "path": "frontend/src/components/combine/CombineTrendsPanel.tsx",
-          "operation": "create",
-          "description": "Add a trends panel that aggregates history into drill-specific series and renders at least the three required line charts using CombineTrendChart."
-        },
-        {
-          "path": "frontend/src/pages/combine/Dashboard.tsx",
+          "path": "frontend/public/manifest.json",
           "operation": "modify",
-          "description": "Wire the trends panel into the Combine Dashboard so users can quickly see progress over time from either guest (local) or signed-in (backend) sources."
+          "description": "Ensure the icons array in manifest.json correctly references frontend/public/assets/generated/pwa-icon-192.dim_192x192.png with size 192x192 and type image/png, and frontend/public/assets/generated/pwa-icon-512.dim_512x512.png with size 512x512 and type image/png. Set purpose field to 'any maskable' for both icons to support various platforms"
         }
       ]
     },
     {
-      "id": "REQ-20",
-      "summary": "Display benchmark reference values/ranges next to recorded drills and provide accessible Above/Near/Below comparison text (positive, informational framing).",
+      "id": "REQ-4",
+      "summary": "Add iOS-specific meta tags to index.html for optimal PWA experience on iOS devices",
       "acceptanceCriteria": [
-        "Each drill shown in the entry detail view includes a benchmark reference value or range.",
-        "The UI indicates comparison state (e.g., Above / Near / Below) using accessible text (not color alone).",
-        "Benchmarks are presented as informational context only, with no absolute claims or insulting/judgmental language."
+        "index.html includes <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">",
+        "index.html includes apple-mobile-web-app-status-bar-style meta tag",
+        "index.html includes apple-mobile-web-app-title meta tag",
+        "index.html includes apple-touch-icon link tags for iOS icons",
+        "App runs in standalone mode on iOS after installation"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/utils/combineBenchmarks.ts",
-          "operation": "create",
-          "description": "Define benchmark reference values/ranges per drill/measurement and implement comparison helpers that return accessible states (Above/Near/Below) with neutral, informational copy."
-        },
-        {
-          "path": "frontend/src/components/combine/BenchmarkComparison.tsx",
-          "operation": "create",
-          "description": "Create a UI component that renders benchmark context and an accessible comparison label (text-first; color optional but not sole indicator)."
-        },
-        {
-          "path": "frontend/src/pages/combine/EntryDetail.tsx",
+          "path": "frontend/index.html",
           "operation": "modify",
-          "description": "Display benchmark reference values and Above/Near/Below comparison text next to each recorded drill/measurement using the benchmark utilities and comparison component."
-        }
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "summary": "Add sharing mode with a shareable Combine Card view and copy-link action; for signed-in users, support publishing to a public view/feed accessible without login.",
-      "acceptanceCriteria": [
-        "A user can open a \"Share\" action from a Combine entry detail page.",
-        "The app renders a clean \"Combine Card\" view suitable for screenshot/sharing.",
-        "For signed-in users, a \"Publish\" toggle creates/updates a publicly readable representation of that entry in the backend and returns a stable share URL.",
-        "Public share pages display only the published entry and do not expose private per-user data."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/combine/ShareCard.tsx",
-          "operation": "create",
-          "description": "Create a clean, print/screenshot-friendly Combine Card page for a selected entry, including a Copy Link action (and explanatory messaging for Guest local-only sharing limitations)."
-        },
-        {
-          "path": "frontend/src/pages/combine/PublicEntry.tsx",
-          "operation": "create",
-          "description": "Create a public, no-login-required share page that renders only a published Combine entry using backend public-read capabilities; ensure it does not attempt to load any private per-user data."
-        },
-        {
-          "path": "frontend/src/pages/combine/Published.tsx",
-          "operation": "create",
-          "description": "Create a simple public feed/browsing page that lists published Combine entries using backend public list capability."
-        },
-        {
-          "path": "frontend/src/pages/combine/EntryDetail.tsx",
-          "operation": "modify",
-          "description": "Add a Share action to navigate to the Combine Card view; for signed-in users, add a Publish toggle that calls the backend publish/unpublish capability and surfaces the stable public share link."
-        },
-        {
-          "path": "frontend/src/hooks/useCombine.ts",
-          "operation": "modify",
-          "description": "Extend Combine hooks to support publishing/unpublishing (signed-in only), fetching published entry for public share pages, and listing all public Combine entries for the public feed."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wire Share Card, Public Entry, and Published routes into the router so they are navigable; ensure Public Entry and Published routes remain accessible without login."
-        }
-      ]
-    },
-    {
-      "id": "REQ-22",
-      "summary": "Refocus navigation and landing around the NFL Combine tracker: rename branding/title, update primary routes, and add Combine nav items (Dashboard, New Entry, History, Share/Published) in English.",
-      "acceptanceCriteria": [
-        "App header/title and Landing page describe an NFL Combine performance tracker rather than a recovery/medications app.",
-        "The main navigation includes Combine-focused destinations and the default signed-in route lands on the Combine dashboard.",
-        "Existing recovery-related pages are not presented as primary navigation items.",
-        "All new user-facing strings are in English."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/public/assets/generated/combine-logo.dim_512x512.png",
-          "operation": "create",
-          "description": "Add the generated logo asset at the exact path: frontend/public/assets/generated/combine-logo.dim_512x512.png."
-        },
-        {
-          "path": "frontend/public/assets/generated/combine-hero.dim_1600x900.png",
-          "operation": "create",
-          "description": "Add the generated hero asset at the exact path: frontend/public/assets/generated/combine-hero.dim_1600x900.png."
-        },
-        {
-          "path": "frontend/src/pages/Landing.tsx",
-          "operation": "modify",
-          "description": "Replace recovery-focused hero/feature copy with Combine tracker messaging, update displayed logo/hero images to frontend/public/assets/generated/combine-logo.dim_512x512.png and frontend/public/assets/generated/combine-hero.dim_1600x900.png, and keep all text in English."
-        },
-        {
-          "path": "frontend/src/components/layout/AppShell.tsx",
-          "operation": "modify",
-          "description": "Update app title/branding to the Combine tracker, replace primary navigation items with Combine: Dashboard, New Entry, History, Share/Published, and remove recovery-related pages from primary navigation (they may remain routable but not highlighted)."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Update primary routes so the default signed-in route lands on the Combine Dashboard; ensure Combine routes are the primary in-app navigation destinations."
+          "description": "Add iOS-specific PWA meta tags in the <head> section: <meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> to enable standalone mode, <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"default\"> for status bar styling, <meta name=\"apple-mobile-web-app-title\" content=\"Combine Tracker\"> for the iOS home screen name, and <link rel=\"apple-touch-icon\" href=\"/assets/generated/apple-touch-icon.dim_180x180.png\"> to reference the generated iOS icon at frontend/public/assets/generated/apple-touch-icon.dim_180x180.png"
         }
       ]
     }

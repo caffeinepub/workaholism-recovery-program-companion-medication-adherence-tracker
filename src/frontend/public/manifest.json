@@ -1,0 +1,24 @@
+{
+  "name": "NFL Combine Tracker",
+  "short_name": "Combine Tracker",
+  "description": "Track and analyze NFL combine performance metrics including 40-yard dash, vertical jump, bench press, and more. Compare results against elite benchmarks.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/generated/pwa-icon-192.dim_192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/generated/pwa-icon-512.dim_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,175 +1,104 @@
 {
   "kind": "build_request",
-  "title": "NFL Combine performance tracker with guest mode, drill logging, benchmarks, and shareable results",
+  "title": "Convert app to Progressive Web App (PWA)",
+  "projectName": "NFL Combine Tracker",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-17",
-      "text": "Add a guest mode so the app can be used immediately without requiring Internet Identity login; in guest mode, store Combine entries locally (per-browser) and clearly label the mode as \"Guest (local only)\" in the UI.",
+      "id": "REQ-1",
+      "text": "Add PWA manifest file (frontend/public/manifest.json) with app name, icons, theme colors, display mode 'standalone', and start URL",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-20"
+          "msg-latest"
         ],
         "quotes": [
-          "Can you build app right now without that please 🙏"
+          "Please make it a PWA"
         ]
       },
       "acceptanceCriteria": [
-        "When the user is not authenticated, the Landing page offers a \"Continue as Guest\" action.",
-        "Guest users can create, view, and edit Combine results and history without logging in.",
-        "Guest data persists across page refreshes (localStorage) but is not shared across devices.",
-        "The UI clearly distinguishes Guest mode from signed-in mode."
+        "manifest.json exists in frontend/public directory",
+        "Manifest includes name, short_name, description, icons array, theme_color, background_color, display: 'standalone', and start_url fields",
+        "Manifest is linked in index.html via <link rel=\"manifest\">",
+        "App can be installed on iOS Safari via 'Add to Home Screen'"
       ]
     },
     {
-      "id": "REQ-18",
-      "text": "Implement a new Combine module that supports recording all standard NFL Combine drills and measurements in a \"latest/official format\" data entry flow, including at minimum: 40-yard dash (with split fields if provided), vertical jump, broad jump, bench press reps, 20-yard shuttle, 3-cone drill, and key measurements (height, weight, wingspan/arm length, hand size).",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-20"
-        ],
-        "quotes": [
-          "Can you build app right now without that please 🙏"
-        ]
-      },
-      "acceptanceCriteria": [
-        "A signed-in user can create and save a Combine result entry to the backend.",
-        "A guest user can create and save the same Combine result entry locally.",
-        "The entry form validates numeric fields and units (seconds, inches/cm, lbs/kg) and prevents invalid saves.",
-        "Each saved entry includes a timestamp/date and an optional note field."
-      ]
-    },
-    {
-      "id": "REQ-19",
-      "text": "Add Combine history and progress views that list past entries and provide simple trend charts over time per drill/measurement (e.g., 40 time, vertical, bench reps).",
+      "id": "REQ-2",
+      "text": "Create service worker (frontend/public/sw.js) to enable offline functionality and caching of static assets",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-20"
+          "msg-latest"
         ],
         "quotes": [
-          "Can you build app right now without that please 🙏"
+          "Please make it a PWA"
         ]
       },
       "acceptanceCriteria": [
-        "Users can view a history list of Combine entries sorted newest-first.",
-        "Selecting an entry shows a readable detail view of all recorded stats.",
-        "Users can view drill-specific trends over time (at least line charts for 40-yard dash, vertical jump, bench reps).",
-        "History and trends work for both guest (local) and signed-in (backend) data sources."
+        "Service worker file exists at frontend/public/sw.js",
+        "Service worker caches shell assets (HTML, CSS, JS) on install",
+        "Service worker serves cached content when offline",
+        "Service worker is registered in main.tsx or index.html"
       ]
     },
     {
-      "id": "REQ-20",
-      "text": "Add comparison against official/typical NFL Combine benchmarks by displaying reference values next to each recorded drill (e.g., average/target ranges) and highlighting whether the user is above/near/below the reference.",
+      "id": "REQ-3",
+      "text": "Generate PWA icon set with multiple sizes (192x192, 512x512) for manifest icons array",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-20"
+          "msg-latest"
         ],
         "quotes": [
-          "Can you build app right now without that please 🙏"
+          "Please make it a PWA"
         ]
       },
       "acceptanceCriteria": [
-        "Each drill shown in the entry detail view includes a benchmark reference value or range.",
-        "The UI indicates comparison state (e.g., Above / Near / Below) using accessible text (not color alone).",
-        "Benchmarks are presented as informational context only, with no absolute claims or insulting/judgmental language."
+        "Icon files exist in frontend/public/icons directory",
+        "Icons include 192x192 and 512x512 PNG sizes minimum",
+        "Icons are referenced in manifest.json icons array with correct sizes and types",
+        "Icons display correctly when app is installed on home screen"
       ]
     },
     {
-      "id": "REQ-21",
-      "text": "Implement a broadcasting/sharing mode for Combine results: allow a user to generate a shareable \"Combine Card\" view for a selected entry and copy a share link; for signed-in users, support publishing a specific entry to a public list that is viewable without login.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-20"
-        ],
-        "quotes": [
-          "Can you build app right now without that please 🙏"
-        ]
-      },
-      "acceptanceCriteria": [
-        "A user can open a \"Share\" action from a Combine entry detail page.",
-        "The app renders a clean \"Combine Card\" view suitable for screenshot/sharing.",
-        "For signed-in users, a \"Publish\" toggle creates/updates a publicly readable representation of that entry in the backend and returns a stable share URL.",
-        "Public share pages display only the published entry and do not expose private per-user data."
-      ]
-    },
-    {
-      "id": "REQ-22",
-      "text": "Refocus the app’s navigation and landing experience around the NFL Combine tracker (rename title/branding, update primary routes, and add navigation items for Combine: Dashboard, New Entry, History, Share/Published). Keep all user-facing text in English.",
+      "id": "REQ-4",
+      "text": "Add iOS-specific meta tags to index.html for optimal PWA experience (apple-mobile-web-app-capable, apple-mobile-web-app-status-bar-style, apple-mobile-web-app-title, apple-touch-icon)",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-20"
+          "msg-latest"
         ],
         "quotes": [
-          "Can you build app right now without that please 🙏"
+          "Please make it a PWA"
         ]
       },
       "acceptanceCriteria": [
-        "App header/title and Landing page describe an NFL Combine performance tracker rather than a recovery/medications app.",
-        "The main navigation includes Combine-focused destinations and the default signed-in route lands on the Combine dashboard.",
-        "Existing recovery-related pages are not presented as primary navigation items.",
-        "All new user-facing strings are in English."
-      ]
-    },
-    {
-      "id": "REQ-23",
-      "text": "Extend the Motoko backend actor to persist Combine entries per user and to store/read published (public) Combine entries needed for share links and a simple public feed.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-20"
-        ],
-        "quotes": [
-          "Can you build app right now without that please 🙏"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend exposes update/query methods to create/list/get Combine entries scoped to the caller principal.",
-        "Backend exposes methods to publish/unpublish an entry and to fetch a published entry without requiring the caller to be the owner (public read).",
-        "Access control prevents reading/writing another user’s private Combine entries.",
-        "Published entries contain only the fields required for the Combine Card/public view."
-      ]
-    },
-    {
-      "id": "REQ-24",
-      "text": "If the backend uses stable state that requires upgrade support, update migration logic to initialize any new Combine-related storage while preserving existing stored data.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-20"
-        ],
-        "quotes": [
-          "Can you build app right now without that please 🙏"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Upgrading the canister does not break existing stored state.",
-        "New Combine maps/collections are initialized to empty for existing users upon upgrade.",
-        "Existing migration behavior remains correct for previously stored fields."
+        "index.html includes <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">",
+        "index.html includes apple-mobile-web-app-status-bar-style meta tag",
+        "index.html includes apple-mobile-web-app-title meta tag",
+        "index.html includes apple-touch-icon link tags for iOS icons",
+        "App runs in standalone mode on iOS after installation"
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor in backend/main.mo.",
-    "Do not edit files under frontend/src/components/ui or any path listed in frontend.immutablePaths.",
-    "Do not implement true 24/7 background recording or device-wide persistence guarantees; only user-entered logging and normal web storage/back-end persistence are in scope.",
-    "No violent/harassing/insulting language in the UI; keep competitive features framed positively and non-judgmentally."
+    "Do not modify backend/main.mo or backend/migration.mo",
+    "Do not edit immutable frontend paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui",
+    "Service worker must not interfere with Internet Identity authentication flow",
+    "Offline functionality should gracefully handle authenticated vs guest states"
   ],
   "nonGoals": [
-    "Implementing third-party authentication (only Internet Identity is supported).",
-    "Building a real-time global leaderboard of \"all men\" or any demographic-wide ranking.",
-    "Audio/video capture or automatic timing measurement from sensors/camera.",
-    "Push notifications or background services that run when the browser/app is closed."
+    "Native iOS app wrapper using Capacitor or Cordova",
+    "Apple App Store submission",
+    "Advanced offline sync strategies for authenticated data",
+    "Push notifications"
   ],
   "imageRequirements": {
     "required": [
-      "Modern athletic app logo with a football/combine stopwatch motif (combine-logo.dim_512x512.png)",
-      "Wide hero illustration of an athlete training for combine drills in a clean, modern graphic style (combine-hero.dim_1600x900.png)"
+      "NFL combine app icon with football theme for PWA installation (pwa-icon-192.dim_192x192.png)",
+      "NFL combine app icon with football theme for PWA installation (pwa-icon-512.dim_512x512.png)",
+      "Apple touch icon with football theme for iOS home screen (apple-touch-icon.dim_180x180.png)"
     ],
     "edits": []
   }

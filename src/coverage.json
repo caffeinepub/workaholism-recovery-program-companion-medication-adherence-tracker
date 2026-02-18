@@ -1,201 +1,77 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T19:31:07.888Z",
+  "generatedAt": "2026-02-18T21:56:51.992Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 8,
-    "implemented": 6,
+    "total": 4,
+    "implemented": 4,
     "items": [
       {
-        "id": "REQ-17",
-        "summary": "Add a guest mode so the app can be used immediately without requiring Internet Identity login; in guest mode, store Combine entries locally (per-browser) and clearly label the mode as \"Guest (local only)\" in the UI.",
+        "id": "REQ-1",
+        "summary": "Add PWA manifest file (frontend/public/manifest.json) with app name, icons, theme colors, display mode 'standalone', and start URL",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/pages/Landing.tsx",
-          "frontend/src/components/layout/AppShell.tsx",
-          "frontend/src/utils/combineGuestStorage.ts"
+          "frontend/public/manifest.json",
+          "frontend/index.html"
         ],
         "matchedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/pages/Landing.tsx",
-          "frontend/src/components/layout/AppShell.tsx",
-          "frontend/src/utils/combineGuestStorage.ts"
+          "frontend/public/manifest.json",
+          "frontend/index.html"
         ]
       },
       {
-        "id": "REQ-18",
-        "summary": "Implement a new Combine module that supports recording all standard NFL Combine drills and measurements in a \"latest/official format\" data entry flow, including at minimum: 40-yard dash (with split fields if provided), vertical jump, broad jump, bench press reps, 20-yard shuttle, 3-cone drill, and key measurements (height, weight, wingspan/arm length, hand size).",
+        "id": "REQ-2",
+        "summary": "Create service worker (frontend/public/sw.js) to enable offline functionality and caching of static assets",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useCombine.ts",
-          "frontend/src/utils/combineValidation.ts",
-          "frontend/src/components/combine/CombineEntryForm.tsx",
-          "frontend/src/pages/combine/NewEntry.tsx",
-          "frontend/src/pages/combine/Dashboard.tsx",
-          "frontend/src/App.tsx"
+          "frontend/public/sw.js",
+          "frontend/src/main.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useCombine.ts",
-          "frontend/src/utils/combineValidation.ts",
-          "frontend/src/components/combine/CombineEntryForm.tsx",
-          "frontend/src/pages/combine/NewEntry.tsx",
-          "frontend/src/pages/combine/Dashboard.tsx",
-          "frontend/src/App.tsx"
+          "frontend/public/sw.js"
         ]
       },
       {
-        "id": "REQ-19",
-        "summary": "Add Combine history and progress views that list past entries and provide simple trend charts over time per drill/measurement (e.g., 40 time, vertical, bench reps).",
+        "id": "REQ-3",
+        "summary": "Generate PWA icon set with multiple sizes (192x192, 512x512) for manifest icons array",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/combine/History.tsx",
-          "frontend/src/pages/combine/EntryDetail.tsx",
-          "frontend/src/components/combine/CombineTrendChart.tsx",
-          "frontend/src/components/combine/CombineTrendsPanel.tsx",
-          "frontend/src/pages/combine/Dashboard.tsx"
+          "frontend/public/manifest.json"
         ],
         "matchedFiles": [
-          "frontend/src/pages/combine/History.tsx",
-          "frontend/src/pages/combine/EntryDetail.tsx",
-          "frontend/src/components/combine/CombineTrendChart.tsx",
-          "frontend/src/components/combine/CombineTrendsPanel.tsx",
-          "frontend/src/pages/combine/Dashboard.tsx"
+          "frontend/public/manifest.json"
         ]
       },
       {
-        "id": "REQ-20",
-        "summary": "Add comparison against official/typical NFL Combine benchmarks by displaying reference values next to each recorded drill (e.g., average/target ranges) and highlighting whether the user is above/near/below the reference.",
+        "id": "REQ-4",
+        "summary": "Add iOS-specific meta tags to index.html for optimal PWA experience (apple-mobile-web-app-capable, apple-mobile-web-app-status-bar-style, apple-mobile-web-app-title, apple-touch-icon)",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/utils/combineBenchmarks.ts",
-          "frontend/src/components/combine/BenchmarkComparison.tsx",
-          "frontend/src/pages/combine/EntryDetail.tsx"
+          "frontend/index.html"
         ],
         "matchedFiles": [
-          "frontend/src/utils/combineBenchmarks.ts",
-          "frontend/src/components/combine/BenchmarkComparison.tsx",
-          "frontend/src/pages/combine/EntryDetail.tsx"
+          "frontend/index.html"
         ]
-      },
-      {
-        "id": "REQ-21",
-        "summary": "Implement a broadcasting/sharing mode for Combine results: allow a user to generate a shareable \"Combine Card\" view for a selected entry and copy a share link; for signed-in users, support publishing a specific entry to a public list that is viewable without login.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/combine/ShareCard.tsx",
-          "frontend/src/pages/combine/PublicEntry.tsx",
-          "frontend/src/pages/combine/Published.tsx",
-          "frontend/src/pages/combine/EntryDetail.tsx",
-          "frontend/src/hooks/useCombine.ts",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/combine/ShareCard.tsx",
-          "frontend/src/pages/combine/PublicEntry.tsx",
-          "frontend/src/pages/combine/Published.tsx",
-          "frontend/src/pages/combine/EntryDetail.tsx",
-          "frontend/src/hooks/useCombine.ts",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-22",
-        "summary": "Refocus the app’s navigation and landing experience around the NFL Combine tracker (rename title/branding, update primary routes, and add navigation items for Combine: Dashboard, New Entry, History, Share/Published). Keep all user-facing text in English.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/public/assets/generated/combine-logo.dim_512x512.png",
-          "frontend/public/assets/generated/combine-hero.dim_1600x900.png",
-          "frontend/src/pages/Landing.tsx",
-          "frontend/src/components/layout/AppShell.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/public/assets/generated/combine-logo.dim_512x512.png",
-          "frontend/public/assets/generated/combine-hero.dim_1600x900.png",
-          "frontend/src/pages/Landing.tsx",
-          "frontend/src/components/layout/AppShell.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-23",
-        "summary": "Extend the Motoko backend actor to persist Combine entries per user and to store/read published (public) Combine entries needed for share links and a simple public feed.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-24",
-        "summary": "If the backend uses stable state that requires upgrade support, update migration logic to initialize any new Combine-related storage while preserving existing stored data.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
+    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/public/assets/generated/combine-hero.dim_1600x900.png",
-    "frontend/public/assets/generated/combine-logo.dim_512x512.png",
-    "frontend/src/App.tsx",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/checkins/CheckInEditor.tsx",
-    "frontend/src/components/checkins/CheckInTrends.tsx",
-    "frontend/src/components/combine/BenchmarkComparison.tsx",
-    "frontend/src/components/combine/CombineEntryForm.tsx",
-    "frontend/src/components/combine/CombineTrendChart.tsx",
-    "frontend/src/components/combine/CombineTrendsPanel.tsx",
-    "frontend/src/components/layout/AppShell.tsx",
-    "frontend/src/components/medications/DoseChecklistToday.tsx",
-    "frontend/src/components/medications/MedicationForm.tsx",
-    "frontend/src/components/meetings/MeetingForm.tsx",
-    "frontend/src/components/meetings/SponsorNotes.tsx",
-    "frontend/src/components/safety/CommitmentsPlanEditor.tsx",
-    "frontend/src/components/safety/Disclaimers.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useCombine.ts",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/index.css",
-    "frontend/src/pages/AdherenceHistory.tsx",
-    "frontend/src/pages/CheckIns.tsx",
-    "frontend/src/pages/CrisisHelp.tsx",
-    "frontend/src/pages/Landing.tsx",
-    "frontend/src/pages/MedicationDetail.tsx",
-    "frontend/src/pages/Medications.tsx",
-    "frontend/src/pages/Meetings.tsx",
-    "frontend/src/pages/Onboarding.tsx",
-    "frontend/src/pages/Program.tsx",
-    "frontend/src/pages/ProgramStepDetail.tsx",
-    "frontend/src/pages/Settings.tsx",
-    "frontend/src/pages/SettingsDataExport.tsx",
-    "frontend/src/pages/StayingSafeOutOfTrouble.tsx",
-    "frontend/src/pages/Today.tsx",
-    "frontend/src/pages/combine/Dashboard.tsx",
-    "frontend/src/pages/combine/EntryDetail.tsx",
-    "frontend/src/pages/combine/History.tsx",
-    "frontend/src/pages/combine/NewEntry.tsx",
-    "frontend/src/pages/combine/PublicEntry.tsx",
-    "frontend/src/pages/combine/Published.tsx",
-    "frontend/src/pages/combine/ShareCard.tsx",
-    "frontend/src/utils/combineBenchmarks.ts",
-    "frontend/src/utils/combineGuestStorage.ts",
-    "frontend/src/utils/combineValidation.ts",
-    "frontend/src/utils/exporters.ts",
-    "frontend/src/utils/reminders.ts",
-    "frontend/src/utils/userScopedStorage.ts",
-    "frontend/tailwind.config.js",
+    "frontend/index.html",
+    "frontend/public/assets/generated/apple-touch-icon.dim_180x180.png",
+    "frontend/public/assets/generated/pwa-icon-192.dim_192x192.png",
+    "frontend/public/assets/generated/pwa-icon-512.dim_512x512.png",
+    "frontend/public/manifest.json",
+    "frontend/public/sw.js",
+    "frontend/src/config.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

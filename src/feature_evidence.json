@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-pwa-manifest-file-frontend-public-manifest-json-with-app-name-icons-theme-colors-display-mode-standalone-and-start-url",
-      "featureTitle": "Add PWA manifest file (frontend/public/manifest.json) with app name, icons, theme colors, display mode 'standalone', and start URL",
+      "featureId": "feature-verify-that-the-published-feed-page-frontend-src-pages-combine-published-tsx-displays-all-public-combine-entries-from-all-authenticated-users-not-just-the-current-user-s-entries",
+      "featureTitle": "Verify that the Published feed page (frontend/src/pages/combine/Published.tsx) displays all public combine entries from all authenticated users, not just the current user's entries",
       "files": [
-        "frontend/index.html",
-        "frontend/public/manifest.json"
+        "frontend/src/pages/combine/Published.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -22,29 +21,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-create-service-worker-frontend-public-sw-js-to-enable-offline-functionality-and-caching-of-static-assets",
-      "featureTitle": "Create service worker (frontend/public/sw.js) to enable offline functionality and caching of static assets",
+      "featureId": "feature-add-sorting-capability-to-the-published-feed-to-display-entries-as-a-proper-leaderboard-with-options-to-sort-by-different-metrics-e-g-fastest-40-yard-dash-highest-vertical-jump-most-bench-press-reps",
+      "featureTitle": "Add sorting capability to the Published feed to display entries as a proper leaderboard, with options to sort by different metrics (e.g., fastest 40-yard dash, highest vertical jump, most bench press reps)",
       "files": [
-        "frontend/public/sw.js"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-generate-pwa-icon-set-with-multiple-sizes-192x192-512x512-for-manifest-icons-array",
-      "featureTitle": "Generate PWA icon set with multiple sizes (192x192, 512x512) for manifest icons array",
-      "files": [
-        "frontend/public/manifest.json"
+        "frontend/src/pages/combine/Published.tsx",
+        "frontend/src/utils/combineSorting.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -56,25 +37,6 @@
       ],
       "testIds": [
         "REQ-3"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-ios-specific-meta-tags-to-index-html-for-optimal-pwa-experience-apple-mobile-web-app-capable-apple-mobile-web-app-status-bar-style-apple-mobile-web-app-title-apple-touch-icon",
-      "featureTitle": "Add iOS-specific meta tags to index.html for optimal PWA experience (apple-mobile-web-app-capable, apple-mobile-web-app-status-bar-style, apple-mobile-web-app-title, apple-touch-icon)",
-      "files": [
-        "frontend/index.html"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-4"
       ],
       "confidence": "high"
     }

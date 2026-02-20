@@ -7,13 +7,12 @@ import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
 import Principal "mo:core/Principal";
 
-
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
 // Use migratable actor pattern to persist data and update logic
 
- actor {
+actor {
   //-----------------------------TYPES---------------------------------
   public type RecoveryStep = {
     id : Nat;
@@ -469,8 +468,7 @@ import AccessControl "authorization/access-control";
     };
   };
 
-  // Fetch all public combine entries - viewable by anyone including guests (no login required)
-  // This supports the public feed feature
+  // Fetch all public combine entries
   public query ({ caller }) func getAllPublicCombineEntries() : async [CombineResult] {
     combineState.publicCombineEntries.values().toArray();
   };

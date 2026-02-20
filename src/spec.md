@@ -1,12 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Convert the NFL Combine Tracker into a Progressive Web App (PWA) that can be installed on mobile devices and work offline.
+**Goal:** Ensure the Published feed displays all public combine entries from all users as a sortable leaderboard.
 
 **Planned changes:**
-- Add PWA manifest file with app metadata, icons, and display configuration
-- Create service worker for offline functionality and asset caching
-- Generate PWA icon set in multiple sizes (192x192, 512x512, 180x180)
-- Add iOS-specific meta tags for optimal installation experience on Safari
+- Verify backend returns all public entries across all users without filtering by caller identity
+- Verify frontend Published feed displays entries from all authenticated users, not just current user
+- Add sorting capability to Published feed with options to sort by different performance metrics (40-yard dash, vertical jump, bench press reps, etc.)
+- Set default sort order to most recent entry date
 
-**User-visible outcome:** Users can install the app on their home screen (iOS and Android) and access it like a native app with offline support.
+**User-visible outcome:** Users can view a public leaderboard showing all published combine entries from all participants, with the ability to sort by different performance metrics to see top performers in each category.

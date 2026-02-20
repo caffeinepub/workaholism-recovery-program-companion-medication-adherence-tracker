@@ -1,84 +1,47 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Convert NFL Combine Tracker to Progressive Web App (PWA)",
+  "title": "Ensure leaderboard displays all public entries from all users",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Add PWA manifest file with app metadata, icons, theme colors, and standalone display mode",
+      "summary": "Verify that the Published feed page displays all public combine entries from all authenticated users, not just the current user's entries",
       "acceptanceCriteria": [
-        "manifest.json exists in frontend/public directory",
-        "Manifest includes name, short_name, description, icons array, theme_color, background_color, display: 'standalone', and start_url fields",
-        "Manifest is linked in index.html via <link rel=\"manifest\">",
-        "App can be installed on iOS Safari via 'Add to Home Screen'"
+        "The Published feed shows entries from all users who have made their entries public",
+        "Entries are not filtered by the current user's identity",
+        "Guest mode entries are excluded from the public feed since they lack stable authentication"
       ],
       "file_operations": [
         {
-          "path": "frontend/public/manifest.json",
-          "operation": "create",
-          "description": "Create PWA manifest with app name 'NFL Combine Tracker', short_name 'Combine Tracker', description about tracking NFL combine performance metrics, theme_color and background_color matching the app's blue theme, display mode 'standalone', start_url '/', and icons array referencing the generated PWA icons at frontend/public/assets/generated/pwa-icon-192.dim_192x192.png and frontend/public/assets/generated/pwa-icon-512.dim_512x512.png with appropriate sizes and types"
+          "path": "frontend/src/pages/combine/Published.tsx",
+          "operation": "modify",
+          "description": "Update the Published feed component to call the backend's getAllPublicCombineEntries function instead of filtering by current user. This ensures all public entries from all authenticated users are displayed. Remove any client-side filtering by user identity. The page already maps through entries and displays them as cards, so the main change is updating the data source to fetch all public entries rather than user-specific ones."
         },
         {
-          "path": "frontend/index.html",
+          "path": "frontend/src/hooks/useCombine.ts",
           "operation": "modify",
-          "description": "Add <link rel=\"manifest\" href=\"/manifest.json\"> in the <head> section to link the PWA manifest file"
-        }
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "summary": "Create service worker to enable offline functionality and caching of static assets",
-      "acceptanceCriteria": [
-        "Service worker file exists at frontend/public/sw.js",
-        "Service worker caches shell assets (HTML, CSS, JS) on install",
-        "Service worker serves cached content when offline",
-        "Service worker is registered in main.tsx or index.html"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/public/sw.js",
-          "operation": "create",
-          "description": "Create service worker that caches essential shell assets (index.html, main CSS, main JS bundles, generated images) on install event, serves cached content when offline using cache-first strategy for static assets, and uses network-first strategy for API calls to avoid interfering with Internet Identity authentication flow. Include logic to handle online/offline states gracefully for both authenticated and guest users"
-        },
-        {
-          "path": "frontend/src/main.tsx",
-          "operation": "modify",
-          "description": "Register the service worker after the React app mounts by adding service worker registration code that checks for navigator.serviceWorker support, registers /sw.js, and handles registration success/failure. Ensure registration happens after authentication initialization to prevent interference with Internet Identity flow"
+          "description": "Add or update a React Query hook useAllPublicCombineEntries that calls actor.getAllPublicCombineEntries() to fetch all public entries from the backend. Ensure the query is properly typed with CombineResult[] and includes appropriate error handling. This hook should be usable without authentication checks since public entries should be viewable by anyone."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Wire generated PWA icon set into manifest and ensure proper referencing",
+      "summary": "Add sorting capability to the Published feed to display entries as a proper leaderboard, with options to sort by different metrics",
       "acceptanceCriteria": [
-        "Icon files exist in frontend/public/icons directory",
-        "Icons include 192x192 and 512x512 PNG sizes minimum",
-        "Icons are referenced in manifest.json icons array with correct sizes and types",
-        "Icons display correctly when app is installed on home screen"
+        "Users can select which metric to sort by from a dropdown or tabs",
+        "Entries are ordered with best performances at the top",
+        "Default sort order is by most recent entry date"
       ],
       "file_operations": [
         {
-          "path": "frontend/public/manifest.json",
+          "path": "frontend/src/pages/combine/Published.tsx",
           "operation": "modify",
-          "description": "Ensure the icons array in manifest.json correctly references frontend/public/assets/generated/pwa-icon-192.dim_192x192.png with size 192x192 and type image/png, and frontend/public/assets/generated/pwa-icon-512.dim_512x512.png with size 512x512 and type image/png. Set purpose field to 'any maskable' for both icons to support various platforms"
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Add iOS-specific meta tags to index.html for optimal PWA experience on iOS devices",
-      "acceptanceCriteria": [
-        "index.html includes <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">",
-        "index.html includes apple-mobile-web-app-status-bar-style meta tag",
-        "index.html includes apple-mobile-web-app-title meta tag",
-        "index.html includes apple-touch-icon link tags for iOS icons",
-        "App runs in standalone mode on iOS after installation"
-      ],
-      "file_operations": [
+          "description": "Add a sorting UI (dropdown or tabs) above the entry list allowing users to select a metric to sort by: 40-yard dash, vertical jump, bench press reps, broad jump, 3-cone drill, 20-yard shuttle, and most recent (default). Implement client-side sorting logic that orders entries with best performances at the top (lowest times for speed drills, highest values for strength/jump metrics). Handle optional fields gracefully by placing entries without the selected metric at the bottom of the list. Update the UI to indicate current sort order and highlight the selected sort option."
+        },
         {
-          "path": "frontend/index.html",
-          "operation": "modify",
-          "description": "Add iOS-specific PWA meta tags in the <head> section: <meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> to enable standalone mode, <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"default\"> for status bar styling, <meta name=\"apple-mobile-web-app-title\" content=\"Combine Tracker\"> for the iOS home screen name, and <link rel=\"apple-touch-icon\" href=\"/assets/generated/apple-touch-icon.dim_180x180.png\"> to reference the generated iOS icon at frontend/public/assets/generated/apple-touch-icon.dim_180x180.png"
+          "path": "frontend/src/utils/combineSorting.ts",
+          "operation": "create",
+          "description": "Create a utility module with sorting functions for combine metrics. Export a sortCombineEntries function that takes an array of CombineResult and a sort key (metric name or 'recent'), returning a sorted array. For speed drills (dash40yd, threeConeDrill, shuttle20yd), sort ascending (lower is better). For strength/jump metrics (verticalJumpInches, broadJumpInches, benchPressReps), sort descending (higher is better). For 'recent', sort by timestamp descending. Handle optional fields by treating undefined/null values as worst performance for that metric."
         }
       ]
     }

@@ -1,44 +1,24 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "NFL combine performance tracking app being converted to PWA for iOS installation",
-  "architectural_notes": [
-    "App deployed as web application on Internet Computer blockchain",
-    "PWA features for iOS home screen installation"
-  ],
+  "summary": "New project",
+  "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- NFL combine app icon with football theme for PWA installation (pwa-icon-192.dim_192x192.png)\n- NFL combine app icon with football theme for PWA installation (pwa-icon-512.dim_512x512.png)\n- Apple touch icon with football theme for iOS home screen (apple-touch-icon.dim_180x180.png)",
   "existing_features": [
     {
-      "id": "feature-add-pwa-manifest-file-frontend-public-manifest-json-with-app-name-icons-theme-colors-display-mode-standalone-and-start-url",
-      "title": "Add PWA manifest file (frontend/public/manifest.json) with app name, icons, theme colors, display mode 'standalone', and start URL",
+      "id": "feature-verify-that-the-published-feed-page-frontend-src-pages-combine-published-tsx-displays-all-public-combine-entries-from-all-authenticated-users-not-just-the-current-user-s-entries",
+      "title": "Verify that the Published feed page (frontend/src/pages/combine/Published.tsx) displays all public combine entries from all authenticated users, not just the current user's entries",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-create-service-worker-frontend-public-sw-js-to-enable-offline-functionality-and-caching-of-static-assets",
-      "title": "Create service worker (frontend/public/sw.js) to enable offline functionality and caching of static assets",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-generate-pwa-icon-set-with-multiple-sizes-192x192-512x512-for-manifest-icons-array",
-      "title": "Generate PWA icon set with multiple sizes (192x192, 512x512) for manifest icons array",
+      "id": "feature-add-sorting-capability-to-the-published-feed-to-display-entries-as-a-proper-leaderboard-with-options-to-sort-by-different-metrics-e-g-fastest-40-yard-dash-highest-vertical-jump-most-bench-press-reps",
+      "title": "Add sorting capability to the Published feed to display entries as a proper leaderboard, with options to sort by different metrics (e.g., fastest 40-yard dash, highest vertical jump, most bench press reps)",
       "reqIds": [
         "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-ios-specific-meta-tags-to-index-html-for-optimal-pwa-experience-apple-mobile-web-app-capable-apple-mobile-web-app-status-bar-style-apple-mobile-web-app-title-apple-touch-icon",
-      "title": "Add iOS-specific meta tags to index.html for optimal PWA experience (apple-mobile-web-app-capable, apple-mobile-web-app-status-bar-style, apple-mobile-web-app-title, apple-touch-icon)",
-      "reqIds": [
-        "REQ-4"
       ],
       "version": 1
     }
@@ -46,12 +26,20 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Convert app to Progressive Web App (PWA) with iOS installation support",
+      "summary": "Ensure leaderboard is public and includes all entries",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Verify that the backend listPublishedEntries function returns all public entries across all users without filtering by caller identity",
+      "reqIds": [
+        "REQ-2"
+      ],
       "status": "pending"
     }
   ],
-  "projectName": "NFL Combine Performance Tracker",
+  "projectName": "NFL Combine Tracker",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

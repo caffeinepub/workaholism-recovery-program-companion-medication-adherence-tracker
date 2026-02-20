@@ -1,105 +1,76 @@
 {
   "kind": "build_request",
-  "title": "Convert app to Progressive Web App (PWA)",
+  "title": "Ensure leaderboard displays all public entries from all users",
   "projectName": "NFL Combine Tracker",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Add PWA manifest file (frontend/public/manifest.json) with app name, icons, theme colors, display mode 'standalone', and start URL",
+      "text": "Verify that the Published feed page (frontend/src/pages/combine/Published.tsx) displays all public combine entries from all authenticated users, not just the current user's entries",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-latest"
         ],
         "quotes": [
-          "Please make it a PWA"
+          "How to make sure the leaderboard is public and includes everyone that makes an entry?"
         ]
       },
       "acceptanceCriteria": [
-        "manifest.json exists in frontend/public directory",
-        "Manifest includes name, short_name, description, icons array, theme_color, background_color, display: 'standalone', and start_url fields",
-        "Manifest is linked in index.html via <link rel=\"manifest\">",
-        "App can be installed on iOS Safari via 'Add to Home Screen'"
+        "The Published feed shows entries from all users who have made their entries public",
+        "Entries are not filtered by the current user's identity",
+        "Guest mode entries are excluded from the public feed since they lack stable authentication"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Create service worker (frontend/public/sw.js) to enable offline functionality and caching of static assets",
-      "target": "frontend",
+      "text": "Verify that the backend listPublishedEntries function returns all public entries across all users without filtering by caller identity",
+      "target": "backend",
       "source": {
         "messageIds": [
           "msg-latest"
         ],
         "quotes": [
-          "Please make it a PWA"
+          "How to make sure the leaderboard is public and includes everyone that makes an entry?"
         ]
       },
       "acceptanceCriteria": [
-        "Service worker file exists at frontend/public/sw.js",
-        "Service worker caches shell assets (HTML, CSS, JS) on install",
-        "Service worker serves cached content when offline",
-        "Service worker is registered in main.tsx or index.html"
+        "Backend returns all entries where isPublic is true",
+        "No filtering by caller principal",
+        "Results include athlete name and all performance data"
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Generate PWA icon set with multiple sizes (192x192, 512x512) for manifest icons array",
+      "text": "Add sorting capability to the Published feed to display entries as a proper leaderboard, with options to sort by different metrics (e.g., fastest 40-yard dash, highest vertical jump, most bench press reps)",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-latest"
         ],
         "quotes": [
-          "Please make it a PWA"
+          "How to make sure the leaderboard is public"
         ]
       },
       "acceptanceCriteria": [
-        "Icon files exist in frontend/public/icons directory",
-        "Icons include 192x192 and 512x512 PNG sizes minimum",
-        "Icons are referenced in manifest.json icons array with correct sizes and types",
-        "Icons display correctly when app is installed on home screen"
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Add iOS-specific meta tags to index.html for optimal PWA experience (apple-mobile-web-app-capable, apple-mobile-web-app-status-bar-style, apple-mobile-web-app-title, apple-touch-icon)",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "Please make it a PWA"
-        ]
-      },
-      "acceptanceCriteria": [
-        "index.html includes <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">",
-        "index.html includes apple-mobile-web-app-status-bar-style meta tag",
-        "index.html includes apple-mobile-web-app-title meta tag",
-        "index.html includes apple-touch-icon link tags for iOS icons",
-        "App runs in standalone mode on iOS after installation"
+        "Users can select which metric to sort by from a dropdown or tabs",
+        "Entries are ordered with best performances at the top",
+        "Default sort order is by most recent entry date"
       ]
     }
   ],
   "constraints": [
-    "Do not modify backend/main.mo or backend/migration.mo",
-    "Do not edit immutable frontend paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui",
-    "Service worker must not interfere with Internet Identity authentication flow",
-    "Offline functionality should gracefully handle authenticated vs guest states"
+    "Do not modify the useInternetIdentity hook or authentication logic",
+    "Maintain the existing CombineEntry type structure",
+    "Preserve the single-actor backend architecture"
   ],
   "nonGoals": [
-    "Native iOS app wrapper using Capacitor or Cordova",
-    "Apple App Store submission",
-    "Advanced offline sync strategies for authenticated data",
-    "Push notifications"
+    "Creating a new separate leaderboard page (enhance existing Published feed)",
+    "Adding filtering by position or combine date",
+    "Implementing real-time updates or live rankings"
   ],
   "imageRequirements": {
-    "required": [
-      "NFL combine app icon with football theme for PWA installation (pwa-icon-192.dim_192x192.png)",
-      "NFL combine app icon with football theme for PWA installation (pwa-icon-512.dim_512x512.png)",
-      "Apple touch icon with football theme for iOS home screen (apple-touch-icon.dim_180x180.png)"
-    ],
+    "required": [],
     "edits": []
   }
 }

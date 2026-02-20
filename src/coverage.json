@@ -1,77 +1,57 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T21:56:51.992Z",
+  "generatedAt": "2026-02-20T23:37:04.635Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 4,
+    "total": 3,
+    "implemented": 2,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Add PWA manifest file (frontend/public/manifest.json) with app name, icons, theme colors, display mode 'standalone', and start URL",
+        "summary": "Verify that the Published feed page (frontend/src/pages/combine/Published.tsx) displays all public combine entries from all authenticated users, not just the current user's entries",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/public/manifest.json",
-          "frontend/index.html"
+          "frontend/src/pages/combine/Published.tsx",
+          "frontend/src/hooks/useCombine.ts"
         ],
         "matchedFiles": [
-          "frontend/public/manifest.json",
-          "frontend/index.html"
+          "frontend/src/pages/combine/Published.tsx"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Create service worker (frontend/public/sw.js) to enable offline functionality and caching of static assets",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/public/sw.js",
-          "frontend/src/main.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/public/sw.js"
-        ]
+        "summary": "Verify that the backend listPublishedEntries function returns all public entries across all users without filtering by caller identity",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
         "id": "REQ-3",
-        "summary": "Generate PWA icon set with multiple sizes (192x192, 512x512) for manifest icons array",
+        "summary": "Add sorting capability to the Published feed to display entries as a proper leaderboard, with options to sort by different metrics (e.g., fastest 40-yard dash, highest vertical jump, most bench press reps)",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/public/manifest.json"
+          "frontend/src/pages/combine/Published.tsx",
+          "frontend/src/utils/combineSorting.ts"
         ],
         "matchedFiles": [
-          "frontend/public/manifest.json"
-        ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "Add iOS-specific meta tags to index.html for optimal PWA experience (apple-mobile-web-app-capable, apple-mobile-web-app-status-bar-style, apple-mobile-web-app-title, apple-touch-icon)",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/index.html"
-        ],
-        "matchedFiles": [
-          "frontend/index.html"
+          "frontend/src/pages/combine/Published.tsx",
+          "frontend/src/utils/combineSorting.ts"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/index.html",
-    "frontend/public/assets/generated/apple-touch-icon.dim_180x180.png",
-    "frontend/public/assets/generated/pwa-icon-192.dim_192x192.png",
-    "frontend/public/assets/generated/pwa-icon-512.dim_512x512.png",
-    "frontend/public/manifest.json",
-    "frontend/public/sw.js",
-    "frontend/src/config.ts",
+    "frontend/src/pages/combine/Published.tsx",
+    "frontend/src/utils/combineSorting.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

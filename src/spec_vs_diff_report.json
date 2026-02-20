@@ -1,26 +1,34 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T21:56:51.988Z",
-  "summary": "All four PWA requirements (REQ-1 through REQ-4) appear to be fully implemented. The diff shows manifest.json, service worker, iOS meta tags in index.html, and references to required icon files. No missing requirements or hallucinated features detected.",
+  "generatedAt": "2026-02-20T23:37:04.632Z",
+  "summary": "All three requirements appear to be implemented. REQ-1 (frontend displays all public entries) and REQ-2 (backend returns all public entries) cannot be fully verified from the truncated backend code, but REQ-3 (sorting capability) is fully implemented with sorting utilities, UI controls, and proper metric handling.",
   "missing_requirements": [
     {
-      "id": "REQ-2",
-      "requirement": "Service worker is registered in main.tsx or index.html",
-      "reason": "The service worker file sw.js exists, but no evidence in the diff shows registration code in main.tsx or index.html. The constraint states main.tsx is immutable, so registration should appear in index.html, but no <script> tag for sw.js registration is visible.",
+      "id": "REQ-1",
+      "requirement": "Verify that the Published feed page displays all public combine entries from all authenticated users, not just the current user's entries",
+      "reason": "Cannot fully verify from truncated diff. Frontend uses useGetPublicCombineEntries hook but the backend implementation is cut off. Evidence shows the frontend expects to receive all entries, but whether the backend actually returns all users' entries (vs filtering by caller) cannot be confirmed.",
       "evidence": [
-        "frontend/index.html",
-        "frontend/public/sw.js"
+        "frontend/src/pages/combine/Published.tsx",
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "requirement": "Verify that the backend listPublishedEntries function returns all public entries across all users without filtering by caller identity",
+      "reason": "Backend code is truncated before reaching the listPublishedEntries function implementation. Cannot verify that it returns all public entries without caller filtering or that it includes all performance data.",
+      "evidence": [
+        "backend/main.mo"
       ]
     }
   ],
   "hallucinated_features": [],
-  "confidence": 0.85,
+  "confidence": 0.6,
   "changed_files": [
+    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/index.html",
-    "frontend/public/manifest.json",
-    "frontend/public/sw.js",
+    "frontend/src/pages/combine/Published.tsx",
+    "frontend/src/utils/combineSorting.ts",
     "project_state.json"
   ]
 }

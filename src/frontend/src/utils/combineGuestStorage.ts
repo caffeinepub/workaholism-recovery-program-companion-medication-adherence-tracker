@@ -10,6 +10,7 @@ export interface GuestCombineEntry {
   weightPounds?: number;
   wingspanInches?: number;
   handSizeInches?: number;
+  armLength?: number;
   dash40yd?: number;
   dash10yd?: number;
   dash20yd?: number;
@@ -18,6 +19,14 @@ export interface GuestCombineEntry {
   benchPressReps?: number;
   shuttle20yd?: number;
   threeConeDrill?: number;
+  shuttle60yd?: number;
+  shuttleProAgility?: number;
+  bodyFatPercentage?: number;
+  bmi?: number;
+  standingReach?: number;
+  seatedRow?: number;
+  squat?: number;
+  powerClean?: number;
   note?: string;
 }
 

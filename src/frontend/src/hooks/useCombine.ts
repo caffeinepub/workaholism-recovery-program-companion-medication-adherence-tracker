@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { useInternetIdentity } from './useInternetIdentity';
-import type { CombineResult } from '../backend';
+import type { CombineResult, CombineMeasurement } from '../backend';
 import { Principal } from '@dfinity/principal';
 import {
   loadGuestEntries,
@@ -11,6 +11,17 @@ import {
   deleteGuestEntry,
   type GuestCombineEntry,
 } from '../utils/combineGuestStorage';
+
+function createMeasurement(value: number | undefined, type: string): CombineMeasurement {
+  return {
+    value: value,
+    verified: true,
+    notes: undefined,
+    attemptNumber: undefined,
+    equipmentUsed: undefined,
+    measurementType: type,
+  };
+}
 
 export function useGetCombineEntries() {
   const { actor, isFetching } = useActor();
@@ -25,7 +36,7 @@ export function useGetCombineEntries() {
       if (!actor) return [];
       return actor.getUserCombineResults(identity.getPrincipal());
     },
-    enabled: !!actor && !isFetching || !identity,
+    enabled: (!!actor && !isFetching) || !identity,
   });
 }
 
@@ -58,6 +69,7 @@ export function useSaveCombineEntry() {
       weightPounds?: number;
       wingspanInches?: number;
       handSizeInches?: number;
+      armLength?: number;
       dash40yd?: number;
       dash10yd?: number;
       dash20yd?: number;
@@ -66,6 +78,14 @@ export function useSaveCombineEntry() {
       benchPressReps?: number;
       shuttle20yd?: number;
       threeConeDrill?: number;
+      shuttle60yd?: number;
+      shuttleProAgility?: number;
+      bodyFatPercentage?: number;
+      bmi?: number;
+      standingReach?: number;
+      seatedRow?: number;
+      squat?: number;
+      powerClean?: number;
       note?: string;
       makePublic?: boolean;
     }) => {
@@ -75,18 +95,29 @@ export function useSaveCombineEntry() {
       if (!actor) throw new Error('Actor not available');
       return actor.saveCombineResult({
         athleteName: data.athleteName,
-        heightInches: data.heightInches ? BigInt(data.heightInches) : undefined,
-        weightPounds: data.weightPounds ? BigInt(data.weightPounds) : undefined,
-        wingspanInches: data.wingspanInches,
-        handSizeInches: data.handSizeInches,
-        dash40yd: data.dash40yd,
-        dash10yd: data.dash10yd,
-        dash20yd: data.dash20yd,
-        verticalJumpInches: data.verticalJumpInches,
-        broadJumpInches: data.broadJumpInches,
-        benchPressReps: data.benchPressReps ? BigInt(data.benchPressReps) : undefined,
-        shuttle20yd: data.shuttle20yd,
-        threeConeDrill: data.threeConeDrill,
+        height: createMeasurement(data.heightInches, 'heightInches'),
+        weight: createMeasurement(data.weightPounds, 'weightPounds'),
+        wingspan: createMeasurement(data.wingspanInches, 'wingspanInches'),
+        handSize: createMeasurement(data.handSizeInches, 'handSizeInches'),
+        armLength: createMeasurement(data.armLength, 'armLength'),
+        dash40yd: createMeasurement(data.dash40yd, '40ydDash'),
+        dash10yd: createMeasurement(data.dash10yd, '10ydDash'),
+        dash20yd: createMeasurement(data.dash20yd, '20ydDash'),
+        verticalJump: createMeasurement(data.verticalJumpInches, 'verticalJump'),
+        broadJump: createMeasurement(data.broadJumpInches, 'broadJump'),
+        benchPressReps: createMeasurement(data.benchPressReps, 'benchPress'),
+        shuttle20yd: createMeasurement(data.shuttle20yd, '20ydShuttle'),
+        threeConeDrill: createMeasurement(data.threeConeDrill, 'threeCone'),
+        shuttle60yd: createMeasurement(data.shuttle60yd, '60ydShuttle'),
+        shuttleProAgility: createMeasurement(data.shuttleProAgility, 'proAgility'),
+        bodyFatPercentage: createMeasurement(data.bodyFatPercentage, 'bodyFat'),
+        bmi: createMeasurement(data.bmi, 'bmi'),
+        standingReach: createMeasurement(data.standingReach, 'standingReach'),
+        seatedRow: createMeasurement(data.seatedRow, 'seatedRow'),
+        squat: createMeasurement(data.squat, 'squat'),
+        powerClean: createMeasurement(data.powerClean, 'powerClean'),
+        developerNotes: data.note,
+        passedMedical: true,
         makePublic: data.makePublic || false,
       });
     },

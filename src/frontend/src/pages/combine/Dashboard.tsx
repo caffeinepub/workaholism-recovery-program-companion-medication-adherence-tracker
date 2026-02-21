@@ -5,6 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, History, Share2, TrendingUp } from 'lucide-react';
 import CombineTrendsPanel from '../../components/combine/CombineTrendsPanel';
 
+function getMeasurementValue(measurement: any): number | undefined {
+  if (typeof measurement === 'object' && measurement !== null && 'value' in measurement) {
+    return measurement.value;
+  }
+  return typeof measurement === 'number' ? measurement : undefined;
+}
+
 export default function CombineDashboard() {
   const navigate = useNavigate();
   const { data: entries, isLoading } = useGetCombineEntries();
@@ -82,35 +89,46 @@ export default function CombineDashboard() {
                 </span>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
-                {latestEntry.dash40yd && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">40-Yard Dash</p>
-                    <p className="text-lg font-semibold">{latestEntry.dash40yd.toFixed(2)}s</p>
-                  </div>
-                )}
-                {latestEntry.verticalJumpInches && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">Vertical Jump</p>
-                    <p className="text-lg font-semibold">{latestEntry.verticalJumpInches.toFixed(1)}"</p>
-                  </div>
-                )}
-                {latestEntry.benchPressReps && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">Bench Press</p>
-                    <p className="text-lg font-semibold">
-                      {typeof latestEntry.benchPressReps === 'bigint'
-                        ? Number(latestEntry.benchPressReps)
-                        : latestEntry.benchPressReps}{' '}
-                      reps
-                    </p>
-                  </div>
-                )}
-                {latestEntry.broadJumpInches && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">Broad Jump</p>
-                    <p className="text-lg font-semibold">{latestEntry.broadJumpInches.toFixed(1)}"</p>
-                  </div>
-                )}
+                {(() => {
+                  const dash40 = getMeasurementValue(latestEntry.dash40yd);
+                  return dash40 !== undefined ? (
+                    <div>
+                      <p className="text-xs text-muted-foreground">40-Yard Dash</p>
+                      <p className="text-lg font-semibold">{dash40.toFixed(2)}s</p>
+                    </div>
+                  ) : null;
+                })()}
+                {(() => {
+                  const vertical = 'verticalJump' in latestEntry 
+                    ? getMeasurementValue(latestEntry.verticalJump)
+                    : latestEntry.verticalJumpInches;
+                  return vertical !== undefined ? (
+                    <div>
+                      <p className="text-xs text-muted-foreground">Vertical Jump</p>
+                      <p className="text-lg font-semibold">{vertical.toFixed(1)}"</p>
+                    </div>
+                  ) : null;
+                })()}
+                {(() => {
+                  const bench = getMeasurementValue(latestEntry.benchPressReps);
+                  return bench !== undefined ? (
+                    <div>
+                      <p className="text-xs text-muted-foreground">Bench Press</p>
+                      <p className="text-lg font-semibold">{bench.toFixed(0)} reps</p>
+                    </div>
+                  ) : null;
+                })()}
+                {(() => {
+                  const broad = 'broadJump' in latestEntry
+                    ? getMeasurementValue(latestEntry.broadJump)
+                    : latestEntry.broadJumpInches;
+                  return broad !== undefined ? (
+                    <div>
+                      <p className="text-xs text-muted-foreground">Broad Jump</p>
+                      <p className="text-lg font-semibold">{broad.toFixed(1)}"</p>
+                    </div>
+                  ) : null;
+                })()}
               </div>
               <Button
                 variant="outline"

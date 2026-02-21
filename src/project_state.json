@@ -1,24 +1,51 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
-  "architectural_notes": [],
+  "summary": "NFL combine statistics tracking app with public leaderboard",
+  "architectural_notes": [
+    "Store comprehensive NFL combine statistics per user entry",
+    "Implement ranking algorithm for leaderboard ordering"
+  ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-verify-that-the-published-feed-page-frontend-src-pages-combine-published-tsx-displays-all-public-combine-entries-from-all-authenticated-users-not-just-the-current-user-s-entries",
-      "title": "Verify that the Published feed page (frontend/src/pages/combine/Published.tsx) displays all public combine entries from all authenticated users, not just the current user's entries",
+      "id": "feature-update-the-frontend-combineentryform-to-include-input-fields-for-all-nfl-combine-statistics-40-yard-dash-bench-press-reps-vertical-jump-broad-jump-3-cone-drill-20-yard-shuttle-60-yard-shuttle-height-weight-arm-length-hand-size-and-wingspan-with-appropriate-validation",
+      "title": "Update the frontend CombineEntryForm to include input fields for all NFL Combine statistics: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan with appropriate validation",
       "reqIds": [
-        "REQ-1"
+        "REQ-5"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-sorting-capability-to-the-published-feed-to-display-entries-as-a-proper-leaderboard-with-options-to-sort-by-different-metrics-e-g-fastest-40-yard-dash-highest-vertical-jump-most-bench-press-reps",
-      "title": "Add sorting capability to the Published feed to display entries as a proper leaderboard, with options to sort by different metrics (e.g., fastest 40-yard dash, highest vertical jump, most bench press reps)",
+      "id": "feature-display-all-tracked-nfl-combine-statistics-in-the-entrydetail-and-publicentry-views-showing-every-recorded-measurement-and-drill-result-for-the-entry",
+      "title": "Display all tracked NFL Combine statistics in the EntryDetail and PublicEntry views, showing every recorded measurement and drill result for the entry",
       "reqIds": [
-        "REQ-3"
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-enhance-the-published-page-leaderboard-to-display-usernames-alongside-each-entry-and-rank-all-public-entries-numerically-from-best-to-worst-based-on-the-selected-sorting-metric",
+      "title": "Enhance the Published page leaderboard to display usernames alongside each entry and rank all public entries numerically from best to worst based on the selected sorting metric",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-benchmark-comparison-logic-to-support-all-newly-tracked-nfl-combine-statistics-providing-performance-level-indicators-elite-above-average-average-below-average-for-each-drill-and-measurement",
+      "title": "Update benchmark comparison logic to support all newly tracked NFL Combine statistics, providing performance level indicators (elite, above-average, average, below-average) for each drill and measurement",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-extend-the-guest-mode-localstorage-implementation-to-support-all-newly-tracked-nfl-combine-statistics-ensuring-feature-parity-between-authenticated-and-guest-users",
+      "title": "Extend the guest mode localStorage implementation to support all newly tracked NFL Combine statistics, ensuring feature parity between authenticated and guest users",
+      "reqIds": [
+        "REQ-9"
       ],
       "version": 1
     }
@@ -26,15 +53,21 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Ensure leaderboard is public and includes all entries",
+      "summary": "Track all NFL combine statistics for every individual entry",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Create public leaderboard ranking entries by performance with usernames",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Verify that the backend listPublishedEntries function returns all public entries across all users without filtering by caller identity",
+      "summary": "Expand the backend data model to track all standard NFL Combine statistics for each entry, ensuring every measurement and drill result is captured: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan",
       "reqIds": [
-        "REQ-2"
+        "REQ-4"
       ],
       "status": "pending"
     }

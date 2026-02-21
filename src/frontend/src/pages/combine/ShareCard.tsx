@@ -7,6 +7,13 @@ import { ArrowLeft, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+function getMeasurementValue(measurement: any): number | undefined {
+  if (typeof measurement === 'object' && measurement !== null && 'value' in measurement) {
+    return measurement.value;
+  }
+  return typeof measurement === 'number' ? measurement : undefined;
+}
+
 export default function CombineShareCard() {
   const { entryId } = useParams({ from: '/share/$entryId' });
   const navigate = useNavigate();
@@ -41,16 +48,24 @@ export default function CombineShareCard() {
   }
 
   const drills = [
-    { label: '40-Yard Dash', value: entry.dash40yd, unit: 's' },
-    { label: 'Vertical Jump', value: entry.verticalJumpInches, unit: '"' },
-    { label: 'Broad Jump', value: entry.broadJumpInches, unit: '"' },
+    { label: '40-Yard Dash', value: getMeasurementValue(entry.dash40yd), unit: 's' },
+    { 
+      label: 'Vertical Jump', 
+      value: 'verticalJump' in entry ? getMeasurementValue(entry.verticalJump) : entry.verticalJumpInches, 
+      unit: '"' 
+    },
+    { 
+      label: 'Broad Jump', 
+      value: 'broadJump' in entry ? getMeasurementValue(entry.broadJump) : entry.broadJumpInches, 
+      unit: '"' 
+    },
     {
       label: 'Bench Press',
-      value: entry.benchPressReps ? (typeof entry.benchPressReps === 'bigint' ? Number(entry.benchPressReps) : entry.benchPressReps) : undefined,
+      value: getMeasurementValue(entry.benchPressReps),
       unit: ' reps',
     },
-    { label: '20-Yd Shuttle', value: entry.shuttle20yd, unit: 's' },
-    { label: '3-Cone', value: entry.threeConeDrill, unit: 's' },
+    { label: '20-Yd Shuttle', value: getMeasurementValue(entry.shuttle20yd), unit: 's' },
+    { label: '3-Cone', value: getMeasurementValue(entry.threeConeDrill), unit: 's' },
   ].filter((d) => d.value !== undefined);
 
   return (

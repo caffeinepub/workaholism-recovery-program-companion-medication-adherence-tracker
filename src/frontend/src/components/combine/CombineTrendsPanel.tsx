@@ -6,27 +6,40 @@ interface CombineTrendsPanelProps {
   entries: (CombineResult | GuestCombineEntry)[];
 }
 
+function getMeasurementValue(measurement: any): number | undefined {
+  if (typeof measurement === 'object' && measurement !== null && 'value' in measurement) {
+    return measurement.value;
+  }
+  return typeof measurement === 'number' ? measurement : undefined;
+}
+
 export default function CombineTrendsPanel({ entries }: CombineTrendsPanelProps) {
   const dash40Data = entries
-    .filter((e) => e.dash40yd !== undefined)
     .map((e) => ({
       timestamp: typeof e.timestamp === 'bigint' ? Number(e.timestamp) / 1_000_000 : e.timestamp,
-      value: e.dash40yd!,
-    }));
+      value: getMeasurementValue(e.dash40yd),
+    }))
+    .filter((d) => d.value !== undefined)
+    .map((d) => ({ timestamp: d.timestamp, value: d.value! }));
 
   const verticalData = entries
-    .filter((e) => e.verticalJumpInches !== undefined)
-    .map((e) => ({
-      timestamp: typeof e.timestamp === 'bigint' ? Number(e.timestamp) / 1_000_000 : e.timestamp,
-      value: e.verticalJumpInches!,
-    }));
+    .map((e) => {
+      const value = 'verticalJump' in e ? getMeasurementValue(e.verticalJump) : e.verticalJumpInches;
+      return {
+        timestamp: typeof e.timestamp === 'bigint' ? Number(e.timestamp) / 1_000_000 : e.timestamp,
+        value,
+      };
+    })
+    .filter((d) => d.value !== undefined)
+    .map((d) => ({ timestamp: d.timestamp, value: d.value! }));
 
   const benchData = entries
-    .filter((e) => e.benchPressReps !== undefined)
     .map((e) => ({
       timestamp: typeof e.timestamp === 'bigint' ? Number(e.timestamp) / 1_000_000 : e.timestamp,
-      value: typeof e.benchPressReps === 'bigint' ? Number(e.benchPressReps) : e.benchPressReps!,
-    }));
+      value: getMeasurementValue(e.benchPressReps),
+    }))
+    .filter((d) => d.value !== undefined)
+    .map((d) => ({ timestamp: d.timestamp, value: d.value! }));
 
   if (entries.length === 0) {
     return (

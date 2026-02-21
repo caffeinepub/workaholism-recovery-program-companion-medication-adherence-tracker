@@ -20,6 +20,7 @@ export default function CombineEntryForm({ initialData, onSubmit, isSubmitting }
     weightPounds: initialData?.weightPounds || '',
     wingspanInches: initialData?.wingspanInches || '',
     handSizeInches: initialData?.handSizeInches || '',
+    armLength: initialData?.armLength || '',
     dash40yd: initialData?.dash40yd || '',
     dash10yd: initialData?.dash10yd || '',
     dash20yd: initialData?.dash20yd || '',
@@ -28,6 +29,14 @@ export default function CombineEntryForm({ initialData, onSubmit, isSubmitting }
     benchPressReps: initialData?.benchPressReps || '',
     shuttle20yd: initialData?.shuttle20yd || '',
     threeConeDrill: initialData?.threeConeDrill || '',
+    shuttle60yd: initialData?.shuttle60yd || '',
+    shuttleProAgility: initialData?.shuttleProAgility || '',
+    bodyFatPercentage: initialData?.bodyFatPercentage || '',
+    bmi: initialData?.bmi || '',
+    standingReach: initialData?.standingReach || '',
+    seatedRow: initialData?.seatedRow || '',
+    squat: initialData?.squat || '',
+    powerClean: initialData?.powerClean || '',
     note: initialData?.note || '',
   });
 
@@ -76,7 +85,7 @@ export default function CombineEntryForm({ initialData, onSubmit, isSubmitting }
 
       <Card>
         <CardHeader>
-          <CardTitle>Measurements</CardTitle>
+          <CardTitle>Body Measurements</CardTitle>
         </CardHeader>
         <CardContent className="grid md:grid-cols-2 gap-4">
           <div>
@@ -126,6 +135,54 @@ export default function CombineEntryForm({ initialData, onSubmit, isSubmitting }
               placeholder="e.g., 9.5"
             />
             {errors.handSizeInches && <p className="text-sm text-destructive mt-1">{errors.handSizeInches}</p>}
+          </div>
+          <div>
+            <Label htmlFor="armLength">Arm Length (inches)</Label>
+            <Input
+              id="armLength"
+              type="number"
+              step="0.1"
+              value={formData.armLength}
+              onChange={(e) => handleChange('armLength', e.target.value)}
+              placeholder="e.g., 32"
+            />
+            {errors.armLength && <p className="text-sm text-destructive mt-1">{errors.armLength}</p>}
+          </div>
+          <div>
+            <Label htmlFor="standingReach">Standing Reach (inches)</Label>
+            <Input
+              id="standingReach"
+              type="number"
+              step="0.1"
+              value={formData.standingReach}
+              onChange={(e) => handleChange('standingReach', e.target.value)}
+              placeholder="e.g., 95"
+            />
+            {errors.standingReach && <p className="text-sm text-destructive mt-1">{errors.standingReach}</p>}
+          </div>
+          <div>
+            <Label htmlFor="bodyFatPercentage">Body Fat Percentage (%)</Label>
+            <Input
+              id="bodyFatPercentage"
+              type="number"
+              step="0.1"
+              value={formData.bodyFatPercentage}
+              onChange={(e) => handleChange('bodyFatPercentage', e.target.value)}
+              placeholder="e.g., 12.5"
+            />
+            {errors.bodyFatPercentage && <p className="text-sm text-destructive mt-1">{errors.bodyFatPercentage}</p>}
+          </div>
+          <div>
+            <Label htmlFor="bmi">BMI</Label>
+            <Input
+              id="bmi"
+              type="number"
+              step="0.1"
+              value={formData.bmi}
+              onChange={(e) => handleChange('bmi', e.target.value)}
+              placeholder="e.g., 25.3"
+            />
+            {errors.bmi && <p className="text-sm text-destructive mt-1">{errors.bmi}</p>}
           </div>
         </CardContent>
       </Card>
@@ -195,6 +252,30 @@ export default function CombineEntryForm({ initialData, onSubmit, isSubmitting }
             />
             {errors.threeConeDrill && <p className="text-sm text-destructive mt-1">{errors.threeConeDrill}</p>}
           </div>
+          <div>
+            <Label htmlFor="shuttle60yd">60-Yard Shuttle (seconds)</Label>
+            <Input
+              id="shuttle60yd"
+              type="number"
+              step="0.01"
+              value={formData.shuttle60yd}
+              onChange={(e) => handleChange('shuttle60yd', e.target.value)}
+              placeholder="e.g., 11.50"
+            />
+            {errors.shuttle60yd && <p className="text-sm text-destructive mt-1">{errors.shuttle60yd}</p>}
+          </div>
+          <div>
+            <Label htmlFor="shuttleProAgility">Pro Agility Shuttle (seconds)</Label>
+            <Input
+              id="shuttleProAgility"
+              type="number"
+              step="0.01"
+              value={formData.shuttleProAgility}
+              onChange={(e) => handleChange('shuttleProAgility', e.target.value)}
+              placeholder="e.g., 4.10"
+            />
+            {errors.shuttleProAgility && <p className="text-sm text-destructive mt-1">{errors.shuttleProAgility}</p>}
+          </div>
         </CardContent>
       </Card>
 
@@ -239,6 +320,50 @@ export default function CombineEntryForm({ initialData, onSubmit, isSubmitting }
               placeholder="e.g., 25"
             />
             {errors.benchPressReps && <p className="text-sm text-destructive mt-1">{errors.benchPressReps}</p>}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Strength Tests</CardTitle>
+        </CardHeader>
+        <CardContent className="grid md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="seatedRow">Seated Row (pounds)</Label>
+            <Input
+              id="seatedRow"
+              type="number"
+              step="1"
+              value={formData.seatedRow}
+              onChange={(e) => handleChange('seatedRow', e.target.value)}
+              placeholder="e.g., 250"
+            />
+            {errors.seatedRow && <p className="text-sm text-destructive mt-1">{errors.seatedRow}</p>}
+          </div>
+          <div>
+            <Label htmlFor="squat">Squat (pounds)</Label>
+            <Input
+              id="squat"
+              type="number"
+              step="1"
+              value={formData.squat}
+              onChange={(e) => handleChange('squat', e.target.value)}
+              placeholder="e.g., 400"
+            />
+            {errors.squat && <p className="text-sm text-destructive mt-1">{errors.squat}</p>}
+          </div>
+          <div>
+            <Label htmlFor="powerClean">Power Clean (pounds)</Label>
+            <Input
+              id="powerClean"
+              type="number"
+              step="1"
+              value={formData.powerClean}
+              onChange={(e) => handleChange('powerClean', e.target.value)}
+              placeholder="e.g., 300"
+            />
+            {errors.powerClean && <p className="text-sm text-destructive mt-1">{errors.powerClean}</p>}
           </div>
         </CardContent>
       </Card>

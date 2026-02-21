@@ -5,15 +5,13 @@ import Text "mo:core/Text";
 import Map "mo:core/Map";
 import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
-import Principal "mo:core/Principal";
-
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import Principal "mo:core/Principal";
+import Migration "migration";
 
-// Use migratable actor pattern to persist data and update logic
-
+(with migration = Migration.run)
 actor {
-  //-----------------------------TYPES---------------------------------
   public type RecoveryStep = {
     id : Nat;
     title : Text;
@@ -81,25 +79,44 @@ actor {
     name : Text;
   };
 
-  // Combine types
+  type CombineMeasurement = {
+    value : ?Float;
+    verified : Bool;
+    notes : ?Text;
+    attemptNumber : ?Nat;
+    equipmentUsed : ?Text;
+    measurementType : Text;
+  };
+
   public type CombineResult = {
     id : Nat;
     athleteName : Text;
     timestamp : Time.Time;
-    heightInches : ?Nat;
-    weightPounds : ?Nat;
-    wingspanInches : ?Float;
-    handSizeInches : ?Float;
-    dash40yd : ?Float;
-    dash10yd : ?Float;
-    dash20yd : ?Float;
-    verticalJumpInches : ?Float;
-    broadJumpInches : ?Float;
-    benchPressReps : ?Nat;
-    shuttle20yd : ?Float;
-    threeConeDrill : ?Float;
-    creator : Principal;
+    height : CombineMeasurement;
+    weight : CombineMeasurement;
+    wingspan : CombineMeasurement;
+    handSize : CombineMeasurement;
+    dash40yd : CombineMeasurement;
+    dash10yd : CombineMeasurement;
+    dash20yd : CombineMeasurement;
+    verticalJump : CombineMeasurement;
+    broadJump : CombineMeasurement;
+    benchPressReps : CombineMeasurement;
+    shuttle20yd : CombineMeasurement;
+    threeConeDrill : CombineMeasurement;
+    shuttle60yd : CombineMeasurement;
+    shuttleProAgility : CombineMeasurement;
+    armLength : CombineMeasurement;
+    bodyFatPercentage : CombineMeasurement;
+    bmi : CombineMeasurement;
+    standingReach : CombineMeasurement;
+    seatedRow : CombineMeasurement;
+    squat : CombineMeasurement;
+    powerClean : CombineMeasurement;
+    developerNotes : ?Text;
+    passedMedical : Bool;
     isPublic : Bool;
+    creator : Principal;
   };
 
   type CombineState = {
@@ -108,7 +125,6 @@ actor {
     userCombines : Map.Map<Principal, [CombineResult]>;
   };
 
-  // Initialize the access control state
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
@@ -133,7 +149,6 @@ actor {
     };
   };
 
-  //-------------------------USER SYSTEM---------------------------------
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access profiles");
@@ -155,7 +170,6 @@ actor {
     userProfiles.add(caller, profile);
   };
 
-  //-------------------------COMMITMENTS SYSTEM---------------------------------
   public shared ({ caller }) func saveCommitmentsPlan(plan : CommitmentsPlan) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save commitments plans");
@@ -170,20 +184,16 @@ actor {
     commitmentsPlans.get(caller);
   };
 
-  //-----------------------RECOVERY SYSTEM-------------------------------------
   public query ({ caller }) func getAllRecoverySteps() : async [RecoveryStep] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access recovery steps");
     };
     switch (recoveryPrograms.get(caller)) {
       case (null) { [] };
-      case (?steps) {
-        steps.sort();
-      };
+      case (?steps) { steps.sort() };
     };
   };
 
-  //------------------------REFLECTION SYSTEM------------------------------
   public shared ({ caller }) func saveReflection(reflection : Reflection) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save reflections");
@@ -206,7 +216,6 @@ actor {
     };
   };
 
-  //--------------------------CHECKIN SYSTEM-------------------------------
   public shared ({ caller }) func logCheckIn(checkIn : CheckIn) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can log check-ins");
@@ -229,7 +238,6 @@ actor {
     };
   };
 
-  //-------------------------MEDICATION SYSTEM-------------------------------
   public shared ({ caller }) func addMedication(medicine : Medication) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can add medications");
@@ -252,7 +260,6 @@ actor {
     };
   };
 
-  //----------------------------DOSE LOG SYSTEM-----------------------------------
   public shared ({ caller }) func logDose(doseLog : DoseLog) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can log doses");
@@ -275,7 +282,6 @@ actor {
     };
   };
 
-  //------------------------------MEETING SYSTEM-----------------------------------
   public shared ({ caller }) func addMeeting(meeting : Meeting) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can add meetings");
@@ -298,7 +304,6 @@ actor {
     };
   };
 
-  //-------------------------EMERGENCY CONTACTS--------------------------------
   public shared ({ caller }) func addEmergencyContact(contact : EmergencyContact) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can add emergency contacts");
@@ -321,7 +326,6 @@ actor {
     };
   };
 
-  //----------------------------------EXPORT USER DATA SYSTEM---------------------------
   public query ({ caller }) func getUserData() : async {
     reflections : [Reflection];
     checkIns : [CheckIn];
@@ -368,22 +372,31 @@ actor {
     };
   };
 
-  //----------------------------------COMBINE SYSTEM-----------------------
-
   public shared ({ caller }) func saveCombineResult(resultInput : {
     athleteName : Text;
-    heightInches : ?Nat;
-    weightPounds : ?Nat;
-    wingspanInches : ?Float;
-    handSizeInches : ?Float;
-    dash40yd : ?Float;
-    dash10yd : ?Float;
-    dash20yd : ?Float;
-    verticalJumpInches : ?Float;
-    broadJumpInches : ?Float;
-    benchPressReps : ?Nat;
-    shuttle20yd : ?Float;
-    threeConeDrill : ?Float;
+    height : CombineMeasurement;
+    weight : CombineMeasurement;
+    wingspan : CombineMeasurement;
+    handSize : CombineMeasurement;
+    dash40yd : CombineMeasurement;
+    dash10yd : CombineMeasurement;
+    dash20yd : CombineMeasurement;
+    verticalJump : CombineMeasurement;
+    broadJump : CombineMeasurement;
+    benchPressReps : CombineMeasurement;
+    shuttle20yd : CombineMeasurement;
+    threeConeDrill : CombineMeasurement;
+    shuttle60yd : CombineMeasurement;
+    shuttleProAgility : CombineMeasurement;
+    armLength : CombineMeasurement;
+    bodyFatPercentage : CombineMeasurement;
+    bmi : CombineMeasurement;
+    standingReach : CombineMeasurement;
+    seatedRow : CombineMeasurement;
+    squat : CombineMeasurement;
+    powerClean : CombineMeasurement;
+    developerNotes : ?Text;
+    passedMedical : Bool;
     makePublic : Bool;
   }) : async CombineResult {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
@@ -394,23 +407,33 @@ actor {
       id = combineState.nextCombineId;
       athleteName = resultInput.athleteName;
       timestamp = Time.now();
-      heightInches = resultInput.heightInches;
-      weightPounds = resultInput.weightPounds;
-      wingspanInches = resultInput.wingspanInches;
-      handSizeInches = resultInput.handSizeInches;
+      height = resultInput.height;
+      weight = resultInput.weight;
+      wingspan = resultInput.wingspan;
+      handSize = resultInput.handSize;
       dash40yd = resultInput.dash40yd;
       dash10yd = resultInput.dash10yd;
       dash20yd = resultInput.dash20yd;
-      verticalJumpInches = resultInput.verticalJumpInches;
-      broadJumpInches = resultInput.broadJumpInches;
+      verticalJump = resultInput.verticalJump;
+      broadJump = resultInput.broadJump;
       benchPressReps = resultInput.benchPressReps;
       shuttle20yd = resultInput.shuttle20yd;
       threeConeDrill = resultInput.threeConeDrill;
-      creator = caller;
+      shuttle60yd = resultInput.shuttle60yd;
+      shuttleProAgility = resultInput.shuttleProAgility;
+      armLength = resultInput.armLength;
+      bodyFatPercentage = resultInput.bodyFatPercentage;
+      bmi = resultInput.bmi;
+      standingReach = resultInput.standingReach;
+      seatedRow = resultInput.seatedRow;
+      squat = resultInput.squat;
+      powerClean = resultInput.powerClean;
+      developerNotes = resultInput.developerNotes;
+      passedMedical = resultInput.passedMedical;
       isPublic = resultInput.makePublic;
+      creator = caller;
     };
 
-    // Update user's combine list
     let existingCombines = switch (combineState.userCombines.get(caller)) {
       case (?combines) { combines };
       case (null) { [] };
@@ -418,7 +441,6 @@ actor {
     let updatedCombines = existingCombines.concat([newResult]);
     combineState.userCombines.add(caller, updatedCombines);
 
-    // If public, update public entries
     if (resultInput.makePublic) {
       combineState.publicCombineEntries.add(combineState.nextCombineId, newResult);
     };
@@ -431,26 +453,19 @@ actor {
     newResult;
   };
 
-  // Retrieve a user's combine entries (private + public)
-  // Users can view their own entries (all), others can only see public entries
   public query ({ caller }) func getUserCombineResults(user : Principal) : async [CombineResult] {
     let entries = switch (combineState.userCombines.get(user)) {
       case (null) { [] };
       case (?results) { results };
     };
 
-    // Owner can see all their entries
     if (caller == user) { return entries };
 
-    // Others (including guests) can only see public entries
     let publicEntries = entries.filter(func(c) { c.isPublic });
     publicEntries;
   };
 
-  // Fetch a single result by id (public entries viewable by anyone, private only by creator)
-  // This supports share links - public entries are viewable without login
   public query ({ caller }) func getCombineResultById(id : Nat) : async ?CombineResult {
-    // First check if it's a public entry (accessible to everyone including guests)
     switch (combineState.publicCombineEntries.get(id)) {
       case (?publicResult) { ?publicResult };
       case (null) {
@@ -468,12 +483,10 @@ actor {
     };
   };
 
-  // Fetch all public combine entries
   public query ({ caller }) func getAllPublicCombineEntries() : async [CombineResult] {
     combineState.publicCombineEntries.values().toArray();
   };
 
-  // Delete a combine result - only the creator can delete their own entries
   public shared ({ caller }) func deleteCombineResult(id : Nat) : async Bool {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can delete combine results");
@@ -497,7 +510,6 @@ actor {
     };
   };
 
-  // Toggle public/private state - only the creator can modify their own entries
   public shared ({ caller }) func toggleCombinePublicState(id : Nat) : async Bool {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can modify combine results");

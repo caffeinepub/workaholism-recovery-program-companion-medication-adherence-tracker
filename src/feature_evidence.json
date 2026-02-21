@@ -2,9 +2,50 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-verify-that-the-published-feed-page-frontend-src-pages-combine-published-tsx-displays-all-public-combine-entries-from-all-authenticated-users-not-just-the-current-user-s-entries",
-      "featureTitle": "Verify that the Published feed page (frontend/src/pages/combine/Published.tsx) displays all public combine entries from all authenticated users, not just the current user's entries",
+      "featureId": "feature-update-the-frontend-combineentryform-to-include-input-fields-for-all-nfl-combine-statistics-40-yard-dash-bench-press-reps-vertical-jump-broad-jump-3-cone-drill-20-yard-shuttle-60-yard-shuttle-height-weight-arm-length-hand-size-and-wingspan-with-appropriate-validation",
+      "featureTitle": "Update the frontend CombineEntryForm to include input fields for all NFL Combine statistics: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan with appropriate validation",
       "files": [
+        "frontend/src/components/combine/CombineEntryForm.tsx",
+        "frontend/src/utils/combineValidation.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-all-tracked-nfl-combine-statistics-in-the-entrydetail-and-publicentry-views-showing-every-recorded-measurement-and-drill-result-for-the-entry",
+      "featureTitle": "Display all tracked NFL Combine statistics in the EntryDetail and PublicEntry views, showing every recorded measurement and drill result for the entry",
+      "files": [
+        "frontend/src/pages/combine/EntryDetail.tsx",
+        "frontend/src/pages/combine/PublicEntry.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-enhance-the-published-page-leaderboard-to-display-usernames-alongside-each-entry-and-rank-all-public-entries-numerically-from-best-to-worst-based-on-the-selected-sorting-metric",
+      "featureTitle": "Enhance the Published page leaderboard to display usernames alongside each entry and rank all public entries numerically from best to worst based on the selected sorting metric",
+      "files": [
+        "frontend/src/hooks/useQueries.ts",
         "frontend/src/pages/combine/Published.tsx"
       ],
       "components": [
@@ -16,16 +57,16 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-1"
+        "REQ-7"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-sorting-capability-to-the-published-feed-to-display-entries-as-a-proper-leaderboard-with-options-to-sort-by-different-metrics-e-g-fastest-40-yard-dash-highest-vertical-jump-most-bench-press-reps",
-      "featureTitle": "Add sorting capability to the Published feed to display entries as a proper leaderboard, with options to sort by different metrics (e.g., fastest 40-yard dash, highest vertical jump, most bench press reps)",
+      "featureId": "feature-update-benchmark-comparison-logic-to-support-all-newly-tracked-nfl-combine-statistics-providing-performance-level-indicators-elite-above-average-average-below-average-for-each-drill-and-measurement",
+      "featureTitle": "Update benchmark comparison logic to support all newly tracked NFL Combine statistics, providing performance level indicators (elite, above-average, average, below-average) for each drill and measurement",
       "files": [
-        "frontend/src/pages/combine/Published.tsx",
-        "frontend/src/utils/combineSorting.ts"
+        "frontend/src/components/combine/BenchmarkComparison.tsx",
+        "frontend/src/utils/combineBenchmarks.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -36,7 +77,27 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-3"
+        "REQ-8"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-extend-the-guest-mode-localstorage-implementation-to-support-all-newly-tracked-nfl-combine-statistics-ensuring-feature-parity-between-authenticated-and-guest-users",
+      "featureTitle": "Extend the guest mode localStorage implementation to support all newly tracked NFL Combine statistics, ensuring feature parity between authenticated and guest users",
+      "files": [
+        "frontend/src/hooks/useCombine.ts",
+        "frontend/src/utils/combineGuestStorage.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-9"
       ],
       "confidence": "high"
     }

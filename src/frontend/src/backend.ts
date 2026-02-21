@@ -94,13 +94,13 @@ export interface CommitmentsPlan {
     atRiskActions: string;
     personalCommitments: string;
 }
-export interface CheckIn {
-    stressLevel: bigint;
-    mood: string;
-    timestamp: Time;
-    reflection: string;
-    workHours: bigint;
-    intention: string;
+export interface CombineMeasurement {
+    verified: boolean;
+    value?: number;
+    equipmentUsed?: string;
+    notes?: string;
+    measurementType: string;
+    attemptNumber?: bigint;
 }
 export interface RecoveryStep {
     id: bigint;
@@ -118,28 +118,47 @@ export interface Meeting {
 }
 export interface CombineResult {
     id: bigint;
+    bmi: CombineMeasurement;
+    weight: CombineMeasurement;
+    passedMedical: boolean;
+    height: CombineMeasurement;
+    powerClean: CombineMeasurement;
+    verticalJump: CombineMeasurement;
     creator: Principal;
-    dash10yd?: number;
-    dash20yd?: number;
-    dash40yd?: number;
-    heightInches?: bigint;
-    wingspanInches?: number;
-    threeConeDrill?: number;
-    handSizeInches?: number;
-    weightPounds?: bigint;
-    benchPressReps?: bigint;
-    broadJumpInches?: number;
-    shuttle20yd?: number;
+    dash10yd: CombineMeasurement;
+    dash20yd: CombineMeasurement;
+    dash40yd: CombineMeasurement;
+    wingspan: CombineMeasurement;
+    threeConeDrill: CombineMeasurement;
+    benchPressReps: CombineMeasurement;
+    squat: CombineMeasurement;
+    developerNotes?: string;
+    shuttleProAgility: CombineMeasurement;
+    shuttle20yd: CombineMeasurement;
     timestamp: Time;
+    shuttle60yd: CombineMeasurement;
     isPublic: boolean;
-    verticalJumpInches?: number;
+    handSize: CombineMeasurement;
+    broadJump: CombineMeasurement;
+    seatedRow: CombineMeasurement;
     athleteName: string;
+    armLength: CombineMeasurement;
+    standingReach: CombineMeasurement;
+    bodyFatPercentage: CombineMeasurement;
 }
 export interface EmergencyContact {
     relationship: string;
     name: string;
     notes: string;
     phone: string;
+}
+export interface CheckIn {
+    stressLevel: bigint;
+    mood: string;
+    timestamp: Time;
+    reflection: string;
+    workHours: bigint;
+    intention: string;
 }
 export interface Reflection {
     id: bigint;
@@ -213,26 +232,37 @@ export interface backendInterface {
     logDose(doseLog: DoseLog): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     saveCombineResult(resultInput: {
-        dash10yd?: number;
-        dash20yd?: number;
-        dash40yd?: number;
-        heightInches?: bigint;
-        wingspanInches?: number;
-        threeConeDrill?: number;
-        handSizeInches?: number;
-        weightPounds?: bigint;
-        benchPressReps?: bigint;
-        broadJumpInches?: number;
-        shuttle20yd?: number;
+        bmi: CombineMeasurement;
+        weight: CombineMeasurement;
+        passedMedical: boolean;
+        height: CombineMeasurement;
+        powerClean: CombineMeasurement;
+        verticalJump: CombineMeasurement;
+        dash10yd: CombineMeasurement;
+        dash20yd: CombineMeasurement;
+        dash40yd: CombineMeasurement;
+        wingspan: CombineMeasurement;
+        threeConeDrill: CombineMeasurement;
+        benchPressReps: CombineMeasurement;
+        squat: CombineMeasurement;
+        developerNotes?: string;
+        shuttleProAgility: CombineMeasurement;
+        shuttle20yd: CombineMeasurement;
+        shuttle60yd: CombineMeasurement;
         makePublic: boolean;
-        verticalJumpInches?: number;
+        handSize: CombineMeasurement;
+        broadJump: CombineMeasurement;
+        seatedRow: CombineMeasurement;
         athleteName: string;
+        armLength: CombineMeasurement;
+        standingReach: CombineMeasurement;
+        bodyFatPercentage: CombineMeasurement;
     }): Promise<CombineResult>;
     saveCommitmentsPlan(plan: CommitmentsPlan): Promise<void>;
     saveReflection(reflection: Reflection): Promise<void>;
     toggleCombinePublicState(id: bigint): Promise<boolean>;
 }
-import type { CheckIn as _CheckIn, CombineResult as _CombineResult, CommitmentsPlan as _CommitmentsPlan, DoseLog as _DoseLog, EmergencyContact as _EmergencyContact, Medication as _Medication, Meeting as _Meeting, RecoveryStep as _RecoveryStep, Reflection as _Reflection, Time as _Time, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
+import type { CheckIn as _CheckIn, CombineMeasurement as _CombineMeasurement, CombineResult as _CombineResult, CommitmentsPlan as _CommitmentsPlan, DoseLog as _DoseLog, EmergencyContact as _EmergencyContact, Medication as _Medication, Meeting as _Meeting, RecoveryStep as _RecoveryStep, Reflection as _Reflection, Time as _Time, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
@@ -351,28 +381,28 @@ export class Backend implements backendInterface {
         if (this.processError) {
             try {
                 const result = await this.actor.getCallerUserProfile();
-                return from_candid_opt_n10(this._uploadFile, this._downloadFile, result);
+                return from_candid_opt_n13(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getCallerUserProfile();
-            return from_candid_opt_n10(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n13(this._uploadFile, this._downloadFile, result);
         }
     }
     async getCallerUserRole(): Promise<UserRole> {
         if (this.processError) {
             try {
                 const result = await this.actor.getCallerUserRole();
-                return from_candid_UserRole_n11(this._uploadFile, this._downloadFile, result);
+                return from_candid_UserRole_n14(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getCallerUserRole();
-            return from_candid_UserRole_n11(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserRole_n14(this._uploadFile, this._downloadFile, result);
         }
     }
     async getCheckIns(): Promise<Array<CheckIn>> {
@@ -393,42 +423,42 @@ export class Backend implements backendInterface {
         if (this.processError) {
             try {
                 const result = await this.actor.getCombineResultById(arg0);
-                return from_candid_opt_n13(this._uploadFile, this._downloadFile, result);
+                return from_candid_opt_n16(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getCombineResultById(arg0);
-            return from_candid_opt_n13(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n16(this._uploadFile, this._downloadFile, result);
         }
     }
     async getCommitmentsPlan(): Promise<CommitmentsPlan | null> {
         if (this.processError) {
             try {
                 const result = await this.actor.getCommitmentsPlan();
-                return from_candid_opt_n14(this._uploadFile, this._downloadFile, result);
+                return from_candid_opt_n17(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getCommitmentsPlan();
-            return from_candid_opt_n14(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n17(this._uploadFile, this._downloadFile, result);
         }
     }
     async getDoseLogs(): Promise<Array<DoseLog>> {
         if (this.processError) {
             try {
                 const result = await this.actor.getDoseLogs();
-                return from_candid_vec_n15(this._uploadFile, this._downloadFile, result);
+                return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getDoseLogs();
-            return from_candid_vec_n15(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n18(this._uploadFile, this._downloadFile, result);
         }
     }
     async getEmergencyContacts(): Promise<Array<EmergencyContact>> {
@@ -449,14 +479,14 @@ export class Backend implements backendInterface {
         if (this.processError) {
             try {
                 const result = await this.actor.getMedications();
-                return from_candid_vec_n21(this._uploadFile, this._downloadFile, result);
+                return from_candid_vec_n23(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getMedications();
-            return from_candid_vec_n21(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n23(this._uploadFile, this._downloadFile, result);
         }
     }
     async getMeetings(): Promise<Array<Meeting>> {
@@ -514,28 +544,28 @@ export class Backend implements backendInterface {
         if (this.processError) {
             try {
                 const result = await this.actor.getUserData();
-                return from_candid_record_n24(this._uploadFile, this._downloadFile, result);
+                return from_candid_record_n26(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getUserData();
-            return from_candid_record_n24(this._uploadFile, this._downloadFile, result);
+            return from_candid_record_n26(this._uploadFile, this._downloadFile, result);
         }
     }
     async getUserProfile(arg0: Principal): Promise<UserProfile | null> {
         if (this.processError) {
             try {
                 const result = await this.actor.getUserProfile(arg0);
-                return from_candid_opt_n10(this._uploadFile, this._downloadFile, result);
+                return from_candid_opt_n13(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getUserProfile(arg0);
-            return from_candid_opt_n10(this._uploadFile, this._downloadFile, result);
+            return from_candid_opt_n13(this._uploadFile, this._downloadFile, result);
         }
     }
     async isCallerAdmin(): Promise<boolean> {
@@ -569,14 +599,14 @@ export class Backend implements backendInterface {
     async logDose(arg0: DoseLog): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.logDose(to_candid_DoseLog_n25(this._uploadFile, this._downloadFile, arg0));
+                const result = await this.actor.logDose(to_candid_DoseLog_n27(this._uploadFile, this._downloadFile, arg0));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.logDose(to_candid_DoseLog_n25(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.logDose(to_candid_DoseLog_n27(this._uploadFile, this._downloadFile, arg0));
             return result;
         }
     }
@@ -595,31 +625,42 @@ export class Backend implements backendInterface {
         }
     }
     async saveCombineResult(arg0: {
-        dash10yd?: number;
-        dash20yd?: number;
-        dash40yd?: number;
-        heightInches?: bigint;
-        wingspanInches?: number;
-        threeConeDrill?: number;
-        handSizeInches?: number;
-        weightPounds?: bigint;
-        benchPressReps?: bigint;
-        broadJumpInches?: number;
-        shuttle20yd?: number;
+        bmi: CombineMeasurement;
+        weight: CombineMeasurement;
+        passedMedical: boolean;
+        height: CombineMeasurement;
+        powerClean: CombineMeasurement;
+        verticalJump: CombineMeasurement;
+        dash10yd: CombineMeasurement;
+        dash20yd: CombineMeasurement;
+        dash40yd: CombineMeasurement;
+        wingspan: CombineMeasurement;
+        threeConeDrill: CombineMeasurement;
+        benchPressReps: CombineMeasurement;
+        squat: CombineMeasurement;
+        developerNotes?: string;
+        shuttleProAgility: CombineMeasurement;
+        shuttle20yd: CombineMeasurement;
+        shuttle60yd: CombineMeasurement;
         makePublic: boolean;
-        verticalJumpInches?: number;
+        handSize: CombineMeasurement;
+        broadJump: CombineMeasurement;
+        seatedRow: CombineMeasurement;
         athleteName: string;
+        armLength: CombineMeasurement;
+        standingReach: CombineMeasurement;
+        bodyFatPercentage: CombineMeasurement;
     }): Promise<CombineResult> {
         if (this.processError) {
             try {
-                const result = await this.actor.saveCombineResult(to_candid_record_n28(this._uploadFile, this._downloadFile, arg0));
+                const result = await this.actor.saveCombineResult(to_candid_record_n30(this._uploadFile, this._downloadFile, arg0));
                 return from_candid_CombineResult_n6(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.saveCombineResult(to_candid_record_n28(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.saveCombineResult(to_candid_record_n30(this._uploadFile, this._downloadFile, arg0));
             return from_candid_CombineResult_n6(this._uploadFile, this._downloadFile, result);
         }
     }
@@ -666,40 +707,43 @@ export class Backend implements backendInterface {
         }
     }
 }
+function from_candid_CombineMeasurement_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _CombineMeasurement): CombineMeasurement {
+    return from_candid_record_n9(_uploadFile, _downloadFile, value);
+}
 function from_candid_CombineResult_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _CombineResult): CombineResult {
     return from_candid_record_n7(_uploadFile, _downloadFile, value);
 }
-function from_candid_DoseLog_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _DoseLog): DoseLog {
-    return from_candid_record_n17(_uploadFile, _downloadFile, value);
+function from_candid_DoseLog_n19(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _DoseLog): DoseLog {
+    return from_candid_record_n20(_uploadFile, _downloadFile, value);
 }
-function from_candid_Medication_n22(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Medication): Medication {
-    return from_candid_record_n23(_uploadFile, _downloadFile, value);
+function from_candid_Medication_n24(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Medication): Medication {
+    return from_candid_record_n25(_uploadFile, _downloadFile, value);
 }
-function from_candid_UserRole_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
-    return from_candid_variant_n12(_uploadFile, _downloadFile, value);
+function from_candid_UserRole_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
+    return from_candid_variant_n15(_uploadFile, _downloadFile, value);
 }
-function from_candid_opt_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
+function from_candid_opt_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [number]): number | null {
     return value.length === 0 ? null : value[0];
 }
-function from_candid_opt_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_CombineResult]): CombineResult | null {
+function from_candid_opt_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [bigint]): bigint | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_CombineResult]): CombineResult | null {
     return value.length === 0 ? null : from_candid_CombineResult_n6(_uploadFile, _downloadFile, value[0]);
 }
-function from_candid_opt_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_CommitmentsPlan]): CommitmentsPlan | null {
+function from_candid_opt_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_CommitmentsPlan]): CommitmentsPlan | null {
     return value.length === 0 ? null : value[0];
 }
-function from_candid_opt_n19(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
+function from_candid_opt_n22(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Time]): Time | null {
     return value.length === 0 ? null : value[0];
 }
-function from_candid_opt_n20(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Time]): Time | null {
-    return value.length === 0 ? null : value[0];
-}
-function from_candid_opt_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [number]): number | null {
-    return value.length === 0 ? null : value[0];
-}
-function from_candid_opt_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [bigint]): bigint | null {
-    return value.length === 0 ? null : value[0];
-}
-function from_candid_record_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_record_n20(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     status: {
         Skipped: null;
     } | {
@@ -721,15 +765,15 @@ function from_candid_record_n17(_uploadFile: (file: ExternalBlob) => Promise<Uin
     timestamp: Time;
 } {
     return {
-        status: from_candid_variant_n18(_uploadFile, _downloadFile, value.status),
+        status: from_candid_variant_n21(_uploadFile, _downloadFile, value.status),
         medicationName: value.medicationName,
         scheduledTime: value.scheduledTime,
-        note: record_opt_to_undefined(from_candid_opt_n19(_uploadFile, _downloadFile, value.note)),
-        takenTime: record_opt_to_undefined(from_candid_opt_n20(_uploadFile, _downloadFile, value.takenTime)),
+        note: record_opt_to_undefined(from_candid_opt_n11(_uploadFile, _downloadFile, value.note)),
+        takenTime: record_opt_to_undefined(from_candid_opt_n22(_uploadFile, _downloadFile, value.takenTime)),
         timestamp: value.timestamp
     };
 }
-function from_candid_record_n23(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_record_n25(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     endDate: [] | [_Time];
     dose: string;
     name: string;
@@ -747,16 +791,16 @@ function from_candid_record_n23(_uploadFile: (file: ExternalBlob) => Promise<Uin
     startDate?: Time;
 } {
     return {
-        endDate: record_opt_to_undefined(from_candid_opt_n20(_uploadFile, _downloadFile, value.endDate)),
+        endDate: record_opt_to_undefined(from_candid_opt_n22(_uploadFile, _downloadFile, value.endDate)),
         dose: value.dose,
         name: value.name,
         instructions: value.instructions,
         schedule: value.schedule,
         prescriber: value.prescriber,
-        startDate: record_opt_to_undefined(from_candid_opt_n20(_uploadFile, _downloadFile, value.startDate))
+        startDate: record_opt_to_undefined(from_candid_opt_n22(_uploadFile, _downloadFile, value.startDate))
     };
 }
-function from_candid_record_n24(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_record_n26(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     meetings: Array<_Meeting>;
     emergencyContacts: Array<_EmergencyContact>;
     reflections: Array<_Reflection>;
@@ -779,71 +823,128 @@ function from_candid_record_n24(_uploadFile: (file: ExternalBlob) => Promise<Uin
         meetings: value.meetings,
         emergencyContacts: value.emergencyContacts,
         reflections: value.reflections,
-        medications: from_candid_vec_n21(_uploadFile, _downloadFile, value.medications),
+        medications: from_candid_vec_n23(_uploadFile, _downloadFile, value.medications),
         checkIns: value.checkIns,
-        doseLogs: from_candid_vec_n15(_uploadFile, _downloadFile, value.doseLogs),
-        commitmentsPlan: record_opt_to_undefined(from_candid_opt_n14(_uploadFile, _downloadFile, value.commitmentsPlan)),
+        doseLogs: from_candid_vec_n18(_uploadFile, _downloadFile, value.doseLogs),
+        commitmentsPlan: record_opt_to_undefined(from_candid_opt_n17(_uploadFile, _downloadFile, value.commitmentsPlan)),
         recoverySteps: value.recoverySteps
     };
 }
 function from_candid_record_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     id: bigint;
+    bmi: _CombineMeasurement;
+    weight: _CombineMeasurement;
+    passedMedical: boolean;
+    height: _CombineMeasurement;
+    powerClean: _CombineMeasurement;
+    verticalJump: _CombineMeasurement;
     creator: Principal;
-    dash10yd: [] | [number];
-    dash20yd: [] | [number];
-    dash40yd: [] | [number];
-    heightInches: [] | [bigint];
-    wingspanInches: [] | [number];
-    threeConeDrill: [] | [number];
-    handSizeInches: [] | [number];
-    weightPounds: [] | [bigint];
-    benchPressReps: [] | [bigint];
-    broadJumpInches: [] | [number];
-    shuttle20yd: [] | [number];
+    dash10yd: _CombineMeasurement;
+    dash20yd: _CombineMeasurement;
+    dash40yd: _CombineMeasurement;
+    wingspan: _CombineMeasurement;
+    threeConeDrill: _CombineMeasurement;
+    benchPressReps: _CombineMeasurement;
+    squat: _CombineMeasurement;
+    developerNotes: [] | [string];
+    shuttleProAgility: _CombineMeasurement;
+    shuttle20yd: _CombineMeasurement;
     timestamp: _Time;
+    shuttle60yd: _CombineMeasurement;
     isPublic: boolean;
-    verticalJumpInches: [] | [number];
+    handSize: _CombineMeasurement;
+    broadJump: _CombineMeasurement;
+    seatedRow: _CombineMeasurement;
     athleteName: string;
+    armLength: _CombineMeasurement;
+    standingReach: _CombineMeasurement;
+    bodyFatPercentage: _CombineMeasurement;
 }): {
     id: bigint;
+    bmi: CombineMeasurement;
+    weight: CombineMeasurement;
+    passedMedical: boolean;
+    height: CombineMeasurement;
+    powerClean: CombineMeasurement;
+    verticalJump: CombineMeasurement;
     creator: Principal;
-    dash10yd?: number;
-    dash20yd?: number;
-    dash40yd?: number;
-    heightInches?: bigint;
-    wingspanInches?: number;
-    threeConeDrill?: number;
-    handSizeInches?: number;
-    weightPounds?: bigint;
-    benchPressReps?: bigint;
-    broadJumpInches?: number;
-    shuttle20yd?: number;
+    dash10yd: CombineMeasurement;
+    dash20yd: CombineMeasurement;
+    dash40yd: CombineMeasurement;
+    wingspan: CombineMeasurement;
+    threeConeDrill: CombineMeasurement;
+    benchPressReps: CombineMeasurement;
+    squat: CombineMeasurement;
+    developerNotes?: string;
+    shuttleProAgility: CombineMeasurement;
+    shuttle20yd: CombineMeasurement;
     timestamp: Time;
+    shuttle60yd: CombineMeasurement;
     isPublic: boolean;
-    verticalJumpInches?: number;
+    handSize: CombineMeasurement;
+    broadJump: CombineMeasurement;
+    seatedRow: CombineMeasurement;
     athleteName: string;
+    armLength: CombineMeasurement;
+    standingReach: CombineMeasurement;
+    bodyFatPercentage: CombineMeasurement;
 } {
     return {
         id: value.id,
+        bmi: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.bmi),
+        weight: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.weight),
+        passedMedical: value.passedMedical,
+        height: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.height),
+        powerClean: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.powerClean),
+        verticalJump: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.verticalJump),
         creator: value.creator,
-        dash10yd: record_opt_to_undefined(from_candid_opt_n8(_uploadFile, _downloadFile, value.dash10yd)),
-        dash20yd: record_opt_to_undefined(from_candid_opt_n8(_uploadFile, _downloadFile, value.dash20yd)),
-        dash40yd: record_opt_to_undefined(from_candid_opt_n8(_uploadFile, _downloadFile, value.dash40yd)),
-        heightInches: record_opt_to_undefined(from_candid_opt_n9(_uploadFile, _downloadFile, value.heightInches)),
-        wingspanInches: record_opt_to_undefined(from_candid_opt_n8(_uploadFile, _downloadFile, value.wingspanInches)),
-        threeConeDrill: record_opt_to_undefined(from_candid_opt_n8(_uploadFile, _downloadFile, value.threeConeDrill)),
-        handSizeInches: record_opt_to_undefined(from_candid_opt_n8(_uploadFile, _downloadFile, value.handSizeInches)),
-        weightPounds: record_opt_to_undefined(from_candid_opt_n9(_uploadFile, _downloadFile, value.weightPounds)),
-        benchPressReps: record_opt_to_undefined(from_candid_opt_n9(_uploadFile, _downloadFile, value.benchPressReps)),
-        broadJumpInches: record_opt_to_undefined(from_candid_opt_n8(_uploadFile, _downloadFile, value.broadJumpInches)),
-        shuttle20yd: record_opt_to_undefined(from_candid_opt_n8(_uploadFile, _downloadFile, value.shuttle20yd)),
+        dash10yd: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.dash10yd),
+        dash20yd: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.dash20yd),
+        dash40yd: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.dash40yd),
+        wingspan: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.wingspan),
+        threeConeDrill: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.threeConeDrill),
+        benchPressReps: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.benchPressReps),
+        squat: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.squat),
+        developerNotes: record_opt_to_undefined(from_candid_opt_n11(_uploadFile, _downloadFile, value.developerNotes)),
+        shuttleProAgility: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.shuttleProAgility),
+        shuttle20yd: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.shuttle20yd),
         timestamp: value.timestamp,
+        shuttle60yd: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.shuttle60yd),
         isPublic: value.isPublic,
-        verticalJumpInches: record_opt_to_undefined(from_candid_opt_n8(_uploadFile, _downloadFile, value.verticalJumpInches)),
-        athleteName: value.athleteName
+        handSize: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.handSize),
+        broadJump: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.broadJump),
+        seatedRow: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.seatedRow),
+        athleteName: value.athleteName,
+        armLength: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.armLength),
+        standingReach: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.standingReach),
+        bodyFatPercentage: from_candid_CombineMeasurement_n8(_uploadFile, _downloadFile, value.bodyFatPercentage)
     };
 }
-function from_candid_variant_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_record_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    verified: boolean;
+    value: [] | [number];
+    equipmentUsed: [] | [string];
+    notes: [] | [string];
+    measurementType: string;
+    attemptNumber: [] | [bigint];
+}): {
+    verified: boolean;
+    value?: number;
+    equipmentUsed?: string;
+    notes?: string;
+    measurementType: string;
+    attemptNumber?: bigint;
+} {
+    return {
+        verified: value.verified,
+        value: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.value)),
+        equipmentUsed: record_opt_to_undefined(from_candid_opt_n11(_uploadFile, _downloadFile, value.equipmentUsed)),
+        notes: record_opt_to_undefined(from_candid_opt_n11(_uploadFile, _downloadFile, value.notes)),
+        measurementType: value.measurementType,
+        attemptNumber: record_opt_to_undefined(from_candid_opt_n12(_uploadFile, _downloadFile, value.attemptNumber))
+    };
+}
+function from_candid_variant_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     admin: null;
 } | {
     user: null;
@@ -852,7 +953,7 @@ function from_candid_variant_n12(_uploadFile: (file: ExternalBlob) => Promise<Ui
 }): UserRole {
     return "admin" in value ? UserRole.admin : "user" in value ? UserRole.user : "guest" in value ? UserRole.guest : value;
 }
-function from_candid_variant_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_variant_n21(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     Skipped: null;
 } | {
     Late: null;
@@ -861,17 +962,20 @@ function from_candid_variant_n18(_uploadFile: (file: ExternalBlob) => Promise<Ui
 }): Variant_Skipped_Late_Taken {
     return "Skipped" in value ? Variant_Skipped_Late_Taken.Skipped : "Late" in value ? Variant_Skipped_Late_Taken.Late : "Taken" in value ? Variant_Skipped_Late_Taken.Taken : value;
 }
-function from_candid_vec_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_DoseLog>): Array<DoseLog> {
-    return value.map((x)=>from_candid_DoseLog_n16(_uploadFile, _downloadFile, x));
+function from_candid_vec_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_DoseLog>): Array<DoseLog> {
+    return value.map((x)=>from_candid_DoseLog_n19(_uploadFile, _downloadFile, x));
 }
-function from_candid_vec_n21(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Medication>): Array<Medication> {
-    return value.map((x)=>from_candid_Medication_n22(_uploadFile, _downloadFile, x));
+function from_candid_vec_n23(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Medication>): Array<Medication> {
+    return value.map((x)=>from_candid_Medication_n24(_uploadFile, _downloadFile, x));
 }
 function from_candid_vec_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_CombineResult>): Array<CombineResult> {
     return value.map((x)=>from_candid_CombineResult_n6(_uploadFile, _downloadFile, x));
 }
-function to_candid_DoseLog_n25(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: DoseLog): _DoseLog {
-    return to_candid_record_n26(_uploadFile, _downloadFile, value);
+function to_candid_CombineMeasurement_n31(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: CombineMeasurement): _CombineMeasurement {
+    return to_candid_record_n32(_uploadFile, _downloadFile, value);
+}
+function to_candid_DoseLog_n27(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: DoseLog): _DoseLog {
+    return to_candid_record_n28(_uploadFile, _downloadFile, value);
 }
 function to_candid_Medication_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Medication): _Medication {
     return to_candid_record_n2(_uploadFile, _downloadFile, value);
@@ -906,7 +1010,7 @@ function to_candid_record_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8A
         startDate: value.startDate ? candid_some(value.startDate) : candid_none()
     };
 }
-function to_candid_record_n26(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function to_candid_record_n28(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     status: Variant_Skipped_Late_Taken;
     medicationName: string;
     scheduledTime: string;
@@ -928,7 +1032,7 @@ function to_candid_record_n26(_uploadFile: (file: ExternalBlob) => Promise<Uint8
     timestamp: _Time;
 } {
     return {
-        status: to_candid_variant_n27(_uploadFile, _downloadFile, value.status),
+        status: to_candid_variant_n29(_uploadFile, _downloadFile, value.status),
         medicationName: value.medicationName,
         scheduledTime: value.scheduledTime,
         note: value.note ? candid_some(value.note) : candid_none(),
@@ -936,55 +1040,112 @@ function to_candid_record_n26(_uploadFile: (file: ExternalBlob) => Promise<Uint8
         timestamp: value.timestamp
     };
 }
-function to_candid_record_n28(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    dash10yd?: number;
-    dash20yd?: number;
-    dash40yd?: number;
-    heightInches?: bigint;
-    wingspanInches?: number;
-    threeConeDrill?: number;
-    handSizeInches?: number;
-    weightPounds?: bigint;
-    benchPressReps?: bigint;
-    broadJumpInches?: number;
-    shuttle20yd?: number;
+function to_candid_record_n30(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    bmi: CombineMeasurement;
+    weight: CombineMeasurement;
+    passedMedical: boolean;
+    height: CombineMeasurement;
+    powerClean: CombineMeasurement;
+    verticalJump: CombineMeasurement;
+    dash10yd: CombineMeasurement;
+    dash20yd: CombineMeasurement;
+    dash40yd: CombineMeasurement;
+    wingspan: CombineMeasurement;
+    threeConeDrill: CombineMeasurement;
+    benchPressReps: CombineMeasurement;
+    squat: CombineMeasurement;
+    developerNotes?: string;
+    shuttleProAgility: CombineMeasurement;
+    shuttle20yd: CombineMeasurement;
+    shuttle60yd: CombineMeasurement;
     makePublic: boolean;
-    verticalJumpInches?: number;
+    handSize: CombineMeasurement;
+    broadJump: CombineMeasurement;
+    seatedRow: CombineMeasurement;
     athleteName: string;
+    armLength: CombineMeasurement;
+    standingReach: CombineMeasurement;
+    bodyFatPercentage: CombineMeasurement;
 }): {
-    dash10yd: [] | [number];
-    dash20yd: [] | [number];
-    dash40yd: [] | [number];
-    heightInches: [] | [bigint];
-    wingspanInches: [] | [number];
-    threeConeDrill: [] | [number];
-    handSizeInches: [] | [number];
-    weightPounds: [] | [bigint];
-    benchPressReps: [] | [bigint];
-    broadJumpInches: [] | [number];
-    shuttle20yd: [] | [number];
+    bmi: _CombineMeasurement;
+    weight: _CombineMeasurement;
+    passedMedical: boolean;
+    height: _CombineMeasurement;
+    powerClean: _CombineMeasurement;
+    verticalJump: _CombineMeasurement;
+    dash10yd: _CombineMeasurement;
+    dash20yd: _CombineMeasurement;
+    dash40yd: _CombineMeasurement;
+    wingspan: _CombineMeasurement;
+    threeConeDrill: _CombineMeasurement;
+    benchPressReps: _CombineMeasurement;
+    squat: _CombineMeasurement;
+    developerNotes: [] | [string];
+    shuttleProAgility: _CombineMeasurement;
+    shuttle20yd: _CombineMeasurement;
+    shuttle60yd: _CombineMeasurement;
     makePublic: boolean;
-    verticalJumpInches: [] | [number];
+    handSize: _CombineMeasurement;
+    broadJump: _CombineMeasurement;
+    seatedRow: _CombineMeasurement;
     athleteName: string;
+    armLength: _CombineMeasurement;
+    standingReach: _CombineMeasurement;
+    bodyFatPercentage: _CombineMeasurement;
 } {
     return {
-        dash10yd: value.dash10yd ? candid_some(value.dash10yd) : candid_none(),
-        dash20yd: value.dash20yd ? candid_some(value.dash20yd) : candid_none(),
-        dash40yd: value.dash40yd ? candid_some(value.dash40yd) : candid_none(),
-        heightInches: value.heightInches ? candid_some(value.heightInches) : candid_none(),
-        wingspanInches: value.wingspanInches ? candid_some(value.wingspanInches) : candid_none(),
-        threeConeDrill: value.threeConeDrill ? candid_some(value.threeConeDrill) : candid_none(),
-        handSizeInches: value.handSizeInches ? candid_some(value.handSizeInches) : candid_none(),
-        weightPounds: value.weightPounds ? candid_some(value.weightPounds) : candid_none(),
-        benchPressReps: value.benchPressReps ? candid_some(value.benchPressReps) : candid_none(),
-        broadJumpInches: value.broadJumpInches ? candid_some(value.broadJumpInches) : candid_none(),
-        shuttle20yd: value.shuttle20yd ? candid_some(value.shuttle20yd) : candid_none(),
+        bmi: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.bmi),
+        weight: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.weight),
+        passedMedical: value.passedMedical,
+        height: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.height),
+        powerClean: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.powerClean),
+        verticalJump: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.verticalJump),
+        dash10yd: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.dash10yd),
+        dash20yd: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.dash20yd),
+        dash40yd: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.dash40yd),
+        wingspan: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.wingspan),
+        threeConeDrill: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.threeConeDrill),
+        benchPressReps: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.benchPressReps),
+        squat: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.squat),
+        developerNotes: value.developerNotes ? candid_some(value.developerNotes) : candid_none(),
+        shuttleProAgility: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.shuttleProAgility),
+        shuttle20yd: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.shuttle20yd),
+        shuttle60yd: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.shuttle60yd),
         makePublic: value.makePublic,
-        verticalJumpInches: value.verticalJumpInches ? candid_some(value.verticalJumpInches) : candid_none(),
-        athleteName: value.athleteName
+        handSize: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.handSize),
+        broadJump: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.broadJump),
+        seatedRow: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.seatedRow),
+        athleteName: value.athleteName,
+        armLength: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.armLength),
+        standingReach: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.standingReach),
+        bodyFatPercentage: to_candid_CombineMeasurement_n31(_uploadFile, _downloadFile, value.bodyFatPercentage)
     };
 }
-function to_candid_variant_n27(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Variant_Skipped_Late_Taken): {
+function to_candid_record_n32(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    verified: boolean;
+    value?: number;
+    equipmentUsed?: string;
+    notes?: string;
+    measurementType: string;
+    attemptNumber?: bigint;
+}): {
+    verified: boolean;
+    value: [] | [number];
+    equipmentUsed: [] | [string];
+    notes: [] | [string];
+    measurementType: string;
+    attemptNumber: [] | [bigint];
+} {
+    return {
+        verified: value.verified,
+        value: value.value ? candid_some(value.value) : candid_none(),
+        equipmentUsed: value.equipmentUsed ? candid_some(value.equipmentUsed) : candid_none(),
+        notes: value.notes ? candid_some(value.notes) : candid_none(),
+        measurementType: value.measurementType,
+        attemptNumber: value.attemptNumber ? candid_some(value.attemptNumber) : candid_none()
+    };
+}
+function to_candid_variant_n29(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Variant_Skipped_Late_Taken): {
     Skipped: null;
 } | {
     Late: null;

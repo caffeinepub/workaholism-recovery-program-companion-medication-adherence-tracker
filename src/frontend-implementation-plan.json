@@ -1,47 +1,114 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Ensure leaderboard displays all public entries from all users",
+  "title": "Comprehensive NFL Combine Statistics Tracking and Public Leaderboard",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Verify that the Published feed page displays all public combine entries from all authenticated users, not just the current user's entries",
+      "id": "REQ-5",
+      "summary": "Update CombineEntryForm to include input fields for all NFL Combine statistics with appropriate validation",
       "acceptanceCriteria": [
-        "The Published feed shows entries from all users who have made their entries public",
-        "Entries are not filtered by the current user's identity",
-        "Guest mode entries are excluded from the public feed since they lack stable authentication"
+        "Form includes labeled input fields for all standard NFL Combine drills and measurements",
+        "Each field validates numeric input within reasonable ranges for NFL Combine data",
+        "Form layout is organized logically grouping measurements and drills",
+        "All fields support optional entry so users can record partial combine results"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/combine/Published.tsx",
+          "path": "frontend/src/components/combine/CombineEntryForm.tsx",
           "operation": "modify",
-          "description": "Update the Published feed component to call the backend's getAllPublicCombineEntries function instead of filtering by current user. This ensures all public entries from all authenticated users are displayed. Remove any client-side filtering by user identity. The page already maps through entries and displays them as cards, so the main change is updating the data source to fetch all public entries rather than user-specific ones."
+          "description": "Add input fields for all NFL Combine statistics: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan. Organize the form into logical sections (measurements, speed drills, strength drills) with clear labels and units. Each field should accept optional numeric input with appropriate validation ranges matching the backend CombineMeasurement type structure."
         },
         {
-          "path": "frontend/src/hooks/useCombine.ts",
+          "path": "frontend/src/utils/combineValidation.ts",
           "operation": "modify",
-          "description": "Add or update a React Query hook useAllPublicCombineEntries that calls actor.getAllPublicCombineEntries() to fetch all public entries from the backend. Ensure the query is properly typed with CombineResult[] and includes appropriate error handling. This hook should be usable without authentication checks since public entries should be viewable by anyone."
+          "description": "Extend validation logic to include all NFL Combine statistics with realistic min/max ranges: 40-yard dash (3.5-7.0s), bench press reps (0-50), vertical jump (15-50 inches), broad jump (60-150 inches), 3-cone drill (6.0-9.0s), 20-yard shuttle (3.5-6.0s), 60-yard shuttle (10.0-14.0s), height (60-90 inches), weight (150-400 lbs), arm length (28-38 inches), hand size (7-12 inches), and wingspan (65-90 inches). Update parseOptionalNumber and validation helpers to support all new fields."
         }
       ]
     },
     {
-      "id": "REQ-3",
-      "summary": "Add sorting capability to the Published feed to display entries as a proper leaderboard, with options to sort by different metrics",
+      "id": "REQ-6",
+      "summary": "Display all tracked NFL Combine statistics in EntryDetail and PublicEntry views",
       "acceptanceCriteria": [
-        "Users can select which metric to sort by from a dropdown or tabs",
-        "Entries are ordered with best performances at the top",
-        "Default sort order is by most recent entry date"
+        "EntryDetail page renders all available combine statistics for an entry",
+        "PublicEntry page renders all available combine statistics for public entries",
+        "Display includes clear labels and units for each measurement",
+        "Missing/optional fields are handled gracefully without breaking the layout"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/combine/EntryDetail.tsx",
+          "operation": "modify",
+          "description": "Update the entry detail view to display all NFL Combine statistics including 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan. Group related measurements together (body measurements, speed drills, strength tests) with clear section headings. Show units for each metric and handle missing/optional values gracefully by either hiding them or showing 'Not recorded'."
+        },
+        {
+          "path": "frontend/src/pages/combine/PublicEntry.tsx",
+          "operation": "modify",
+          "description": "Update the public entry view to display all NFL Combine statistics with the same comprehensive display as EntryDetail. Ensure all measurements and drill results are rendered with proper labels, units, and graceful handling of missing data. Maintain consistency with EntryDetail presentation while adapting for public viewing context."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Enhance the Published page leaderboard to display usernames alongside each entry and rank all public entries numerically from best to worst",
+      "acceptanceCriteria": [
+        "Published page displays username for each public combine entry in the leaderboard",
+        "Entries are ranked numerically (1, 2, 3, etc.) based on performance in the currently selected metric",
+        "Ranking updates dynamically when the user changes the sort metric",
+        "Best performers appear at rank 1, with descending ranks for lower performers",
+        "Entries without data for the selected metric are handled gracefully (e.g., shown at the bottom or excluded from that metric's ranking)"
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/combine/Published.tsx",
           "operation": "modify",
-          "description": "Add a sorting UI (dropdown or tabs) above the entry list allowing users to select a metric to sort by: 40-yard dash, vertical jump, bench press reps, broad jump, 3-cone drill, 20-yard shuttle, and most recent (default). Implement client-side sorting logic that orders entries with best performances at the top (lowest times for speed drills, highest values for strength/jump metrics). Handle optional fields gracefully by placing entries without the selected metric at the bottom of the list. Update the UI to indicate current sort order and highlight the selected sort option."
+          "description": "Enhance the leaderboard to display numeric rankings (1, 2, 3, etc.) based on the selected sorting metric. Fetch and display the username for each entry by calling getUserProfile(entry.creator) from the backend. Add a rank column that updates dynamically when the sort metric changes. Handle entries without data for the selected metric by placing them at the bottom with a visual indicator (e.g., 'N/A' or '--'). Ensure rankings reflect best-to-worst performance with rank 1 being the top performer."
         },
         {
-          "path": "frontend/src/utils/combineSorting.ts",
-          "operation": "create",
-          "description": "Create a utility module with sorting functions for combine metrics. Export a sortCombineEntries function that takes an array of CombineResult and a sort key (metric name or 'recent'), returning a sorted array. For speed drills (dash40yd, threeConeDrill, shuttle20yd), sort ascending (lower is better). For strength/jump metrics (verticalJumpInches, broadJumpInches, benchPressReps), sort descending (higher is better). For 'recent', sort by timestamp descending. Handle optional fields by treating undefined/null values as worst performance for that metric."
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add a React Query hook for batch-fetching user profiles: useUserProfiles(principals: Principal[]). This hook should fetch multiple user profiles in parallel to efficiently populate usernames in the Published leaderboard. Include proper caching and error handling to avoid repeated network calls for the same users."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Update benchmark comparison logic to support all newly tracked NFL Combine statistics",
+      "acceptanceCriteria": [
+        "Benchmark thresholds are defined for all combine drills and measurements",
+        "BenchmarkComparison component displays appropriate performance levels for all tracked statistics",
+        "Benchmark data reflects realistic NFL Combine performance standards"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/combineBenchmarks.ts",
+          "operation": "modify",
+          "description": "Extend benchmark thresholds to include all NFL Combine statistics: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan. Define elite, above-average, average, and below-average levels for each metric based on realistic NFL Combine performance data. Update the comparison function to support all new drills and measurements with appropriate direction logic (lower is better for timed drills, higher is better for strength/jump metrics)."
+        },
+        {
+          "path": "frontend/src/components/combine/BenchmarkComparison.tsx",
+          "operation": "modify",
+          "description": "Update the component to handle and display benchmark comparisons for all newly tracked NFL Combine statistics. Ensure the component can render performance level indicators (elite, above-average, average, below-average) for all drills and measurements with consistent styling and clear labels."
+        }
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "summary": "Extend the guest mode localStorage implementation to support all newly tracked NFL Combine statistics",
+      "acceptanceCriteria": [
+        "Guest users can record all NFL Combine statistics in localStorage",
+        "Guest entries include all new measurement and drill fields",
+        "Guest mode combines entries persist across sessions with full data integrity"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/combineGuestStorage.ts",
+          "operation": "modify",
+          "description": "Update the guest storage schema to include all NFL Combine statistics matching the backend CombineMeasurement structure: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan. Ensure all CRUD operations (create, read, update, delete) handle the expanded data model while maintaining backward compatibility with existing guest entries. Update type definitions to match the backend interface for consistency."
+        },
+        {
+          "path": "frontend/src/hooks/useCombine.ts",
+          "operation": "modify",
+          "description": "Update the useCombine hooks to handle all newly tracked NFL Combine statistics for both authenticated and guest modes. Ensure saveCombineEntry, updateCombineEntry, and related mutations properly serialize and deserialize the expanded measurement fields. Verify that guest mode localStorage operations maintain feature parity with authenticated backend operations for all new statistics."
         }
       ]
     }

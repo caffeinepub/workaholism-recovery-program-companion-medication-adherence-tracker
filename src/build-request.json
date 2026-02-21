@@ -1,73 +1,126 @@
 {
   "kind": "build_request",
-  "title": "Ensure leaderboard displays all public entries from all users",
+  "title": "Comprehensive NFL Combine Statistics Tracking and Public Leaderboard",
   "projectName": "NFL Combine Tracker",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "Verify that the Published feed page (frontend/src/pages/combine/Published.tsx) displays all public combine entries from all authenticated users, not just the current user's entries",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "How to make sure the leaderboard is public and includes everyone that makes an entry?"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The Published feed shows entries from all users who have made their entries public",
-        "Entries are not filtered by the current user's identity",
-        "Guest mode entries are excluded from the public feed since they lack stable authentication"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "Verify that the backend listPublishedEntries function returns all public entries across all users without filtering by caller identity",
+      "id": "REQ-4",
+      "text": "Expand the backend data model to track all standard NFL Combine statistics for each entry, ensuring every measurement and drill result is captured: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-3"
         ],
         "quotes": [
-          "How to make sure the leaderboard is public and includes everyone that makes an entry?"
+          "Make sure the app tracks every single NFL combine statistic with every entry for every individual"
         ]
       },
       "acceptanceCriteria": [
-        "Backend returns all entries where isPublic is true",
-        "No filtering by caller principal",
-        "Results include athlete name and all performance data"
+        "Backend CombineEntry type includes fields for all standard NFL Combine measurements: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan",
+        "All drill and measurement fields accept optional numeric values to accommodate partial entries",
+        "Existing entries are preserved and can be migrated to include new fields"
       ]
     },
     {
-      "id": "REQ-3",
-      "text": "Add sorting capability to the Published feed to display entries as a proper leaderboard, with options to sort by different metrics (e.g., fastest 40-yard dash, highest vertical jump, most bench press reps)",
+      "id": "REQ-5",
+      "text": "Update the frontend CombineEntryForm to include input fields for all NFL Combine statistics: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan with appropriate validation",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-3"
         ],
         "quotes": [
-          "How to make sure the leaderboard is public"
+          "Make sure the app tracks every single NFL combine statistic with every entry for every individual"
         ]
       },
       "acceptanceCriteria": [
-        "Users can select which metric to sort by from a dropdown or tabs",
-        "Entries are ordered with best performances at the top",
-        "Default sort order is by most recent entry date"
+        "Form includes labeled input fields for all standard NFL Combine drills and measurements",
+        "Each field validates numeric input within reasonable ranges for NFL Combine data",
+        "Form layout is organized logically grouping measurements and drills",
+        "All fields support optional entry so users can record partial combine results"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Display all tracked NFL Combine statistics in the EntryDetail and PublicEntry views, showing every recorded measurement and drill result for the entry",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Make sure the app tracks every single NFL combine statistic with every entry for every individual"
+        ]
+      },
+      "acceptanceCriteria": [
+        "EntryDetail page renders all available combine statistics for an entry",
+        "PublicEntry page renders all available combine statistics for public entries",
+        "Display includes clear labels and units for each measurement",
+        "Missing/optional fields are handled gracefully without breaking the layout"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Enhance the Published page leaderboard to display usernames alongside each entry and rank all public entries numerically from best to worst based on the selected sorting metric",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "the public leaderboard (please make one) ranks all entries with usernames from best to worst in number rank"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Published page displays username for each public combine entry in the leaderboard",
+        "Entries are ranked numerically (1, 2, 3, etc.) based on performance in the currently selected metric",
+        "Ranking updates dynamically when the user changes the sort metric",
+        "Best performers appear at rank 1, with descending ranks for lower performers",
+        "Entries without data for the selected metric are handled gracefully (e.g., shown at the bottom or excluded from that metric's ranking)"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Update benchmark comparison logic to support all newly tracked NFL Combine statistics, providing performance level indicators (elite, above-average, average, below-average) for each drill and measurement",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Benchmark thresholds are defined for all combine drills and measurements",
+        "BenchmarkComparison component displays appropriate performance levels for all tracked statistics",
+        "Benchmark data reflects realistic NFL Combine performance standards"
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "text": "Extend the guest mode localStorage implementation to support all newly tracked NFL Combine statistics, ensuring feature parity between authenticated and guest users",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Guest users can record all NFL Combine statistics in localStorage",
+        "Guest entries include all new measurement and drill fields",
+        "Guest mode combines entries persist across sessions with full data integrity"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the useInternetIdentity hook or authentication logic",
-    "Maintain the existing CombineEntry type structure",
-    "Preserve the single-actor backend architecture"
+    "Preserve existing backend data model structure and add new fields without breaking existing entries",
+    "Maintain compatibility with guest mode localStorage for all new statistics",
+    "Ensure username privacy controls remain functional for public entries"
   ],
   "nonGoals": [
-    "Creating a new separate leaderboard page (enhance existing Published feed)",
-    "Adding filtering by position or combine date",
-    "Implementing real-time updates or live rankings"
+    "Implementing real-time leaderboard updates",
+    "Adding historical NFL Combine data from professional athletes",
+    "Creating position-specific benchmarks or filtering",
+    "Implementing social features like comments or likes on entries"
   ],
   "imageRequirements": {
     "required": [],

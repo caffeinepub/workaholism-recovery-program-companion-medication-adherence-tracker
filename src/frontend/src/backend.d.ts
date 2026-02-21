@@ -12,13 +12,13 @@ export interface CommitmentsPlan {
     atRiskActions: string;
     personalCommitments: string;
 }
-export interface CheckIn {
-    stressLevel: bigint;
-    mood: string;
-    timestamp: Time;
-    reflection: string;
-    workHours: bigint;
-    intention: string;
+export interface CombineMeasurement {
+    verified: boolean;
+    value?: number;
+    equipmentUsed?: string;
+    notes?: string;
+    measurementType: string;
+    attemptNumber?: bigint;
 }
 export interface RecoveryStep {
     id: bigint;
@@ -36,28 +36,47 @@ export interface Meeting {
 }
 export interface CombineResult {
     id: bigint;
+    bmi: CombineMeasurement;
+    weight: CombineMeasurement;
+    passedMedical: boolean;
+    height: CombineMeasurement;
+    powerClean: CombineMeasurement;
+    verticalJump: CombineMeasurement;
     creator: Principal;
-    dash10yd?: number;
-    dash20yd?: number;
-    dash40yd?: number;
-    heightInches?: bigint;
-    wingspanInches?: number;
-    threeConeDrill?: number;
-    handSizeInches?: number;
-    weightPounds?: bigint;
-    benchPressReps?: bigint;
-    broadJumpInches?: number;
-    shuttle20yd?: number;
+    dash10yd: CombineMeasurement;
+    dash20yd: CombineMeasurement;
+    dash40yd: CombineMeasurement;
+    wingspan: CombineMeasurement;
+    threeConeDrill: CombineMeasurement;
+    benchPressReps: CombineMeasurement;
+    squat: CombineMeasurement;
+    developerNotes?: string;
+    shuttleProAgility: CombineMeasurement;
+    shuttle20yd: CombineMeasurement;
     timestamp: Time;
+    shuttle60yd: CombineMeasurement;
     isPublic: boolean;
-    verticalJumpInches?: number;
+    handSize: CombineMeasurement;
+    broadJump: CombineMeasurement;
+    seatedRow: CombineMeasurement;
     athleteName: string;
+    armLength: CombineMeasurement;
+    standingReach: CombineMeasurement;
+    bodyFatPercentage: CombineMeasurement;
 }
 export interface EmergencyContact {
     relationship: string;
     name: string;
     notes: string;
     phone: string;
+}
+export interface CheckIn {
+    stressLevel: bigint;
+    mood: string;
+    timestamp: Time;
+    reflection: string;
+    workHours: bigint;
+    intention: string;
 }
 export interface Reflection {
     id: bigint;
@@ -130,20 +149,31 @@ export interface backendInterface {
     logDose(doseLog: DoseLog): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     saveCombineResult(resultInput: {
-        dash10yd?: number;
-        dash20yd?: number;
-        dash40yd?: number;
-        heightInches?: bigint;
-        wingspanInches?: number;
-        threeConeDrill?: number;
-        handSizeInches?: number;
-        weightPounds?: bigint;
-        benchPressReps?: bigint;
-        broadJumpInches?: number;
-        shuttle20yd?: number;
+        bmi: CombineMeasurement;
+        weight: CombineMeasurement;
+        passedMedical: boolean;
+        height: CombineMeasurement;
+        powerClean: CombineMeasurement;
+        verticalJump: CombineMeasurement;
+        dash10yd: CombineMeasurement;
+        dash20yd: CombineMeasurement;
+        dash40yd: CombineMeasurement;
+        wingspan: CombineMeasurement;
+        threeConeDrill: CombineMeasurement;
+        benchPressReps: CombineMeasurement;
+        squat: CombineMeasurement;
+        developerNotes?: string;
+        shuttleProAgility: CombineMeasurement;
+        shuttle20yd: CombineMeasurement;
+        shuttle60yd: CombineMeasurement;
         makePublic: boolean;
-        verticalJumpInches?: number;
+        handSize: CombineMeasurement;
+        broadJump: CombineMeasurement;
+        seatedRow: CombineMeasurement;
         athleteName: string;
+        armLength: CombineMeasurement;
+        standingReach: CombineMeasurement;
+        bodyFatPercentage: CombineMeasurement;
     }): Promise<CombineResult>;
     saveCommitmentsPlan(plan: CommitmentsPlan): Promise<void>;
     saveReflection(reflection: Reflection): Promise<void>;

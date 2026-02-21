@@ -53,6 +53,98 @@ export const BENCHMARKS: Record<string, Benchmark> = {
     unit: 'seconds',
     lowerIsBetter: true,
   },
+  shuttle60yd: {
+    label: '60-Yard Shuttle',
+    elite: 11.0,
+    good: 11.5,
+    average: 12.0,
+    unit: 'seconds',
+    lowerIsBetter: true,
+  },
+  shuttleProAgility: {
+    label: 'Pro Agility Shuttle',
+    elite: 4.0,
+    good: 4.2,
+    average: 4.4,
+    unit: 'seconds',
+    lowerIsBetter: true,
+  },
+  dash10yd: {
+    label: '10-Yard Split',
+    elite: 1.5,
+    good: 1.6,
+    average: 1.7,
+    unit: 'seconds',
+    lowerIsBetter: true,
+  },
+  dash20yd: {
+    label: '20-Yard Split',
+    elite: 2.5,
+    good: 2.6,
+    average: 2.7,
+    unit: 'seconds',
+    lowerIsBetter: true,
+  },
+  heightInches: {
+    label: 'Height',
+    unit: 'inches',
+  },
+  weightPounds: {
+    label: 'Weight',
+    unit: 'pounds',
+  },
+  wingspanInches: {
+    label: 'Wingspan',
+    unit: 'inches',
+  },
+  handSizeInches: {
+    label: 'Hand Size',
+    elite: 10.0,
+    good: 9.5,
+    average: 9.0,
+    unit: 'inches',
+  },
+  armLength: {
+    label: 'Arm Length',
+    unit: 'inches',
+  },
+  bodyFatPercentage: {
+    label: 'Body Fat',
+    elite: 8,
+    good: 12,
+    average: 15,
+    unit: '%',
+    lowerIsBetter: true,
+  },
+  bmi: {
+    label: 'BMI',
+    unit: '',
+  },
+  standingReach: {
+    label: 'Standing Reach',
+    unit: 'inches',
+  },
+  seatedRow: {
+    label: 'Seated Row',
+    elite: 350,
+    good: 300,
+    average: 250,
+    unit: 'lbs',
+  },
+  squat: {
+    label: 'Squat',
+    elite: 500,
+    good: 450,
+    average: 400,
+    unit: 'lbs',
+  },
+  powerClean: {
+    label: 'Power Clean',
+    elite: 350,
+    good: 300,
+    average: 250,
+    unit: 'lbs',
+  },
 };
 
 export type ComparisonLevel = 'elite' | 'above-average' | 'average' | 'below-average';
@@ -65,7 +157,7 @@ export interface ComparisonResult {
 
 export function compareToBenchmark(drillKey: string, value: number): ComparisonResult | null {
   const benchmark = BENCHMARKS[drillKey];
-  if (!benchmark) return null;
+  if (!benchmark || !benchmark.elite) return null;
 
   const { elite, good, average, lowerIsBetter } = benchmark;
 

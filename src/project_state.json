@@ -1,44 +1,31 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "NFL Combine Tracker with payment-gated access system",
+  "summary": "NFL Combine Tracker with manual Zelle payment verification system and admin access control",
   "architectural_notes": [
-    "Payment-gated access system with user payment status tracking",
-    "Separate /admin route for user management",
-    "Access control checks user payment status before granting app access"
+    "Manual payment verification workflow via Zelle - admin toggles users to 'Paid' status after receiving payment",
+    "Admin-only access control at /admin route with user management interface",
+    "Payment gate blocks sign-in functionality until user marked as 'Paid' by admin",
+    "Internet Identity authentication integrated with payment status checks"
   ],
-  "known_issues": [],
-  "isFixRequest": false,
+  "known_issues": [
+    "Admin page showing 'Access denied' error for authenticated admin user - authorization logic not properly registering or verifying admin Principal ID"
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-create-a-separate-admin-page-at-admin-route-that-displays-a-list-of-all-users-who-have-attempted-to-sign-in-showing-their-username-principal-and-current-payment-status",
-      "title": "Create a separate admin page at /admin route that displays a list of all users who have attempted to sign in, showing their username/principal and current payment status",
+      "id": "feature-fix-admin-page-authorization-to-properly-register-and-verify-the-admin-principal-id-the-first-user-to-visit-admin-should-be-stored-as-the-authorized-admin-and-all-subsequent-visits-should-validate-against-this-stored-principal-ensure-the-backend-correctly-persists-the-admin-principal-and-the-frontend-properly-waits-for-authentication-before-checking-admin-status",
+      "title": "Fix admin page authorization to properly register and verify the admin Principal ID. The first user to visit /admin should be stored as the authorized admin, and all subsequent visits should validate against this stored Principal. Ensure the backend correctly persists the admin Principal and the frontend properly waits for authentication before checking admin status.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-toggle-controls-on-the-admin-page-to-mark-users-as-paid-or-unpaid-with-immediate-persistence-to-backend-state",
-      "title": "Add toggle controls on the admin page to mark users as paid or unpaid, with immediate persistence to backend state",
+      "id": "feature-add-user-management-interface-to-the-admin-page-that-displays-all-registered-users-with-their-current-paid-status-provide-toggle-controls-for-each-user-that-allow-the-admin-to-mark-users-as-paid-or-unpaid-this-enables-manual-zelle-payment-verification-workflow-where-the-admin-receives-zelle-payment-then-toggles-the-user-to-paid-status-after-which-the-user-can-sign-in",
+      "title": "Add user management interface to the admin page that displays all registered users with their current 'Paid' status. Provide toggle controls for each user that allow the admin to mark users as 'Paid' or 'Unpaid'. This enables manual Zelle payment verification workflow where the admin receives Zelle payment, then toggles the user to 'Paid' status, after which the user can sign in.",
       "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-block-unpaid-users-from-accessing-the-app-after-internet-identity-authentication-showing-the-message-please-contact-admin-for-access-thenewbruce1-on-ig-or-iphone-txt-3527348440",
-      "title": "Block unpaid users from accessing the app after Internet Identity authentication, showing the message: 'Please contact admin for access @thenewbruce1 on IG or iPhone 📱 txt 3527348440'",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-modify-appshell-or-authentication-flow-to-enforce-payment-check-on-every-app-load-redirecting-unpaid-users-to-the-blocked-access-message",
-      "title": "Modify AppShell or authentication flow to enforce payment check on every app load, redirecting unpaid users to the blocked access message",
-      "reqIds": [
-        "REQ-5"
+        "REQ-3"
       ],
       "version": 1
     }
@@ -46,33 +33,33 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add /admin page to manage user payment status",
+      "summary": "Fix admin page access - user unable to access /admin despite proper authentication",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Block unpaid users at sign-in with custom contact message",
+      "summary": "Implement payment gate - users cannot sign in without 'Paid' status",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Create admin interface with list of users and paid/unpaid toggles",
+      "summary": "Add admin page user management with toggle controls for 'Paid' status",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-4",
-      "summary": "Implement access control so only paid users can use app after authentication",
+      "summary": "Show error message 'No sign in without up to date payment' for unpaid users attempting sign-in",
       "reqIds": [],
       "status": "pending"
     },
     {
-      "id": "AR-7",
-      "summary": "Implement backend payment status storage and validation that tracks which users are marked as paid, defaulting new users to unpaid status",
+      "id": "AR-6",
+      "summary": "Block all sign-in functionality for users who do not have 'Paid' status. Users attempting to sign in without being marked as 'Paid' by the admin must see the error message: 'No sign in without up to date payment'. The sign-in button or Internet Identity flow should only be available to users who have been toggled to 'Paid' status in the admin panel.",
       "reqIds": [
-        "REQ-3"
+        "REQ-2"
       ],
       "status": "pending"
     }

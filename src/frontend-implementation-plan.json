@@ -1,100 +1,83 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add payment-gated access control with admin management",
+  "title": "Fix admin access and implement manual payment gate with Zelle verification",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Create admin page at /admin route displaying all users with their username and payment status",
+      "summary": "Fix admin page authorization to properly register and verify the admin Principal ID",
       "acceptanceCriteria": [
-        "Admin page is accessible at /admin route",
-        "Page displays all users who have signed in with Internet Identity",
-        "Each user entry shows username and current payment status (paid/unpaid)"
+        "Admin can successfully access /admin page after signing in with Internet Identity",
+        "First user to visit /admin is automatically registered as the authorized admin",
+        "Admin Principal ID is correctly stored in backend state",
+        "Authorization check properly validates current user's Principal against stored admin Principal",
+        "No 'Access denied' error for authenticated admin user"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/AdminPayment.tsx",
-          "operation": "create",
-          "description": "Create admin payment management page at /admin route that fetches all users via adminListAllUsers() backend method. Display user list in a table showing Principal (initially), username from CallerUserProfile, and payment status (hasPaid boolean). Use the authorization component's admin-only access control to protect this page. Include loading states and error handling for unauthorized access."
+          "path": "frontend/src/pages/Admin.tsx",
+          "operation": "modify",
+          "description": "Update admin page to properly wait for authentication and actor initialization before checking admin status. Add loading state that shows spinner while authentication is in progress. Only perform admin check after identity and actor are both ready. Display clear error messaging if admin check fails after authentication completes."
         },
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Add route configuration for /admin path pointing to AdminPayment component. Ensure the route is protected by checking isCallerAdmin() before rendering the admin page. Wire the new admin route into the existing router setup alongside the existing /admin route for subscription management."
-        },
-        {
-          "path": "frontend/src/components/layout/AppShell.tsx",
-          "operation": "modify",
-          "description": "Add navigation link to /admin payment management page in the header/sidebar navigation, visible only when user is authenticated and has admin role. Use isCallerAdmin() query to conditionally show the admin navigation item."
+          "description": "Add useIsAdmin hook that checks admin status using the isCallerAdmin backend method. Hook should only enable the query when both actor and identity are available. Return loading states that account for both actor initialization and query execution."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Add toggle controls on admin page to mark users as paid/unpaid with immediate backend persistence",
+      "summary": "Block all sign-in functionality for users who do not have 'Paid' status",
       "acceptanceCriteria": [
-        "Each user has a toggle switch or checkbox to change payment status",
-        "Toggling updates the backend payment status immediately",
-        "UI reflects current payment status accurately"
+        "Users without 'Paid' status cannot initiate Internet Identity sign-in flow",
+        "Error message 'No sign in without up to date payment' is displayed to unpaid users attempting sign-in",
+        "Only users marked as 'Paid' in the admin panel can successfully sign in",
+        "Payment status check occurs before allowing authentication flow to proceed"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/auth/LoginButton.tsx",
+          "operation": "modify",
+          "description": "Add payment status check before allowing login. Before initiating Internet Identity flow, check if the current principal (if already cached/known) has payment status. If attempting to login and payment check returns false, display error toast/alert with exact message: 'No sign in without up to date payment' and prevent the login flow from proceeding. Handle the case where payment status cannot be determined pre-authentication by checking immediately after successful authentication and logging user out if they are not paid."
+        },
+        {
+          "path": "frontend/src/hooks/useInternetIdentity.ts",
+          "operation": "modify",
+          "description": "Add payment validation hook into the authentication flow. After successful Internet Identity authentication, immediately check getUserPaymentStatus backend method. If user is not paid, clear the authentication state and show error message 'No sign in without up to date payment'. Ensure this check happens before any other queries or data fetching occurs."
+        },
+        {
+          "path": "frontend/src/components/layout/AppShell.tsx",
+          "operation": "modify",
+          "description": "Update the payment gate logic to enforce payment status check immediately after authentication. If authenticated user lacks payment status, display PaymentGate component and prevent access to any authenticated routes. Ensure payment status is rechecked after any login attempt."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Add user management interface to the admin page that displays all registered users with their current 'Paid' status",
+      "acceptanceCriteria": [
+        "Admin page displays a list of all registered users",
+        "Each user entry shows their current 'Paid' status (Paid/Unpaid)",
+        "Toggle control is available for each user to switch between Paid and Unpaid states",
+        "Changes to payment status are immediately persisted to backend",
+        "Payment status changes take effect immediately for sign-in access control"
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/AdminPayment.tsx",
           "operation": "modify",
-          "description": "Add toggle switch UI component (using shadcn/ui Switch) for each user row that calls togglePaymentStatus(user: Principal) backend method on change. Implement optimistic UI updates and query invalidation to refresh user list after toggle. Show loading state on the specific toggle being changed and handle errors gracefully with toast notifications."
-        },
-        {
-          "path": "frontend/src/hooks/usePaymentAdmin.ts",
-          "operation": "create",
-          "description": "Create custom React Query hooks for payment admin operations including useAdminListAllUsers() to fetch user list with payment status, and useTogglePaymentStatus() mutation hook that calls backend togglePaymentStatus() and invalidates the user list query. Include proper error handling and loading states."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Block unpaid users from accessing the app after authentication, showing contact message",
-      "acceptanceCriteria": [
-        "After successful Internet Identity authentication, check user payment status",
-        "If user is marked unpaid, display the exact contact message",
-        "Unpaid users cannot access any app features beyond the landing page",
-        "Paid users proceed normally to the app"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/auth/PaymentGate.tsx",
-          "operation": "create",
-          "description": "Create PaymentGate component that checks authenticated user's payment status via getUserPaymentStatus() or from CallerUserProfile.hasPaid. If hasPaid is false, render a centered card/modal with the exact message: 'Please contact admin for access @thenewbruce1 on IG or iPhone 📱 txt 3527348440'. Include a logout button and prevent any app navigation. Use styling consistent with the existing theme and ensure the message is clearly visible on both light and dark modes."
-        },
-        {
-          "path": "frontend/src/components/layout/AppShell.tsx",
-          "operation": "modify",
-          "description": "Integrate PaymentGate component into AppShell after authentication check but before rendering main content. If user is authenticated and payment status is unpaid (hasPaid=false), render PaymentGate instead of children. Ensure payment status is loaded before deciding to show PaymentGate to avoid flashing content. Use the CallerUserProfile from getCallerUserProfile() to check hasPaid status."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Ensure useGetCallerUserProfile hook properly exposes hasPaid field from CallerUserProfile type. Add a derived hook or utility to specifically check payment gate status (isPaymentBlocked) based on authentication and hasPaid value for cleaner consumption in AppShell."
-        }
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "summary": "Enforce payment check on every app load for all protected routes",
-      "acceptanceCriteria": [
-        "Payment status is checked when user attempts to access protected routes",
-        "Unpaid users see the contact message instead of app content",
-        "Payment check happens consistently across all protected routes"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/layout/AppShell.tsx",
-          "operation": "modify",
-          "description": "Ensure AppShell enforces payment gate check on every render when user is authenticated. The payment status check via CallerUserProfile should be cached by React Query but revalidated on mount. Position PaymentGate rendering before any route-specific content so it blocks all protected routes uniformly. Add loading state while fetching payment status to prevent content flash."
+          "description": "Enhance the existing admin payment page to display all users with their payment status in a clear table/list format. Show user principal (or name if profile exists), current hasPaid boolean status as a badge (Paid/Unpaid), and a toggle switch for each user. Wire the toggle to call the togglePaymentStatus backend method from usePaymentAdmin hook. Add optimistic updates and refresh the user list after successful toggle. Include loading states during toggle operations and error handling with user-friendly messages."
         },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Review route definitions to ensure all protected routes (dashboard, history, new entry, etc.) are wrapped by AppShell which enforces the payment gate. Landing page route should remain accessible without payment check. Admin routes should only check admin role, not payment status (admins bypass payment gate)."
+          "description": "Ensure the /admin/payment route is properly registered and accessible from the admin navigation. Verify that the route is protected by admin authorization check and redirects unauthorized users to the dashboard."
+        },
+        {
+          "path": "frontend/src/pages/Admin.tsx",
+          "operation": "modify",
+          "description": "Add navigation link or button to the payment management page (/admin/payment) from the main admin panel. Label it clearly as 'Payment Management' or 'User Payment Status' so admins can easily access the user payment toggle interface."
         }
       ]
     }

@@ -251,9 +251,11 @@ export interface backendInterface {
     }>;
     getUserPaymentStatus(user: Principal): Promise<boolean>;
     getUserProfile(user: Principal): Promise<CallerUserProfile | null>;
+    isAdminCaller(): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
     logCheckIn(checkIn: CheckIn): Promise<void>;
     logDose(doseLog: DoseLog): Promise<void>;
+    registerAdmin(adminToken: string, userProvidedToken: string): Promise<void>;
     saveCallerUserProfile(profile: CallerUserProfile): Promise<void>;
     saveCombineResult(resultInput: {
         bmi: CombineMeasurement;
@@ -649,6 +651,20 @@ export class Backend implements backendInterface {
             return from_candid_opt_n18(this._uploadFile, this._downloadFile, result);
         }
     }
+    async isAdminCaller(): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.isAdminCaller();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.isAdminCaller();
+            return result;
+        }
+    }
     async isCallerAdmin(): Promise<boolean> {
         if (this.processError) {
             try {
@@ -688,6 +704,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.logDose(to_candid_DoseLog_n34(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
+    async registerAdmin(arg0: string, arg1: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.registerAdmin(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.registerAdmin(arg0, arg1);
             return result;
         }
     }

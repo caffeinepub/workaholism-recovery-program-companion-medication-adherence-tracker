@@ -1,11 +1,12 @@
 import { useState } from 'react';
+import { Link } from '@tanstack/react-router';
 import { useAdminListAllUsers, useAdminSetUserSubscription } from '../hooks/useSubscription';
-import { useGetCallerUserProfile } from '../hooks/useQueries';
+import { useIsAdmin } from '../hooks/useQueries';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Shield, CheckCircle, Clock, XCircle, Loader2 } from 'lucide-react';
+import { Shield, CheckCircle, Clock, XCircle, Loader2, DollarSign, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import type { SubscriptionStatus } from '../backend';
 
@@ -57,12 +58,29 @@ function getStatusBadge(status: SubscriptionStatus) {
 }
 
 export default function Admin() {
-  const { data: currentProfile } = useGetCallerUserProfile();
-  const { data: users, isLoading } = useAdminListAllUsers();
+  const { data: isAdmin, isLoading: adminCheckLoading } = useIsAdmin();
+  const { data: users, isLoading: usersLoading } = useAdminListAllUsers();
   const setSubscription = useAdminSetUserSubscription();
   const [processingUser, setProcessingUser] = useState<string | null>(null);
 
-  if (!currentProfile?.isAdmin) {
+  // Show loading while checking admin status
+  if (adminCheckLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Card className="max-w-md">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center gap-4">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-muted-foreground">Verifying admin access...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show access denied if not admin
+  if (!isAdmin) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Card className="max-w-md">
@@ -122,12 +140,32 @@ export default function Admin() {
         <p className="text-muted-foreground">Manage user subscriptions and access</p>
       </div>
 
+      <Card className="bg-primary/5 border-primary/20">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-lg mb-1">Payment Management</h3>
+              <p className="text-sm text-muted-foreground">
+                Manage user payment status and toggle access for Zelle payments
+              </p>
+            </div>
+            <Button asChild>
+              <Link to="/admin/payment" className="gap-2">
+                <DollarSign className="h-4 w-4" />
+                Payment Admin
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>User Subscriptions</CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
+          {usersLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>

@@ -168,9 +168,11 @@ export interface backendInterface {
     }>;
     getUserPaymentStatus(user: Principal): Promise<boolean>;
     getUserProfile(user: Principal): Promise<CallerUserProfile | null>;
+    isAdminCaller(): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
     logCheckIn(checkIn: CheckIn): Promise<void>;
     logDose(doseLog: DoseLog): Promise<void>;
+    registerAdmin(adminToken: string, userProvidedToken: string): Promise<void>;
     saveCallerUserProfile(profile: CallerUserProfile): Promise<void>;
     saveCombineResult(resultInput: {
         bmi: CombineMeasurement;

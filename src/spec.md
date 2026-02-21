@@ -1,13 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Add payment-gated access control with admin management to restrict app access to paid users only.
+**Goal:** Fix admin authorization and implement manual payment gate with Zelle verification workflow.
 
 **Planned changes:**
-- Create an admin page at /admin that displays all users with their payment status
-- Add toggle controls on admin page to mark users as paid or unpaid
-- Implement backend storage for user payment status (defaults to unpaid for new users)
-- Block unpaid users after Internet Identity authentication with contact message
-- Enforce payment check on every app load for protected routes
+- Fix admin page authorization to properly register and verify the admin Principal ID on first visit
+- Block sign-in functionality for users without 'Paid' status and display error message "No sign in without up to date payment"
+- Add user management interface to admin page showing all registered users with toggle controls to mark users as Paid/Unpaid
 
-**User-visible outcome:** Unpaid users will be blocked after signing in with a message to contact the admin. Admins can view all users and toggle their payment status to grant or revoke access.
+**User-visible outcome:** Admin can access the admin panel after signing in, manually toggle users to 'Paid' status after receiving Zelle payments, and only users marked as 'Paid' can sign in to the application.

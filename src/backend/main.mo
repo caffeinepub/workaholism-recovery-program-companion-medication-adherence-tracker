@@ -5,12 +5,11 @@ import Text "mo:core/Text";
 import Map "mo:core/Map";
 import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
-import Migration "migration";
+
 import Principal "mo:core/Principal";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
-(with migration = Migration.run)
 actor {
   public type RecoveryStep = {
     id : Nat;
@@ -166,36 +165,75 @@ actor {
     };
   };
 
+  // Helper function to check if user has paid status
+  private func checkUserHasPaid(user : Principal) : Bool {
+    switch (userProfiles.get(user)) {
+      case (?profile) { profile.hasPaid };
+      case (null) { false };
+    };
+  };
+
+  // Helper function to verify payment status before allowing user operations
+  private func requirePaidStatus(caller : Principal) {
+    if (not checkUserHasPaid(caller)) {
+      Runtime.trap("No sign in without up to date payment");
+    };
+  };
+
   public query ({ caller }) func getCallerUserProfile() : async ?CallerUserProfile {
+    if (caller.isAnonymous()) {
+      return null;
+    };
+
+    // Check payment status before allowing profile access
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access profiles");
     };
+
     userProfiles.get(caller);
   };
 
   public query ({ caller }) func getUserProfile(user : Principal) : async ?CallerUserProfile {
+    // Admin can view any profile, users can only view their own
     if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: Can only view your own profile");
     };
+
+    // Non-admin users must have paid status
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     userProfiles.get(user);
   };
 
   public shared ({ caller }) func saveCallerUserProfile(profile : CallerUserProfile) : async () {
+    // Check payment status before allowing profile save (except for admin)
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save profiles");
     };
 
-    // Preserve existing payment status and admin status
+    // Preserve existing payment status and admin status - users cannot modify these
     let existingProfile = userProfiles.get(caller);
     let existingHasPaid = switch (existingProfile) {
       case (?existing) { existing.hasPaid };
       case (null) { false };
     };
 
+    let isCallerAdmin = AccessControl.isAdmin(accessControlState, caller);
+
     let updatedProfile = {
       profile with
       subscriptionStatus = #Pending;
-      isAdmin = false;
+      isAdmin = isCallerAdmin;
       hasPaid = existingHasPaid;
     };
 
@@ -203,6 +241,7 @@ actor {
   };
 
   public shared ({ caller }) func togglePaymentStatus(user : Principal) : async Bool {
+    // Use AccessControl for admin verification
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can toggle payment status");
     };
@@ -220,23 +259,23 @@ actor {
   };
 
   public query ({ caller }) func getUserPaymentStatus(user : Principal) : async Bool {
-    // Only admins can check other users' payment status
-    // Users can only check their own payment status
-    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
-      Runtime.trap("Unauthorized: Can only view your own payment status");
+    // Admin can check any user's payment status
+    if (AccessControl.isAdmin(accessControlState, caller)) {
+      return checkUserHasPaid(user);
     };
 
-    switch (userProfiles.get(user)) {
-      case (?profile) { profile.hasPaid };
-      case (null) {
-        false;
-      };
+    // Users can only check their own payment status
+    if (caller != user) {
+      Runtime.trap("Unauthorized: Can only check your own payment status");
     };
+
+    checkUserHasPaid(user);
   };
 
   public shared ({ caller }) func adminSetUserSubscription(user : Principal, durationDays : Nat) : async () {
+    // Use AccessControl for admin verification
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can set user subscriptions");
+      Runtime.trap("Unauthorized: Only admins can set subscriptions");
     };
 
     let userProfile = switch (userProfiles.get(user)) {
@@ -263,6 +302,7 @@ actor {
   };
 
   public query ({ caller }) func adminListAllUsers() : async [UserProfileWithPrincipal] {
+    // Use AccessControl for admin verification
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can list all users");
     };
@@ -282,6 +322,15 @@ actor {
   };
 
   public query ({ caller }) func checkSubscriptionActive() : async Bool {
+    // Check payment status before allowing subscription check
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can check subscription status");
+    };
+
     switch (userProfiles.get(caller)) {
       case (null) { false };
       case (?profile) {
@@ -297,6 +346,10 @@ actor {
   };
 
   public shared ({ caller }) func saveCommitmentsPlan(plan : CommitmentsPlan) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save commitments plans");
     };
@@ -304,6 +357,10 @@ actor {
   };
 
   public query ({ caller }) func getCommitmentsPlan() : async ?CommitmentsPlan {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access commitments plans");
     };
@@ -311,6 +368,10 @@ actor {
   };
 
   public query ({ caller }) func getAllRecoverySteps() : async [RecoveryStep] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access recovery steps");
     };
@@ -321,6 +382,10 @@ actor {
   };
 
   public shared ({ caller }) func saveReflection(reflection : Reflection) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save reflections");
     };
@@ -333,6 +398,10 @@ actor {
   };
 
   public query ({ caller }) func getReflections() : async [Reflection] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access reflections");
     };
@@ -343,6 +412,10 @@ actor {
   };
 
   public shared ({ caller }) func logCheckIn(checkIn : CheckIn) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can log check-ins");
     };
@@ -355,6 +428,10 @@ actor {
   };
 
   public query ({ caller }) func getCheckIns() : async [CheckIn] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access check-ins");
     };
@@ -365,6 +442,10 @@ actor {
   };
 
   public shared ({ caller }) func addMedication(medicine : Medication) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can add medications");
     };
@@ -377,6 +458,10 @@ actor {
   };
 
   public query ({ caller }) func getMedications() : async [Medication] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access medications");
     };
@@ -387,6 +472,10 @@ actor {
   };
 
   public shared ({ caller }) func logDose(doseLog : DoseLog) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can log doses");
     };
@@ -399,6 +488,10 @@ actor {
   };
 
   public query ({ caller }) func getDoseLogs() : async [DoseLog] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access dose logs");
     };
@@ -409,6 +502,10 @@ actor {
   };
 
   public shared ({ caller }) func addMeeting(meeting : Meeting) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can add meetings");
     };
@@ -421,6 +518,10 @@ actor {
   };
 
   public query ({ caller }) func getMeetings() : async [Meeting] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access meetings");
     };
@@ -431,6 +532,10 @@ actor {
   };
 
   public shared ({ caller }) func addEmergencyContact(contact : EmergencyContact) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can add emergency contacts");
     };
@@ -443,6 +548,10 @@ actor {
   };
 
   public query ({ caller }) func getEmergencyContacts() : async [EmergencyContact] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access emergency contacts");
     };
@@ -462,6 +571,10 @@ actor {
     emergencyContacts : [EmergencyContact];
     commitmentsPlan : ?CommitmentsPlan;
   } {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can export their data");
     };
@@ -525,6 +638,10 @@ actor {
     passedMedical : Bool;
     makePublic : Bool;
   }) : async CombineResult {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can record combine results");
     };
@@ -600,6 +717,14 @@ actor {
   };
 
   public query ({ caller }) func getUserCombineResults(user : Principal) : async [CombineResult] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can access combine results");
+    };
+
     switch (userProfiles.get(caller)) {
       case (?profile) {
         switch (profile.subscriptionStatus) {
@@ -633,6 +758,14 @@ actor {
   };
 
   public query ({ caller }) func getCombineResultById(id : Nat) : async ?CombineResult {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can access combine results");
+    };
+
     switch (userProfiles.get(caller)) {
       case (?profile) {
         switch (profile.subscriptionStatus) {
@@ -672,6 +805,14 @@ actor {
   };
 
   public query ({ caller }) func getAllPublicCombineEntries() : async [CombineResult] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can access combine results");
+    };
+
     switch (userProfiles.get(caller)) {
       case (?profile) {
         switch (profile.subscriptionStatus) {
@@ -697,6 +838,10 @@ actor {
   };
 
   public shared ({ caller }) func deleteCombineResult(id : Nat) : async Bool {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can delete combine results");
     };
@@ -741,6 +886,10 @@ actor {
   };
 
   public shared ({ caller }) func toggleCombinePublicState(id : Nat) : async Bool {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      requirePaidStatus(caller);
+    };
+
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can modify combine results");
     };
@@ -791,5 +940,36 @@ actor {
         true;
       };
     };
+  };
+
+  public shared ({ caller }) func registerAdmin(adminToken : Text, userProvidedToken : Text) : async () {
+    // Initialize AccessControl with this caller as admin
+    // Persistent Storage: Keeps the admin Principal persistent until it is explicitly revoked or changed via the backend
+    AccessControl.initialize(accessControlState, caller, adminToken, userProvidedToken);
+
+    // Create or update admin profile
+    let existingProfile = userProfiles.get(caller);
+    let adminProfile = switch (existingProfile) {
+      case (?profile) {
+        {
+          profile with
+          isAdmin = true;
+          hasPaid = true;
+        };
+      };
+      case (null) {
+        {
+          name = "";
+          subscriptionStatus = #Active(Time.now() + 365 * 86400_000_000_000);
+          isAdmin = true;
+          hasPaid = true;
+        };
+      };
+    };
+    userProfiles.add(caller, adminProfile);
+  };
+
+  public query ({ caller }) func isAdminCaller() : async Bool {
+    AccessControl.isAdmin(accessControlState, caller);
   };
 };

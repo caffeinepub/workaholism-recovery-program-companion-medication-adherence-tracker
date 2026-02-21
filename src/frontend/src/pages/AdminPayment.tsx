@@ -1,35 +1,116 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import { useAdminListAllUsers, useTogglePaymentStatus } from '../hooks/usePaymentAdmin';
-import { useGetCallerUserProfile } from '../hooks/useQueries';
+import { useActor } from '../hooks/useActor';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Shield, Loader2, DollarSign, CheckCircle, XCircle } from 'lucide-react';
+import { Shield, Loader2, DollarSign, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminPayment() {
-  const { data: currentProfile } = useGetCallerUserProfile();
-  const { data: users, isLoading } = useAdminListAllUsers();
+  const navigate = useNavigate();
+  const { actor, isFetching: actorFetching } = useActor();
+  const { data: users, isLoading: usersLoading } = useAdminListAllUsers();
   const togglePayment = useTogglePaymentStatus();
   const [processingUser, setProcessingUser] = useState<string | null>(null);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
 
-  if (!currentProfile?.isAdmin) {
+  // Check admin authorization on mount
+  useEffect(() => {
+    const checkAuthorization = async () => {
+      if (!actor || actorFetching) {
+        return;
+      }
+
+      setAuthLoading(true);
+      setAuthError(null);
+
+      try {
+        const isAdmin = await actor.isAdminCaller();
+        setIsAuthorized(isAdmin);
+
+        if (!isAdmin) {
+          // Show unauthorized message briefly before redirect
+          setTimeout(() => {
+            navigate({ to: '/dashboard' });
+          }, 2000);
+        }
+      } catch (error) {
+        console.error('Authorization check failed:', error);
+        setAuthError('Failed to verify admin status');
+        setIsAuthorized(false);
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+
+    checkAuthorization();
+  }, [actor, actorFetching, navigate]);
+
+  // Show loading state while checking authorization
+  if (authLoading || actorFetching) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Card className="max-w-md">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center gap-4">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-muted-foreground">Verifying admin access...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show error state if authorization check failed
+  if (authError) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Card className="max-w-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-destructive">
+              <AlertTriangle className="h-5 w-5" />
+              Authorization Error
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">{authError}</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show unauthorized message and redirect
+  if (isAuthorized === false) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Card className="max-w-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-destructive">
               <Shield className="h-5 w-5" />
-              Access Denied
+              Unauthorized
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">You do not have permission to access the payment admin panel.</p>
+            <p className="text-muted-foreground mb-4">
+              You do not have permission to access the payment admin panel.
+            </p>
+            <p className="text-sm text-muted-foreground">Redirecting to dashboard...</p>
           </CardContent>
         </Card>
       </div>
     );
+  }
+
+  // Only render admin content if authorized
+  if (!isAuthorized) {
+    return null;
   }
 
   const handleTogglePayment = async (userPrincipal: string, currentStatus: boolean) => {
@@ -112,7 +193,7 @@ export default function AdminPayment() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
+          {usersLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>

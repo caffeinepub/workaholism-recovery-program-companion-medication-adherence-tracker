@@ -38,51 +38,59 @@ export function useSaveCallerUserProfile() {
   });
 }
 
-export function useGetUserProfile(principal: Principal) {
-  const { actor, isFetching } = useActor();
+export function useGetUserProfile(user: Principal) {
+  const { actor, isFetching: actorFetching } = useActor();
 
   return useQuery<CallerUserProfile | null>({
-    queryKey: ['userProfile', principal.toString()],
+    queryKey: ['userProfile', user.toString()],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
-      return actor.getUserProfile(principal);
+      return actor.getUserProfile(user);
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !actorFetching,
     retry: false,
   });
 }
 
-export function useGetUserProfiles(principals: Principal[]) {
-  const { actor, isFetching } = useActor();
+export function useBatchGetUserProfiles(principals: Principal[]) {
+  const { actor, isFetching: actorFetching } = useActor();
 
   return useQuery<Map<string, CallerUserProfile | null>>({
     queryKey: ['userProfiles', principals.map((p) => p.toString()).sort()],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
-      const profileMap = new Map<string, CallerUserProfile | null>();
+      const results = new Map<string, CallerUserProfile | null>();
       await Promise.all(
         principals.map(async (principal) => {
           try {
             const profile = await actor.getUserProfile(principal);
-            profileMap.set(principal.toString(), profile);
+            results.set(principal.toString(), profile);
           } catch (error) {
             console.error(`Failed to fetch profile for ${principal.toString()}:`, error);
-            profileMap.set(principal.toString(), null);
+            results.set(principal.toString(), null);
           }
         })
       );
-      return profileMap;
+      return results;
     },
-    enabled: !!actor && !isFetching && principals.length > 0,
+    enabled: !!actor && !actorFetching && principals.length > 0,
     retry: false,
   });
 }
 
-export function useIsPaymentBlocked() {
-  const { data: userProfile, isLoading, isFetched } = useGetCallerUserProfile();
+export function useIsAdmin() {
+  const { actor, isFetching: actorFetching } = useActor();
+  const { identity } = useInternetIdentity();
 
-  return {
-    isBlocked: !isLoading && isFetched && userProfile !== null && userProfile !== undefined && !userProfile.hasPaid && !userProfile.isAdmin,
-    isLoading,
-  };
+  return useQuery<boolean>({
+    queryKey: ['isAdmin'],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.isAdminCaller();
+    },
+    enabled: !!actor && !actorFetching && !!identity,
+    retry: false,
+  });
 }
+
+import { useInternetIdentity } from './useInternetIdentity';

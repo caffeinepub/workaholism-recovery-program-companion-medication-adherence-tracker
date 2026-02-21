@@ -163,9 +163,11 @@ export interface _SERVICE {
   >,
   'getUserPaymentStatus' : ActorMethod<[Principal], boolean>,
   'getUserProfile' : ActorMethod<[Principal], [] | [CallerUserProfile]>,
+  'isAdminCaller' : ActorMethod<[], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'logCheckIn' : ActorMethod<[CheckIn], undefined>,
   'logDose' : ActorMethod<[DoseLog], undefined>,
+  'registerAdmin' : ActorMethod<[string, string], undefined>,
   'saveCallerUserProfile' : ActorMethod<[CallerUserProfile], undefined>,
   'saveCombineResult' : ActorMethod<
     [

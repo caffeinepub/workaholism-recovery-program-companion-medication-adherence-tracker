@@ -1,98 +1,68 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T11:19:52.206Z",
+  "generatedAt": "2026-02-21T12:32:22.430Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
-    "implemented": 4,
+    "total": 3,
+    "implemented": 2,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Create a separate admin page at /admin route that displays a list of all users who have attempted to sign in, showing their username/principal and current payment status",
+        "summary": "Fix admin page authorization to properly register and verify the admin Principal ID. The first user to visit /admin should be stored as the authorized admin, and all subsequent visits should validate against this stored Principal. Ensure the backend correctly persists the admin Principal and the frontend properly waits for authentication before checking admin status.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/AdminPayment.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/layout/AppShell.tsx"
+          "frontend/src/pages/Admin.tsx",
+          "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": [
-          "frontend/src/pages/AdminPayment.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/layout/AppShell.tsx"
+          "frontend/src/pages/Admin.tsx",
+          "frontend/src/hooks/useQueries.ts"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Add toggle controls on the admin page to mark users as paid or unpaid, with immediate persistence to backend state",
-        "status": "implemented",
+        "summary": "Block all sign-in functionality for users who do not have 'Paid' status. Users attempting to sign in without being marked as 'Paid' by the admin must see the error message: 'No sign in without up to date payment'. The sign-in button or Internet Identity flow should only be available to users who have been toggled to 'Paid' status in the admin panel.",
+        "status": "missing",
         "plannedFiles": [
-          "frontend/src/pages/AdminPayment.tsx",
-          "frontend/src/hooks/usePaymentAdmin.ts"
+          "frontend/src/components/auth/LoginButton.tsx",
+          "frontend/src/hooks/useInternetIdentity.ts",
+          "frontend/src/components/layout/AppShell.tsx"
         ],
-        "matchedFiles": [
-          "frontend/src/pages/AdminPayment.tsx",
-          "frontend/src/hooks/usePaymentAdmin.ts"
-        ]
-      },
-      {
-        "id": "REQ-3",
-        "summary": "Implement backend payment status storage and validation that tracks which users are marked as paid, defaulting new users to unpaid status",
-        "status": "unknown",
-        "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-4",
-        "summary": "Block unpaid users from accessing the app after Internet Identity authentication, showing the message: 'Please contact admin for access @thenewbruce1 on IG or iPhone 📱 txt 3527348440'",
+        "id": "REQ-3",
+        "summary": "Add user management interface to the admin page that displays all registered users with their current 'Paid' status. Provide toggle controls for each user that allow the admin to mark users as 'Paid' or 'Unpaid'. This enables manual Zelle payment verification workflow where the admin receives Zelle payment, then toggles the user to 'Paid' status, after which the user can sign in.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/auth/PaymentGate.tsx",
-          "frontend/src/components/layout/AppShell.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/pages/AdminPayment.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/pages/Admin.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/auth/PaymentGate.tsx",
-          "frontend/src/components/layout/AppShell.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ]
-      },
-      {
-        "id": "REQ-5",
-        "summary": "Modify AppShell or authentication flow to enforce payment check on every app load, redirecting unpaid users to the blocked access message",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/layout/AppShell.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/layout/AppShell.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/pages/Admin.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
     "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
     "frontend/src/components/auth/PaymentGate.tsx",
-    "frontend/src/components/auth/ProfileSetupDialog.tsx",
-    "frontend/src/components/layout/AppShell.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/usePaymentAdmin.ts",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/AdminPayment.tsx",
+    "frontend/src/pages/Admin.tsx",
+    "frontend/src/pages/combine/Published.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

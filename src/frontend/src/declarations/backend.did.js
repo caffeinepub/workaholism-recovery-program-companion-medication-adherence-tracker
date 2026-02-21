@@ -195,9 +195,11 @@ export const idlService = IDL.Service({
       [IDL.Opt(CallerUserProfile)],
       ['query'],
     ),
+  'isAdminCaller' : IDL.Func([], [IDL.Bool], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'logCheckIn' : IDL.Func([CheckIn], [], []),
   'logDose' : IDL.Func([DoseLog], [], []),
+  'registerAdmin' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'saveCallerUserProfile' : IDL.Func([CallerUserProfile], [], []),
   'saveCombineResult' : IDL.Func(
       [
@@ -432,9 +434,11 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(CallerUserProfile)],
         ['query'],
       ),
+    'isAdminCaller' : IDL.Func([], [IDL.Bool], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'logCheckIn' : IDL.Func([CheckIn], [], []),
     'logDose' : IDL.Func([DoseLog], [], []),
+    'registerAdmin' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'saveCallerUserProfile' : IDL.Func([CallerUserProfile], [], []),
     'saveCombineResult' : IDL.Func(
         [

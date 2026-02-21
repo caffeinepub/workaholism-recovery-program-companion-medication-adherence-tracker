@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useGetPublicCombineEntries } from '../../hooks/useCombine';
-import { useGetUserProfiles } from '../../hooks/useQueries';
+import { useBatchGetUserProfiles } from '../../hooks/useQueries';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -36,7 +36,7 @@ export default function CombinePublished() {
     return Array.from(principalSet).map((p) => Principal.fromText(p));
   }, [entries]);
 
-  const { data: profilesMap, isLoading: profilesLoading } = useGetUserProfiles(uniquePrincipals);
+  const { data: profilesMap, isLoading: profilesLoading } = useBatchGetUserProfiles(uniquePrincipals);
 
   const sortedEntries = entries ? sortCombineEntries(entries, sortBy) : [];
 

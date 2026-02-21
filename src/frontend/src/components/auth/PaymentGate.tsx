@@ -20,10 +20,10 @@ export default function PaymentGate() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-destructive">
             <AlertCircle className="h-6 w-6" />
-            Payment Required
+            No sign in without up to date payment
           </CardTitle>
           <CardDescription>
-            Your account is pending payment approval
+            Payment required to access this application
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -32,9 +32,12 @@ export default function PaymentGate() {
             <AlertTitle>Access Restricted</AlertTitle>
             <AlertDescription className="mt-2 space-y-2">
               <p className="font-medium">
-                Please contact admin for access:
+                Please send Zelle payment and contact admin for access:
               </p>
               <div className="flex flex-col gap-2 mt-3">
+                <div className="text-sm">
+                  <strong>Zelle:</strong> 3527348440 (Matt Rossin)
+                </div>
                 <a
                   href="https://instagram.com/thenewbruce1"
                   target="_blank"
@@ -52,12 +55,15 @@ export default function PaymentGate() {
                   iPhone 📱 txt 3527348440
                 </a>
               </div>
+              <p className="text-sm mt-3">
+                Make sure to provide your username, real name, and name you're known by on this App along with your Zelle payment in the description.
+              </p>
             </AlertDescription>
           </Alert>
 
           <div className="pt-4 border-t">
             <p className="text-sm text-muted-foreground mb-4">
-              Once your payment is approved by the admin, you'll have full access to all features.
+              Once your Zelle payment is verified and the admin toggles your status to "Paid", you'll have full access to all features.
             </p>
             <Button onClick={handleLogout} variant="outline" className="w-full gap-2">
               <LogOut className="h-4 w-4" />

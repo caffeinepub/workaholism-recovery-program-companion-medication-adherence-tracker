@@ -7,19 +7,6 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
-export interface CommitmentsPlan {
-    thingsToAvoid: string;
-    atRiskActions: string;
-    personalCommitments: string;
-}
-export interface CombineMeasurement {
-    verified: boolean;
-    value?: number;
-    equipmentUsed?: string;
-    notes?: string;
-    measurementType: string;
-    attemptNumber?: bigint;
-}
 export interface RecoveryStep {
     id: bigint;
     title: string;
@@ -70,19 +57,32 @@ export interface EmergencyContact {
     notes: string;
     phone: string;
 }
-export interface CheckIn {
-    stressLevel: bigint;
-    mood: string;
-    timestamp: Time;
-    reflection: string;
-    workHours: bigint;
-    intention: string;
+export interface UserProfileWithPrincipal {
+    principal: Principal;
+    hasPaid: boolean;
+    name: string;
+    subscriptionStatus: SubscriptionStatus;
+    isAdmin: boolean;
 }
 export interface Reflection {
     id: bigint;
     stepId: bigint;
     content: string;
     timestamp: Time;
+}
+export interface CallerUserProfile {
+    hasPaid: boolean;
+    name: string;
+    subscriptionStatus: SubscriptionStatus;
+    isAdmin: boolean;
+}
+export interface CombineMeasurement {
+    verified: boolean;
+    value?: number;
+    equipmentUsed?: string;
+    notes?: string;
+    measurementType: string;
+    attemptNumber?: bigint;
 }
 export interface DoseLog {
     status: Variant_Skipped_Late_Taken;
@@ -92,8 +92,28 @@ export interface DoseLog {
     takenTime?: Time;
     timestamp: Time;
 }
-export interface UserProfile {
-    name: string;
+export interface CheckIn {
+    stressLevel: bigint;
+    mood: string;
+    timestamp: Time;
+    reflection: string;
+    workHours: bigint;
+    intention: string;
+}
+export type SubscriptionStatus = {
+    __kind__: "Active";
+    Active: Time;
+} | {
+    __kind__: "Expired";
+    Expired: null;
+} | {
+    __kind__: "Pending";
+    Pending: null;
+};
+export interface CommitmentsPlan {
+    thingsToAvoid: string;
+    atRiskActions: string;
+    personalCommitments: string;
 }
 export interface Medication {
     endDate?: Time;
@@ -118,11 +138,14 @@ export interface backendInterface {
     addEmergencyContact(contact: EmergencyContact): Promise<void>;
     addMedication(medicine: Medication): Promise<void>;
     addMeeting(meeting: Meeting): Promise<void>;
+    adminListAllUsers(): Promise<Array<UserProfileWithPrincipal>>;
+    adminSetUserSubscription(user: Principal, durationDays: bigint): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    checkSubscriptionActive(): Promise<boolean>;
     deleteCombineResult(id: bigint): Promise<boolean>;
     getAllPublicCombineEntries(): Promise<Array<CombineResult>>;
     getAllRecoverySteps(): Promise<Array<RecoveryStep>>;
-    getCallerUserProfile(): Promise<UserProfile | null>;
+    getCallerUserProfile(): Promise<CallerUserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getCheckIns(): Promise<Array<CheckIn>>;
     getCombineResultById(id: bigint): Promise<CombineResult | null>;
@@ -143,11 +166,12 @@ export interface backendInterface {
         commitmentsPlan?: CommitmentsPlan;
         recoverySteps: Array<RecoveryStep>;
     }>;
-    getUserProfile(user: Principal): Promise<UserProfile | null>;
+    getUserPaymentStatus(user: Principal): Promise<boolean>;
+    getUserProfile(user: Principal): Promise<CallerUserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     logCheckIn(checkIn: CheckIn): Promise<void>;
     logDose(doseLog: DoseLog): Promise<void>;
-    saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    saveCallerUserProfile(profile: CallerUserProfile): Promise<void>;
     saveCombineResult(resultInput: {
         bmi: CombineMeasurement;
         weight: CombineMeasurement;
@@ -178,4 +202,5 @@ export interface backendInterface {
     saveCommitmentsPlan(plan: CommitmentsPlan): Promise<void>;
     saveReflection(reflection: Reflection): Promise<void>;
     toggleCombinePublicState(id: bigint): Promise<boolean>;
+    togglePaymentStatus(user: Principal): Promise<boolean>;
 }

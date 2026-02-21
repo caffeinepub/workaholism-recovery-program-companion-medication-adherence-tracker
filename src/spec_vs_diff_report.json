@@ -1,63 +1,61 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T01:23:09.398Z",
-  "summary": "The diff implements comprehensive NFL Combine statistics tracking with a significantly expanded data model. However, the backend implementation uses a complex CombineMeasurement wrapper structure (with verified, notes, attemptNumber, equipmentUsed fields) that was not specified in the requirements. The requirements asked for simple optional numeric values. The leaderboard (Published page) displays usernames and includes sorting, but numerical ranking (1, 2, 3...) is not clearly evident in the truncated diff. Benchmark comparisons and guest mode storage appear implemented. Several extra fields beyond the requirements (bodyFatPercentage, bmi, standingReach, seatedRow, squat, powerClean, dash10yd, shuttleProAgility) were added without being requested.",
+  "generatedAt": "2026-02-21T11:19:52.203Z",
+  "summary": "The diff implements a comprehensive payment-gated access control system with admin management. All five requirements appear to be implemented: a dedicated admin payment page displaying users with payment status, toggle controls for updating payment status, backend storage with hasPaid field defaulting to false, a PaymentGate component blocking unpaid users with the exact contact message, and AppShell integration enforcing payment checks. However, the BuildRequest specified the admin page should be at /admin route, but the implementation created it at /admin/payment route.",
   "missing_requirements": [
     {
-      "id": "REQ-7",
-      "requirement": "Entries are ranked numerically (1, 2, 3, etc.) based on performance in the currently selected metric",
-      "reason": "The Published page diff shows sorting and username display, but does not show evidence of numerical rank display (1st, 2nd, 3rd) in the UI",
+      "id": "REQ-1",
+      "requirement": "Create a separate admin page at /admin route",
+      "reason": "The admin payment management page was created at /admin/payment route instead of the specified /admin route. While the page exists and functions correctly, it does not match the exact route specification.",
       "evidence": [
-        "frontend/src/pages/combine/Published.tsx"
+        "frontend/src/App.tsx",
+        "frontend/src/pages/AdminPayment.tsx"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Backend CombineMeasurement wrapper structure with verified, notes, attemptNumber, equipmentUsed, measurementType fields",
-      "reason": "REQ-4 acceptance criteria specify 'All drill and measurement fields accept optional numeric values' - the requirements do not request a complex measurement wrapper structure with verification flags, notes, and equipment tracking",
+      "description": "Migration module with data migration logic for adding hasPaid field to existing user profiles",
+      "reason": "The BuildRequest does not mention or require data migration functionality. The backend/migration.mo file implements migration logic to convert old user profiles to new ones with the hasPaid field, which was not requested.",
       "evidence": [
-        "backend/main.mo",
         "backend/migration.mo"
       ]
     },
     {
-      "description": "Additional statistics: dash10yd, shuttleProAgility, bodyFatPercentage, bmi, standingReach, seatedRow, squat, powerClean",
-      "reason": "Requirements explicitly list the required statistics (40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, wingspan). The listed additional statistics were not requested.",
+      "description": "Statistics cards showing total users, paid users count, and unpaid users count on admin payment page",
+      "reason": "The BuildRequest only specified displaying a list of users with their payment status and toggle controls. The implementation added summary statistics cards with counts and visual indicators, which were not requested.",
       "evidence": [
-        "backend/main.mo",
-        "frontend/src/components/combine/CombineEntryForm.tsx",
-        "frontend/src/utils/combineGuestStorage.ts",
-        "frontend/src/utils/combineValidation.ts"
+        "frontend/src/pages/AdminPayment.tsx"
       ]
     },
     {
-      "description": "Migration system with complex OldCombineResult to NewCombineResult conversion including developerNotes and passedMedical fields",
-      "reason": "No migration requirement was specified. REQ-4 acceptance criteria state 'Existing entries are preserved and can be migrated' but do not specify a formal migration system. The developerNotes and passedMedical fields were not requested.",
+      "description": "Sorting logic on admin page that displays unpaid users first, then sorts by name",
+      "reason": "The BuildRequest did not specify any sorting or ordering requirements for the user list. The implementation added custom sorting logic to prioritize unpaid users.",
       "evidence": [
-        "backend/migration.mo"
+        "frontend/src/pages/AdminPayment.tsx"
+      ]
+    },
+    {
+      "description": "Logout button on PaymentGate component",
+      "reason": "The BuildRequest specified blocking unpaid users with a contact message, but did not request a logout/sign-out option on the blocked access page.",
+      "evidence": [
+        "frontend/src/components/auth/PaymentGate.tsx"
       ]
     }
   ],
-  "confidence": 0.75,
+  "confidence": 0.85,
   "changed_files": [
     "backend/main.mo",
     "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/combine/BenchmarkComparison.tsx",
-    "frontend/src/components/combine/CombineEntryForm.tsx",
-    "frontend/src/components/combine/CombineTrendsPanel.tsx",
-    "frontend/src/hooks/useCombine.ts",
+    "frontend/src/App.tsx",
+    "frontend/src/components/auth/PaymentGate.tsx",
+    "frontend/src/components/auth/ProfileSetupDialog.tsx",
+    "frontend/src/components/layout/AppShell.tsx",
+    "frontend/src/hooks/usePaymentAdmin.ts",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/combine/Dashboard.tsx",
-    "frontend/src/pages/combine/EntryDetail.tsx",
-    "frontend/src/pages/combine/PublicEntry.tsx",
-    "frontend/src/pages/combine/Published.tsx",
-    "frontend/src/pages/combine/ShareCard.tsx",
-    "frontend/src/utils/combineBenchmarks.ts",
-    "frontend/src/utils/combineGuestStorage.ts",
-    "frontend/src/utils/combineValidation.ts",
+    "frontend/src/pages/AdminPayment.tsx",
     "project_state.json"
   ]
 }

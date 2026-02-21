@@ -5,10 +5,10 @@ import Text "mo:core/Text";
 import Map "mo:core/Map";
 import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
+import Migration "migration";
+import Principal "mo:core/Principal";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
-import Principal "mo:core/Principal";
-import Migration "migration";
 
 (with migration = Migration.run)
 actor {
@@ -75,8 +75,25 @@ actor {
     atRiskActions : Text;
   };
 
-  public type UserProfile = {
+  public type SubscriptionStatus = {
+    #Active : Time.Time;
+    #Pending;
+    #Expired;
+  };
+
+  public type CallerUserProfile = {
     name : Text;
+    subscriptionStatus : SubscriptionStatus;
+    isAdmin : Bool;
+    hasPaid : Bool;
+  };
+
+  public type UserProfileWithPrincipal = {
+    principal : Principal;
+    name : Text;
+    subscriptionStatus : SubscriptionStatus;
+    isAdmin : Bool;
+    hasPaid : Bool;
   };
 
   type CombineMeasurement = {
@@ -128,7 +145,7 @@ actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
-  let userProfiles = Map.empty<Principal, UserProfile>();
+  let userProfiles = Map.empty<Principal, CallerUserProfile>();
   let checkIns = Map.empty<Principal, [CheckIn]>();
   let reflections = Map.empty<Principal, [Reflection]>();
   let medications = Map.empty<Principal, [Medication]>();
@@ -149,25 +166,134 @@ actor {
     };
   };
 
-  public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
+  public query ({ caller }) func getCallerUserProfile() : async ?CallerUserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access profiles");
     };
     userProfiles.get(caller);
   };
 
-  public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
+  public query ({ caller }) func getUserProfile(user : Principal) : async ?CallerUserProfile {
     if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: Can only view your own profile");
     };
     userProfiles.get(user);
   };
 
-  public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
+  public shared ({ caller }) func saveCallerUserProfile(profile : CallerUserProfile) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save profiles");
     };
-    userProfiles.add(caller, profile);
+
+    // Preserve existing payment status and admin status
+    let existingProfile = userProfiles.get(caller);
+    let existingHasPaid = switch (existingProfile) {
+      case (?existing) { existing.hasPaid };
+      case (null) { false };
+    };
+
+    let updatedProfile = {
+      profile with
+      subscriptionStatus = #Pending;
+      isAdmin = false;
+      hasPaid = existingHasPaid;
+    };
+
+    userProfiles.add(caller, updatedProfile);
+  };
+
+  public shared ({ caller }) func togglePaymentStatus(user : Principal) : async Bool {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can toggle payment status");
+    };
+
+    switch (userProfiles.get(user)) {
+      case (?profile) {
+        let updatedProfile = { profile with hasPaid = not profile.hasPaid };
+        userProfiles.add(user, updatedProfile);
+        updatedProfile.hasPaid;
+      };
+      case (null) {
+        Runtime.trap("User not found");
+      };
+    };
+  };
+
+  public query ({ caller }) func getUserPaymentStatus(user : Principal) : async Bool {
+    // Only admins can check other users' payment status
+    // Users can only check their own payment status
+    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Can only view your own payment status");
+    };
+
+    switch (userProfiles.get(user)) {
+      case (?profile) { profile.hasPaid };
+      case (null) {
+        false;
+      };
+    };
+  };
+
+  public shared ({ caller }) func adminSetUserSubscription(user : Principal, durationDays : Nat) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can set user subscriptions");
+    };
+
+    let userProfile = switch (userProfiles.get(user)) {
+      case (?profile) { profile };
+      case (null) {
+        let emptyProfile = {
+          name = "";
+          subscriptionStatus = #Pending;
+          isAdmin = false;
+          hasPaid = false;
+        };
+        userProfiles.add(user, emptyProfile);
+        emptyProfile;
+      };
+    };
+
+    let expiryTime = Time.now() + (durationDays * 86400_000_000_000);
+    let updatedProfile = {
+      userProfile with
+      subscriptionStatus = #Active(expiryTime);
+    };
+
+    userProfiles.add(user, updatedProfile);
+  };
+
+  public query ({ caller }) func adminListAllUsers() : async [UserProfileWithPrincipal] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can list all users");
+    };
+
+    let profiles = userProfiles.entries().toArray();
+    profiles.map<(Principal, CallerUserProfile), UserProfileWithPrincipal>(
+      func((principal, profile)) {
+        {
+          principal = principal;
+          name = profile.name;
+          subscriptionStatus = profile.subscriptionStatus;
+          isAdmin = profile.isAdmin;
+          hasPaid = profile.hasPaid;
+        };
+      }
+    );
+  };
+
+  public query ({ caller }) func checkSubscriptionActive() : async Bool {
+    switch (userProfiles.get(caller)) {
+      case (null) { false };
+      case (?profile) {
+        switch (profile.subscriptionStatus) {
+          case (#Active(expiryTime)) {
+            Time.now() <= expiryTime;
+          };
+          case (#Pending) { false };
+          case (#Expired) { false };
+        };
+      };
+    };
   };
 
   public shared ({ caller }) func saveCommitmentsPlan(plan : CommitmentsPlan) : async () {
@@ -402,6 +528,26 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can record combine results");
     };
+    switch (userProfiles.get(caller)) {
+      case (?profile) {
+        switch (profile.subscriptionStatus) {
+          case (#Active(expiryTime)) {
+            if (Time.now() > expiryTime) {
+              Runtime.trap("Subscription expired. Please renew to access this feature.");
+            };
+          };
+          case (#Pending) {
+            Runtime.trap("Pending subscription. Access denied until payment is complete.");
+          };
+          case (#Expired) {
+            Runtime.trap("Subscription expired. Please renew to access this feature.");
+          };
+        };
+      };
+      case (null) {
+        Runtime.trap("User profile not found. Cannot verify subscription.");
+      };
+    };
 
     let newResult = {
       id = combineState.nextCombineId;
@@ -454,6 +600,27 @@ actor {
   };
 
   public query ({ caller }) func getUserCombineResults(user : Principal) : async [CombineResult] {
+    switch (userProfiles.get(caller)) {
+      case (?profile) {
+        switch (profile.subscriptionStatus) {
+          case (#Active(expiryTime)) {
+            if (Time.now() > expiryTime) {
+              Runtime.trap("Subscription expired. Please renew to access this feature.");
+            };
+          };
+          case (#Pending) {
+            Runtime.trap("Pending subscription. Access denied until payment is complete.");
+          };
+          case (#Expired) {
+            Runtime.trap("Subscription expired. Please renew to access this feature.");
+          };
+        };
+      };
+      case (null) {
+        Runtime.trap("User profile not found. Cannot verify subscription.");
+      };
+    };
+
     let entries = switch (combineState.userCombines.get(user)) {
       case (null) { [] };
       case (?results) { results };
@@ -466,6 +633,27 @@ actor {
   };
 
   public query ({ caller }) func getCombineResultById(id : Nat) : async ?CombineResult {
+    switch (userProfiles.get(caller)) {
+      case (?profile) {
+        switch (profile.subscriptionStatus) {
+          case (#Active(expiryTime)) {
+            if (Time.now() > expiryTime) {
+              Runtime.trap("Subscription expired. Please renew to access this feature.");
+            };
+          };
+          case (#Pending) {
+            Runtime.trap("Pending subscription. Access denied until payment is complete.");
+          };
+          case (#Expired) {
+            Runtime.trap("Subscription expired. Please renew to access this feature.");
+          };
+        };
+      };
+      case (null) {
+        Runtime.trap("User profile not found. Cannot verify subscription.");
+      };
+    };
+
     switch (combineState.publicCombineEntries.get(id)) {
       case (?publicResult) { ?publicResult };
       case (null) {
@@ -484,12 +672,54 @@ actor {
   };
 
   public query ({ caller }) func getAllPublicCombineEntries() : async [CombineResult] {
+    switch (userProfiles.get(caller)) {
+      case (?profile) {
+        switch (profile.subscriptionStatus) {
+          case (#Active(expiryTime)) {
+            if (Time.now() > expiryTime) {
+              Runtime.trap("Subscription expired. Please renew to access this feature.");
+            };
+          };
+          case (#Pending) {
+            Runtime.trap("Pending subscription. Access denied until payment is complete.");
+          };
+          case (#Expired) {
+            Runtime.trap("Subscription expired. Please renew to access this feature.");
+          };
+        };
+      };
+      case (null) {
+        Runtime.trap("User profile not found. Cannot verify subscription.");
+      };
+    };
+
     combineState.publicCombineEntries.values().toArray();
   };
 
   public shared ({ caller }) func deleteCombineResult(id : Nat) : async Bool {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can delete combine results");
+    };
+
+    switch (userProfiles.get(caller)) {
+      case (?profile) {
+        switch (profile.subscriptionStatus) {
+          case (#Active(expiryTime)) {
+            if (Time.now() > expiryTime) {
+              Runtime.trap("Subscription expired. Please renew to access this feature.");
+            };
+          };
+          case (#Pending) {
+            Runtime.trap("Pending subscription. Access denied until payment is complete.");
+          };
+          case (#Expired) {
+            Runtime.trap("Subscription expired. Please renew to access this feature.");
+          };
+        };
+      };
+      case (null) {
+        Runtime.trap("User profile not found. Cannot verify subscription.");
+      };
     };
 
     let userCombines = combineState.userCombines.get(caller);
@@ -513,6 +743,27 @@ actor {
   public shared ({ caller }) func toggleCombinePublicState(id : Nat) : async Bool {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can modify combine results");
+    };
+
+    switch (userProfiles.get(caller)) {
+      case (?profile) {
+        switch (profile.subscriptionStatus) {
+          case (#Active(expiryTime)) {
+            if (Time.now() > expiryTime) {
+              Runtime.trap("Subscription expired. Please renew to access this feature.");
+            };
+          };
+          case (#Pending) {
+            Runtime.trap("Pending subscription. Access denied until payment is complete.");
+          };
+          case (#Expired) {
+            Runtime.trap("Subscription expired. Please renew to access this feature.");
+          };
+        };
+      };
+      case (null) {
+        Runtime.trap("User profile not found. Cannot verify subscription.");
+      };
     };
 
     let userCombines = combineState.userCombines.get(caller);

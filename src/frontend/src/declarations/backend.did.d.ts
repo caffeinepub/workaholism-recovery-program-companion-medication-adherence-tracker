@@ -10,6 +10,12 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface CallerUserProfile {
+  'hasPaid' : boolean,
+  'name' : string,
+  'subscriptionStatus' : SubscriptionStatus,
+  'isAdmin' : boolean,
+}
 export interface CheckIn {
   'stressLevel' : bigint,
   'mood' : string,
@@ -105,8 +111,17 @@ export interface Reflection {
   'content' : string,
   'timestamp' : Time,
 }
+export type SubscriptionStatus = { 'Active' : Time } |
+  { 'Expired' : null } |
+  { 'Pending' : null };
 export type Time = bigint;
-export interface UserProfile { 'name' : string }
+export interface UserProfileWithPrincipal {
+  'principal' : Principal,
+  'hasPaid' : boolean,
+  'name' : string,
+  'subscriptionStatus' : SubscriptionStatus,
+  'isAdmin' : boolean,
+}
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
@@ -115,11 +130,14 @@ export interface _SERVICE {
   'addEmergencyContact' : ActorMethod<[EmergencyContact], undefined>,
   'addMedication' : ActorMethod<[Medication], undefined>,
   'addMeeting' : ActorMethod<[Meeting], undefined>,
+  'adminListAllUsers' : ActorMethod<[], Array<UserProfileWithPrincipal>>,
+  'adminSetUserSubscription' : ActorMethod<[Principal, bigint], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'checkSubscriptionActive' : ActorMethod<[], boolean>,
   'deleteCombineResult' : ActorMethod<[bigint], boolean>,
   'getAllPublicCombineEntries' : ActorMethod<[], Array<CombineResult>>,
   'getAllRecoverySteps' : ActorMethod<[], Array<RecoveryStep>>,
-  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [CallerUserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCheckIns' : ActorMethod<[], Array<CheckIn>>,
   'getCombineResultById' : ActorMethod<[bigint], [] | [CombineResult]>,
@@ -143,11 +161,12 @@ export interface _SERVICE {
       'recoverySteps' : Array<RecoveryStep>,
     }
   >,
-  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'getUserPaymentStatus' : ActorMethod<[Principal], boolean>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [CallerUserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'logCheckIn' : ActorMethod<[CheckIn], undefined>,
   'logDose' : ActorMethod<[DoseLog], undefined>,
-  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'saveCallerUserProfile' : ActorMethod<[CallerUserProfile], undefined>,
   'saveCombineResult' : ActorMethod<
     [
       {
@@ -183,6 +202,7 @@ export interface _SERVICE {
   'saveCommitmentsPlan' : ActorMethod<[CommitmentsPlan], undefined>,
   'saveReflection' : ActorMethod<[Reflection], undefined>,
   'toggleCombinePublicState' : ActorMethod<[bigint], boolean>,
+  'togglePaymentStatus' : ActorMethod<[Principal], boolean>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

@@ -1,8 +1,9 @@
 import LoginButton from '../components/auth/LoginButton';
 import { useNavigate } from '@tanstack/react-router';
-import { Activity, TrendingUp, Share2, Trophy } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Activity, TrendingUp, Share2, Trophy, DollarSign } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -56,6 +57,38 @@ export default function Landing() {
 
       <main className="container mx-auto px-4 py-16">
         <div className="max-w-6xl mx-auto">
+          {/* Payment Information Banner */}
+          <Alert className="mb-12 border-2 border-primary bg-primary/5">
+            <DollarSign className="h-5 w-5 text-primary" />
+            <AlertTitle className="text-xl font-bold text-foreground mb-3">
+              Payment Information - Subscription Required
+            </AlertTitle>
+            <AlertDescription className="space-y-3 text-base">
+              <div className="space-y-2">
+                <p className="font-semibold text-foreground">
+                  To access full features, send payment via Zelle:
+                </p>
+                <div className="bg-background/80 p-4 rounded-lg border border-border space-y-2">
+                  <p className="text-foreground">
+                    <span className="font-semibold">Zelle Number:</span> <span className="text-lg font-mono">3527348440</span>
+                  </p>
+                  <p className="text-foreground">
+                    <span className="font-semibold">Recipient Name:</span> Matt Rossin
+                  </p>
+                  <p className="text-foreground">
+                    <span className="font-semibold">Payment Description (Required):</span>
+                  </p>
+                  <p className="text-sm text-muted-foreground ml-4">
+                    Include your username, real name, and "NFL Combine Tracker" in the payment description
+                  </p>
+                </div>
+                <p className="text-sm text-muted-foreground mt-3">
+                  After payment, your subscription will be activated by an admin. You'll receive access to all features including data sync and public sharing.
+                </p>
+              </div>
+            </AlertDescription>
+          </Alert>
+
           <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
             <div className="space-y-6">
               <h2 className="text-4xl md:text-5xl font-bold text-foreground leading-tight">

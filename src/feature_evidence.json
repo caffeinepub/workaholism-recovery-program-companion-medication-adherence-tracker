@@ -2,11 +2,73 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-frontend-combineentryform-to-include-input-fields-for-all-nfl-combine-statistics-40-yard-dash-bench-press-reps-vertical-jump-broad-jump-3-cone-drill-20-yard-shuttle-60-yard-shuttle-height-weight-arm-length-hand-size-and-wingspan-with-appropriate-validation",
-      "featureTitle": "Update the frontend CombineEntryForm to include input fields for all NFL Combine statistics: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan with appropriate validation",
+      "featureId": "feature-create-a-separate-admin-page-at-admin-route-that-displays-a-list-of-all-users-who-have-attempted-to-sign-in-showing-their-username-principal-and-current-payment-status",
+      "featureTitle": "Create a separate admin page at /admin route that displays a list of all users who have attempted to sign in, showing their username/principal and current payment status",
       "files": [
-        "frontend/src/components/combine/CombineEntryForm.tsx",
-        "frontend/src/utils/combineValidation.ts"
+        "frontend/src/App.tsx",
+        "frontend/src/components/layout/AppShell.tsx",
+        "frontend/src/pages/AdminPayment.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-toggle-controls-on-the-admin-page-to-mark-users-as-paid-or-unpaid-with-immediate-persistence-to-backend-state",
+      "featureTitle": "Add toggle controls on the admin page to mark users as paid or unpaid, with immediate persistence to backend state",
+      "files": [
+        "frontend/src/hooks/usePaymentAdmin.ts",
+        "frontend/src/pages/AdminPayment.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-block-unpaid-users-from-accessing-the-app-after-internet-identity-authentication-showing-the-message-please-contact-admin-for-access-thenewbruce1-on-ig-or-iphone-txt-3527348440",
+      "featureTitle": "Block unpaid users from accessing the app after Internet Identity authentication, showing the message: 'Please contact admin for access @thenewbruce1 on IG or iPhone 📱 txt 3527348440'",
+      "files": [
+        "frontend/src/components/auth/PaymentGate.tsx",
+        "frontend/src/components/layout/AppShell.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-modify-appshell-or-authentication-flow-to-enforce-payment-check-on-every-app-load-redirecting-unpaid-users-to-the-blocked-access-message",
+      "featureTitle": "Modify AppShell or authentication flow to enforce payment check on every app load, redirecting unpaid users to the blocked access message",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/layout/AppShell.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -18,86 +80,6 @@
       ],
       "testIds": [
         "REQ-5"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-display-all-tracked-nfl-combine-statistics-in-the-entrydetail-and-publicentry-views-showing-every-recorded-measurement-and-drill-result-for-the-entry",
-      "featureTitle": "Display all tracked NFL Combine statistics in the EntryDetail and PublicEntry views, showing every recorded measurement and drill result for the entry",
-      "files": [
-        "frontend/src/pages/combine/EntryDetail.tsx",
-        "frontend/src/pages/combine/PublicEntry.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-6"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-enhance-the-published-page-leaderboard-to-display-usernames-alongside-each-entry-and-rank-all-public-entries-numerically-from-best-to-worst-based-on-the-selected-sorting-metric",
-      "featureTitle": "Enhance the Published page leaderboard to display usernames alongside each entry and rank all public entries numerically from best to worst based on the selected sorting metric",
-      "files": [
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/combine/Published.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-7"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-benchmark-comparison-logic-to-support-all-newly-tracked-nfl-combine-statistics-providing-performance-level-indicators-elite-above-average-average-below-average-for-each-drill-and-measurement",
-      "featureTitle": "Update benchmark comparison logic to support all newly tracked NFL Combine statistics, providing performance level indicators (elite, above-average, average, below-average) for each drill and measurement",
-      "files": [
-        "frontend/src/components/combine/BenchmarkComparison.tsx",
-        "frontend/src/utils/combineBenchmarks.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-8"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-extend-the-guest-mode-localstorage-implementation-to-support-all-newly-tracked-nfl-combine-statistics-ensuring-feature-parity-between-authenticated-and-guest-users",
-      "featureTitle": "Extend the guest mode localStorage implementation to support all newly tracked NFL Combine statistics, ensuring feature parity between authenticated and guest users",
-      "files": [
-        "frontend/src/hooks/useCombine.ts",
-        "frontend/src/utils/combineGuestStorage.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-9"
       ],
       "confidence": "high"
     }

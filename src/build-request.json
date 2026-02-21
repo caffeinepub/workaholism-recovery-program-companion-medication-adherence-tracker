@@ -1,126 +1,112 @@
 {
   "kind": "build_request",
-  "title": "Comprehensive NFL Combine Statistics Tracking and Public Leaderboard",
+  "title": "Add payment-gated access control with admin management",
   "projectName": "NFL Combine Tracker",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-4",
-      "text": "Expand the backend data model to track all standard NFL Combine statistics for each entry, ensuring every measurement and drill result is captured: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan",
-      "target": "backend",
+      "id": "REQ-1",
+      "text": "Create a separate admin page at /admin route that displays a list of all users who have attempted to sign in, showing their username/principal and current payment status",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-user-3",
+          "msg-user-4"
         ],
         "quotes": [
-          "Make sure the app tracks every single NFL combine statistic with every entry for every individual"
+          "Seperate page",
+          "yes to #3 with those marked \"unpaid\" unable to sign in"
         ]
       },
       "acceptanceCriteria": [
-        "Backend CombineEntry type includes fields for all standard NFL Combine measurements: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan",
-        "All drill and measurement fields accept optional numeric values to accommodate partial entries",
-        "Existing entries are preserved and can be migrated to include new fields"
+        "Admin page is accessible at /admin route",
+        "Page displays all users who have signed in with Internet Identity",
+        "Each user entry shows username and current payment status (paid/unpaid)"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Add toggle controls on the admin page to mark users as paid or unpaid, with immediate persistence to backend state",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-user-4"
+        ],
+        "quotes": [
+          "yes to #3 with those marked \"unpaid\" unable to sign in"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Each user has a toggle switch or checkbox to change payment status",
+        "Toggling updates the backend payment status immediately",
+        "UI reflects current payment status accurately"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Implement backend payment status storage and validation that tracks which users are marked as paid, defaulting new users to unpaid status",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-user-4"
+        ],
+        "quotes": [
+          "those marked \"unpaid\" unable to sign in at all"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend stores payment status (paid/unpaid) for each user principal",
+        "New users default to unpaid status",
+        "Backend provides methods to query and update payment status"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Block unpaid users from accessing the app after Internet Identity authentication, showing the message: 'Please contact admin for access @thenewbruce1 on IG or iPhone 📱 txt 3527348440'",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-4"
+        ],
+        "quotes": [
+          "yes \"Please contact admin for access @thenewbruce1 on IG or iPhone 📱 txt 3527348440\" message should be seen if they try to log in without having been marked \"paid\"",
+          "those marked \"unpaid\" unable to sign in at all and shown above error message"
+        ]
+      },
+      "acceptanceCriteria": [
+        "After successful Internet Identity authentication, check user payment status",
+        "If user is marked unpaid, display the exact contact message",
+        "Unpaid users cannot access any app features beyond the landing page",
+        "Paid users proceed normally to the app"
       ]
     },
     {
       "id": "REQ-5",
-      "text": "Update the frontend CombineEntryForm to include input fields for all NFL Combine statistics: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan with appropriate validation",
+      "text": "Modify AppShell or authentication flow to enforce payment check on every app load, redirecting unpaid users to the blocked access message",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "Make sure the app tracks every single NFL combine statistic with every entry for every individual"
+          "msg-user-4"
         ]
       },
       "acceptanceCriteria": [
-        "Form includes labeled input fields for all standard NFL Combine drills and measurements",
-        "Each field validates numeric input within reasonable ranges for NFL Combine data",
-        "Form layout is organized logically grouping measurements and drills",
-        "All fields support optional entry so users can record partial combine results"
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "text": "Display all tracked NFL Combine statistics in the EntryDetail and PublicEntry views, showing every recorded measurement and drill result for the entry",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "Make sure the app tracks every single NFL combine statistic with every entry for every individual"
-        ]
-      },
-      "acceptanceCriteria": [
-        "EntryDetail page renders all available combine statistics for an entry",
-        "PublicEntry page renders all available combine statistics for public entries",
-        "Display includes clear labels and units for each measurement",
-        "Missing/optional fields are handled gracefully without breaking the layout"
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "text": "Enhance the Published page leaderboard to display usernames alongside each entry and rank all public entries numerically from best to worst based on the selected sorting metric",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "the public leaderboard (please make one) ranks all entries with usernames from best to worst in number rank"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Published page displays username for each public combine entry in the leaderboard",
-        "Entries are ranked numerically (1, 2, 3, etc.) based on performance in the currently selected metric",
-        "Ranking updates dynamically when the user changes the sort metric",
-        "Best performers appear at rank 1, with descending ranks for lower performers",
-        "Entries without data for the selected metric are handled gracefully (e.g., shown at the bottom or excluded from that metric's ranking)"
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "text": "Update benchmark comparison logic to support all newly tracked NFL Combine statistics, providing performance level indicators (elite, above-average, average, below-average) for each drill and measurement",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Benchmark thresholds are defined for all combine drills and measurements",
-        "BenchmarkComparison component displays appropriate performance levels for all tracked statistics",
-        "Benchmark data reflects realistic NFL Combine performance standards"
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "text": "Extend the guest mode localStorage implementation to support all newly tracked NFL Combine statistics, ensuring feature parity between authenticated and guest users",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Guest users can record all NFL Combine statistics in localStorage",
-        "Guest entries include all new measurement and drill fields",
-        "Guest mode combines entries persist across sessions with full data integrity"
+        "Payment status is checked when user attempts to access protected routes",
+        "Unpaid users see the contact message instead of app content",
+        "Payment check happens consistently across all protected routes"
       ]
     }
   ],
   "constraints": [
-    "Preserve existing backend data model structure and add new fields without breaking existing entries",
-    "Maintain compatibility with guest mode localStorage for all new statistics",
-    "Ensure username privacy controls remain functional for public entries"
+    "Preserve existing Internet Identity authentication flow",
+    "Do not modify frontend/src/hooks/useInternetIdentity.ts",
+    "Keep all backend logic in single main.mo actor",
+    "Admin page should be protected (only accessible to admin principal)"
   ],
   "nonGoals": [
-    "Implementing real-time leaderboard updates",
-    "Adding historical NFL Combine data from professional athletes",
-    "Creating position-specific benchmarks or filtering",
-    "Implementing social features like comments or likes on entries"
+    "Implementing actual payment processing integration",
+    "Creating different subscription tiers or pricing models",
+    "Sending automated payment reminder emails or notifications",
+    "Building a public-facing payment page for users to self-service"
   ],
   "imageRequirements": {
     "required": [],

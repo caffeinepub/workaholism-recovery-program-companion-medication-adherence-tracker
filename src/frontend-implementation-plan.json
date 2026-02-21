@@ -1,114 +1,100 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Comprehensive NFL Combine Statistics Tracking and Public Leaderboard",
+  "title": "Add payment-gated access control with admin management",
   "requirements": [
     {
-      "id": "REQ-5",
-      "summary": "Update CombineEntryForm to include input fields for all NFL Combine statistics with appropriate validation",
+      "id": "REQ-1",
+      "summary": "Create admin page at /admin route displaying all users with their username and payment status",
       "acceptanceCriteria": [
-        "Form includes labeled input fields for all standard NFL Combine drills and measurements",
-        "Each field validates numeric input within reasonable ranges for NFL Combine data",
-        "Form layout is organized logically grouping measurements and drills",
-        "All fields support optional entry so users can record partial combine results"
+        "Admin page is accessible at /admin route",
+        "Page displays all users who have signed in with Internet Identity",
+        "Each user entry shows username and current payment status (paid/unpaid)"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/combine/CombineEntryForm.tsx",
-          "operation": "modify",
-          "description": "Add input fields for all NFL Combine statistics: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan. Organize the form into logical sections (measurements, speed drills, strength drills) with clear labels and units. Each field should accept optional numeric input with appropriate validation ranges matching the backend CombineMeasurement type structure."
+          "path": "frontend/src/pages/AdminPayment.tsx",
+          "operation": "create",
+          "description": "Create admin payment management page at /admin route that fetches all users via adminListAllUsers() backend method. Display user list in a table showing Principal (initially), username from CallerUserProfile, and payment status (hasPaid boolean). Use the authorization component's admin-only access control to protect this page. Include loading states and error handling for unauthorized access."
         },
         {
-          "path": "frontend/src/utils/combineValidation.ts",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Extend validation logic to include all NFL Combine statistics with realistic min/max ranges: 40-yard dash (3.5-7.0s), bench press reps (0-50), vertical jump (15-50 inches), broad jump (60-150 inches), 3-cone drill (6.0-9.0s), 20-yard shuttle (3.5-6.0s), 60-yard shuttle (10.0-14.0s), height (60-90 inches), weight (150-400 lbs), arm length (28-38 inches), hand size (7-12 inches), and wingspan (65-90 inches). Update parseOptionalNumber and validation helpers to support all new fields."
+          "description": "Add route configuration for /admin path pointing to AdminPayment component. Ensure the route is protected by checking isCallerAdmin() before rendering the admin page. Wire the new admin route into the existing router setup alongside the existing /admin route for subscription management."
+        },
+        {
+          "path": "frontend/src/components/layout/AppShell.tsx",
+          "operation": "modify",
+          "description": "Add navigation link to /admin payment management page in the header/sidebar navigation, visible only when user is authenticated and has admin role. Use isCallerAdmin() query to conditionally show the admin navigation item."
         }
       ]
     },
     {
-      "id": "REQ-6",
-      "summary": "Display all tracked NFL Combine statistics in EntryDetail and PublicEntry views",
+      "id": "REQ-2",
+      "summary": "Add toggle controls on admin page to mark users as paid/unpaid with immediate backend persistence",
       "acceptanceCriteria": [
-        "EntryDetail page renders all available combine statistics for an entry",
-        "PublicEntry page renders all available combine statistics for public entries",
-        "Display includes clear labels and units for each measurement",
-        "Missing/optional fields are handled gracefully without breaking the layout"
+        "Each user has a toggle switch or checkbox to change payment status",
+        "Toggling updates the backend payment status immediately",
+        "UI reflects current payment status accurately"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/combine/EntryDetail.tsx",
+          "path": "frontend/src/pages/AdminPayment.tsx",
           "operation": "modify",
-          "description": "Update the entry detail view to display all NFL Combine statistics including 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan. Group related measurements together (body measurements, speed drills, strength tests) with clear section headings. Show units for each metric and handle missing/optional values gracefully by either hiding them or showing 'Not recorded'."
+          "description": "Add toggle switch UI component (using shadcn/ui Switch) for each user row that calls togglePaymentStatus(user: Principal) backend method on change. Implement optimistic UI updates and query invalidation to refresh user list after toggle. Show loading state on the specific toggle being changed and handle errors gracefully with toast notifications."
         },
         {
-          "path": "frontend/src/pages/combine/PublicEntry.tsx",
-          "operation": "modify",
-          "description": "Update the public entry view to display all NFL Combine statistics with the same comprehensive display as EntryDetail. Ensure all measurements and drill results are rendered with proper labels, units, and graceful handling of missing data. Maintain consistency with EntryDetail presentation while adapting for public viewing context."
+          "path": "frontend/src/hooks/usePaymentAdmin.ts",
+          "operation": "create",
+          "description": "Create custom React Query hooks for payment admin operations including useAdminListAllUsers() to fetch user list with payment status, and useTogglePaymentStatus() mutation hook that calls backend togglePaymentStatus() and invalidates the user list query. Include proper error handling and loading states."
         }
       ]
     },
     {
-      "id": "REQ-7",
-      "summary": "Enhance the Published page leaderboard to display usernames alongside each entry and rank all public entries numerically from best to worst",
+      "id": "REQ-4",
+      "summary": "Block unpaid users from accessing the app after authentication, showing contact message",
       "acceptanceCriteria": [
-        "Published page displays username for each public combine entry in the leaderboard",
-        "Entries are ranked numerically (1, 2, 3, etc.) based on performance in the currently selected metric",
-        "Ranking updates dynamically when the user changes the sort metric",
-        "Best performers appear at rank 1, with descending ranks for lower performers",
-        "Entries without data for the selected metric are handled gracefully (e.g., shown at the bottom or excluded from that metric's ranking)"
+        "After successful Internet Identity authentication, check user payment status",
+        "If user is marked unpaid, display the exact contact message",
+        "Unpaid users cannot access any app features beyond the landing page",
+        "Paid users proceed normally to the app"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/combine/Published.tsx",
+          "path": "frontend/src/components/auth/PaymentGate.tsx",
+          "operation": "create",
+          "description": "Create PaymentGate component that checks authenticated user's payment status via getUserPaymentStatus() or from CallerUserProfile.hasPaid. If hasPaid is false, render a centered card/modal with the exact message: 'Please contact admin for access @thenewbruce1 on IG or iPhone 📱 txt 3527348440'. Include a logout button and prevent any app navigation. Use styling consistent with the existing theme and ensure the message is clearly visible on both light and dark modes."
+        },
+        {
+          "path": "frontend/src/components/layout/AppShell.tsx",
           "operation": "modify",
-          "description": "Enhance the leaderboard to display numeric rankings (1, 2, 3, etc.) based on the selected sorting metric. Fetch and display the username for each entry by calling getUserProfile(entry.creator) from the backend. Add a rank column that updates dynamically when the sort metric changes. Handle entries without data for the selected metric by placing them at the bottom with a visual indicator (e.g., 'N/A' or '--'). Ensure rankings reflect best-to-worst performance with rank 1 being the top performer."
+          "description": "Integrate PaymentGate component into AppShell after authentication check but before rendering main content. If user is authenticated and payment status is unpaid (hasPaid=false), render PaymentGate instead of children. Ensure payment status is loaded before deciding to show PaymentGate to avoid flashing content. Use the CallerUserProfile from getCallerUserProfile() to check hasPaid status."
         },
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Add a React Query hook for batch-fetching user profiles: useUserProfiles(principals: Principal[]). This hook should fetch multiple user profiles in parallel to efficiently populate usernames in the Published leaderboard. Include proper caching and error handling to avoid repeated network calls for the same users."
+          "description": "Ensure useGetCallerUserProfile hook properly exposes hasPaid field from CallerUserProfile type. Add a derived hook or utility to specifically check payment gate status (isPaymentBlocked) based on authentication and hasPaid value for cleaner consumption in AppShell."
         }
       ]
     },
     {
-      "id": "REQ-8",
-      "summary": "Update benchmark comparison logic to support all newly tracked NFL Combine statistics",
+      "id": "REQ-5",
+      "summary": "Enforce payment check on every app load for all protected routes",
       "acceptanceCriteria": [
-        "Benchmark thresholds are defined for all combine drills and measurements",
-        "BenchmarkComparison component displays appropriate performance levels for all tracked statistics",
-        "Benchmark data reflects realistic NFL Combine performance standards"
+        "Payment status is checked when user attempts to access protected routes",
+        "Unpaid users see the contact message instead of app content",
+        "Payment check happens consistently across all protected routes"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/utils/combineBenchmarks.ts",
+          "path": "frontend/src/components/layout/AppShell.tsx",
           "operation": "modify",
-          "description": "Extend benchmark thresholds to include all NFL Combine statistics: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan. Define elite, above-average, average, and below-average levels for each metric based on realistic NFL Combine performance data. Update the comparison function to support all new drills and measurements with appropriate direction logic (lower is better for timed drills, higher is better for strength/jump metrics)."
+          "description": "Ensure AppShell enforces payment gate check on every render when user is authenticated. The payment status check via CallerUserProfile should be cached by React Query but revalidated on mount. Position PaymentGate rendering before any route-specific content so it blocks all protected routes uniformly. Add loading state while fetching payment status to prevent content flash."
         },
         {
-          "path": "frontend/src/components/combine/BenchmarkComparison.tsx",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Update the component to handle and display benchmark comparisons for all newly tracked NFL Combine statistics. Ensure the component can render performance level indicators (elite, above-average, average, below-average) for all drills and measurements with consistent styling and clear labels."
-        }
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "summary": "Extend the guest mode localStorage implementation to support all newly tracked NFL Combine statistics",
-      "acceptanceCriteria": [
-        "Guest users can record all NFL Combine statistics in localStorage",
-        "Guest entries include all new measurement and drill fields",
-        "Guest mode combines entries persist across sessions with full data integrity"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/utils/combineGuestStorage.ts",
-          "operation": "modify",
-          "description": "Update the guest storage schema to include all NFL Combine statistics matching the backend CombineMeasurement structure: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan. Ensure all CRUD operations (create, read, update, delete) handle the expanded data model while maintaining backward compatibility with existing guest entries. Update type definitions to match the backend interface for consistency."
-        },
-        {
-          "path": "frontend/src/hooks/useCombine.ts",
-          "operation": "modify",
-          "description": "Update the useCombine hooks to handle all newly tracked NFL Combine statistics for both authenticated and guest modes. Ensure saveCombineEntry, updateCombineEntry, and related mutations properly serialize and deserialize the expanded measurement fields. Verify that guest mode localStorage operations maintain feature parity with authenticated backend operations for all new statistics."
+          "description": "Review route definitions to ensure all protected routes (dashboard, history, new entry, etc.) are wrapped by AppShell which enforces the payment gate. Landing page route should remain accessible without payment check. Admin routes should only check admin role, not payment status (admins bypass payment gate)."
         }
       ]
     }

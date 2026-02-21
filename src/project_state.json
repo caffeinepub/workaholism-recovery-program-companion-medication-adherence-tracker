@@ -1,51 +1,44 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "NFL combine statistics tracking app with public leaderboard",
+  "summary": "NFL Combine Tracker with payment-gated access system",
   "architectural_notes": [
-    "Store comprehensive NFL combine statistics per user entry",
-    "Implement ranking algorithm for leaderboard ordering"
+    "Payment-gated access system with user payment status tracking",
+    "Separate /admin route for user management",
+    "Access control checks user payment status before granting app access"
   ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-update-the-frontend-combineentryform-to-include-input-fields-for-all-nfl-combine-statistics-40-yard-dash-bench-press-reps-vertical-jump-broad-jump-3-cone-drill-20-yard-shuttle-60-yard-shuttle-height-weight-arm-length-hand-size-and-wingspan-with-appropriate-validation",
-      "title": "Update the frontend CombineEntryForm to include input fields for all NFL Combine statistics: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan with appropriate validation",
+      "id": "feature-create-a-separate-admin-page-at-admin-route-that-displays-a-list-of-all-users-who-have-attempted-to-sign-in-showing-their-username-principal-and-current-payment-status",
+      "title": "Create a separate admin page at /admin route that displays a list of all users who have attempted to sign in, showing their username/principal and current payment status",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-toggle-controls-on-the-admin-page-to-mark-users-as-paid-or-unpaid-with-immediate-persistence-to-backend-state",
+      "title": "Add toggle controls on the admin page to mark users as paid or unpaid, with immediate persistence to backend state",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-block-unpaid-users-from-accessing-the-app-after-internet-identity-authentication-showing-the-message-please-contact-admin-for-access-thenewbruce1-on-ig-or-iphone-txt-3527348440",
+      "title": "Block unpaid users from accessing the app after Internet Identity authentication, showing the message: 'Please contact admin for access @thenewbruce1 on IG or iPhone 📱 txt 3527348440'",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-modify-appshell-or-authentication-flow-to-enforce-payment-check-on-every-app-load-redirecting-unpaid-users-to-the-blocked-access-message",
+      "title": "Modify AppShell or authentication flow to enforce payment check on every app load, redirecting unpaid users to the blocked access message",
       "reqIds": [
         "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-display-all-tracked-nfl-combine-statistics-in-the-entrydetail-and-publicentry-views-showing-every-recorded-measurement-and-drill-result-for-the-entry",
-      "title": "Display all tracked NFL Combine statistics in the EntryDetail and PublicEntry views, showing every recorded measurement and drill result for the entry",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-enhance-the-published-page-leaderboard-to-display-usernames-alongside-each-entry-and-rank-all-public-entries-numerically-from-best-to-worst-based-on-the-selected-sorting-metric",
-      "title": "Enhance the Published page leaderboard to display usernames alongside each entry and rank all public entries numerically from best to worst based on the selected sorting metric",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-benchmark-comparison-logic-to-support-all-newly-tracked-nfl-combine-statistics-providing-performance-level-indicators-elite-above-average-average-below-average-for-each-drill-and-measurement",
-      "title": "Update benchmark comparison logic to support all newly tracked NFL Combine statistics, providing performance level indicators (elite, above-average, average, below-average) for each drill and measurement",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-extend-the-guest-mode-localstorage-implementation-to-support-all-newly-tracked-nfl-combine-statistics-ensuring-feature-parity-between-authenticated-and-guest-users",
-      "title": "Extend the guest mode localStorage implementation to support all newly tracked NFL Combine statistics, ensuring feature parity between authenticated and guest users",
-      "reqIds": [
-        "REQ-9"
       ],
       "version": 1
     }
@@ -53,21 +46,33 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Track all NFL combine statistics for every individual entry",
+      "summary": "Add /admin page to manage user payment status",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Create public leaderboard ranking entries by performance with usernames",
+      "summary": "Block unpaid users at sign-in with custom contact message",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Expand the backend data model to track all standard NFL Combine statistics for each entry, ensuring every measurement and drill result is captured: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan",
+      "summary": "Create admin interface with list of users and paid/unpaid toggles",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Implement access control so only paid users can use app after authentication",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Implement backend payment status storage and validation that tracks which users are marked as paid, defaulting new users to unpaid status",
       "reqIds": [
-        "REQ-4"
+        "REQ-3"
       ],
       "status": "pending"
     }

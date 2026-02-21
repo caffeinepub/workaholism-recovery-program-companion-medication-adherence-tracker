@@ -31,6 +31,18 @@ export const Meeting = IDL.Record({
   'sponsorContactNotes' : IDL.Text,
   'format' : IDL.Text,
 });
+export const SubscriptionStatus = IDL.Variant({
+  'Active' : Time,
+  'Expired' : IDL.Null,
+  'Pending' : IDL.Null,
+});
+export const UserProfileWithPrincipal = IDL.Record({
+  'principal' : IDL.Principal,
+  'hasPaid' : IDL.Bool,
+  'name' : IDL.Text,
+  'subscriptionStatus' : SubscriptionStatus,
+  'isAdmin' : IDL.Bool,
+});
 export const UserRole = IDL.Variant({
   'admin' : IDL.Null,
   'user' : IDL.Null,
@@ -80,7 +92,12 @@ export const RecoveryStep = IDL.Record({
   'completed' : IDL.Bool,
   'description' : IDL.Text,
 });
-export const UserProfile = IDL.Record({ 'name' : IDL.Text });
+export const CallerUserProfile = IDL.Record({
+  'hasPaid' : IDL.Bool,
+  'name' : IDL.Text,
+  'subscriptionStatus' : SubscriptionStatus,
+  'isAdmin' : IDL.Bool,
+});
 export const CheckIn = IDL.Record({
   'stressLevel' : IDL.Nat,
   'mood' : IDL.Text,
@@ -118,7 +135,14 @@ export const idlService = IDL.Service({
   'addEmergencyContact' : IDL.Func([EmergencyContact], [], []),
   'addMedication' : IDL.Func([Medication], [], []),
   'addMeeting' : IDL.Func([Meeting], [], []),
+  'adminListAllUsers' : IDL.Func(
+      [],
+      [IDL.Vec(UserProfileWithPrincipal)],
+      ['query'],
+    ),
+  'adminSetUserSubscription' : IDL.Func([IDL.Principal, IDL.Nat], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'checkSubscriptionActive' : IDL.Func([], [IDL.Bool], ['query']),
   'deleteCombineResult' : IDL.Func([IDL.Nat], [IDL.Bool], []),
   'getAllPublicCombineEntries' : IDL.Func(
       [],
@@ -126,7 +150,11 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getAllRecoverySteps' : IDL.Func([], [IDL.Vec(RecoveryStep)], ['query']),
-  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getCallerUserProfile' : IDL.Func(
+      [],
+      [IDL.Opt(CallerUserProfile)],
+      ['query'],
+    ),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCheckIns' : IDL.Func([], [IDL.Vec(CheckIn)], ['query']),
   'getCombineResultById' : IDL.Func(
@@ -161,15 +189,16 @@ export const idlService = IDL.Service({
       ],
       ['query'],
     ),
+  'getUserPaymentStatus' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
-      [IDL.Opt(UserProfile)],
+      [IDL.Opt(CallerUserProfile)],
       ['query'],
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'logCheckIn' : IDL.Func([CheckIn], [], []),
   'logDose' : IDL.Func([DoseLog], [], []),
-  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'saveCallerUserProfile' : IDL.Func([CallerUserProfile], [], []),
   'saveCombineResult' : IDL.Func(
       [
         IDL.Record({
@@ -206,6 +235,7 @@ export const idlService = IDL.Service({
   'saveCommitmentsPlan' : IDL.Func([CommitmentsPlan], [], []),
   'saveReflection' : IDL.Func([Reflection], [], []),
   'toggleCombinePublicState' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+  'togglePaymentStatus' : IDL.Func([IDL.Principal], [IDL.Bool], []),
 });
 
 export const idlInitArgs = [];
@@ -233,6 +263,18 @@ export const idlFactory = ({ IDL }) => {
     'notes' : IDL.Text,
     'sponsorContactNotes' : IDL.Text,
     'format' : IDL.Text,
+  });
+  const SubscriptionStatus = IDL.Variant({
+    'Active' : Time,
+    'Expired' : IDL.Null,
+    'Pending' : IDL.Null,
+  });
+  const UserProfileWithPrincipal = IDL.Record({
+    'principal' : IDL.Principal,
+    'hasPaid' : IDL.Bool,
+    'name' : IDL.Text,
+    'subscriptionStatus' : SubscriptionStatus,
+    'isAdmin' : IDL.Bool,
   });
   const UserRole = IDL.Variant({
     'admin' : IDL.Null,
@@ -283,7 +325,12 @@ export const idlFactory = ({ IDL }) => {
     'completed' : IDL.Bool,
     'description' : IDL.Text,
   });
-  const UserProfile = IDL.Record({ 'name' : IDL.Text });
+  const CallerUserProfile = IDL.Record({
+    'hasPaid' : IDL.Bool,
+    'name' : IDL.Text,
+    'subscriptionStatus' : SubscriptionStatus,
+    'isAdmin' : IDL.Bool,
+  });
   const CheckIn = IDL.Record({
     'stressLevel' : IDL.Nat,
     'mood' : IDL.Text,
@@ -321,7 +368,14 @@ export const idlFactory = ({ IDL }) => {
     'addEmergencyContact' : IDL.Func([EmergencyContact], [], []),
     'addMedication' : IDL.Func([Medication], [], []),
     'addMeeting' : IDL.Func([Meeting], [], []),
+    'adminListAllUsers' : IDL.Func(
+        [],
+        [IDL.Vec(UserProfileWithPrincipal)],
+        ['query'],
+      ),
+    'adminSetUserSubscription' : IDL.Func([IDL.Principal, IDL.Nat], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'checkSubscriptionActive' : IDL.Func([], [IDL.Bool], ['query']),
     'deleteCombineResult' : IDL.Func([IDL.Nat], [IDL.Bool], []),
     'getAllPublicCombineEntries' : IDL.Func(
         [],
@@ -329,7 +383,11 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getAllRecoverySteps' : IDL.Func([], [IDL.Vec(RecoveryStep)], ['query']),
-    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getCallerUserProfile' : IDL.Func(
+        [],
+        [IDL.Opt(CallerUserProfile)],
+        ['query'],
+      ),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCheckIns' : IDL.Func([], [IDL.Vec(CheckIn)], ['query']),
     'getCombineResultById' : IDL.Func(
@@ -368,15 +426,16 @@ export const idlFactory = ({ IDL }) => {
         ],
         ['query'],
       ),
+    'getUserPaymentStatus' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
-        [IDL.Opt(UserProfile)],
+        [IDL.Opt(CallerUserProfile)],
         ['query'],
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'logCheckIn' : IDL.Func([CheckIn], [], []),
     'logDose' : IDL.Func([DoseLog], [], []),
-    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'saveCallerUserProfile' : IDL.Func([CallerUserProfile], [], []),
     'saveCombineResult' : IDL.Func(
         [
           IDL.Record({
@@ -413,6 +472,7 @@ export const idlFactory = ({ IDL }) => {
     'saveCommitmentsPlan' : IDL.Func([CommitmentsPlan], [], []),
     'saveReflection' : IDL.Func([Reflection], [], []),
     'toggleCombinePublicState' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+    'togglePaymentStatus' : IDL.Func([IDL.Principal], [IDL.Bool], []),
   });
 };
 

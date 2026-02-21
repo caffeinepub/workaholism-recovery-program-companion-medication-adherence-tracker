@@ -1,12 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { UserProfile } from '../backend';
+import type { CallerUserProfile } from '../backend';
 import { Principal } from '@dfinity/principal';
 
 export function useGetCallerUserProfile() {
   const { actor, isFetching: actorFetching } = useActor();
 
-  const query = useQuery<UserProfile | null>({
+  const query = useQuery<CallerUserProfile | null>({
     queryKey: ['currentUserProfile'],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
@@ -28,7 +28,7 @@ export function useSaveCallerUserProfile() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (profile: UserProfile) => {
+    mutationFn: async (profile: CallerUserProfile) => {
       if (!actor) throw new Error('Actor not available');
       return actor.saveCallerUserProfile(profile);
     },
@@ -41,7 +41,7 @@ export function useSaveCallerUserProfile() {
 export function useGetUserProfile(principal: Principal) {
   const { actor, isFetching } = useActor();
 
-  return useQuery<UserProfile | null>({
+  return useQuery<CallerUserProfile | null>({
     queryKey: ['userProfile', principal.toString()],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
@@ -55,11 +55,11 @@ export function useGetUserProfile(principal: Principal) {
 export function useGetUserProfiles(principals: Principal[]) {
   const { actor, isFetching } = useActor();
 
-  return useQuery<Map<string, UserProfile | null>>({
+  return useQuery<Map<string, CallerUserProfile | null>>({
     queryKey: ['userProfiles', principals.map((p) => p.toString()).sort()],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
-      const profileMap = new Map<string, UserProfile | null>();
+      const profileMap = new Map<string, CallerUserProfile | null>();
       await Promise.all(
         principals.map(async (principal) => {
           try {
@@ -76,4 +76,13 @@ export function useGetUserProfiles(principals: Principal[]) {
     enabled: !!actor && !isFetching && principals.length > 0,
     retry: false,
   });
+}
+
+export function useIsPaymentBlocked() {
+  const { data: userProfile, isLoading, isFetched } = useGetCallerUserProfile();
+
+  return {
+    isBlocked: !isLoading && isFetched && userProfile !== null && userProfile !== undefined && !userProfile.hasPaid && !userProfile.isAdmin,
+    isLoading,
+  };
 }

@@ -1,85 +1,76 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T01:23:09.401Z",
+  "generatedAt": "2026-02-21T11:19:52.206Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 6,
-    "implemented": 5,
+    "total": 5,
+    "implemented": 4,
     "items": [
       {
-        "id": "REQ-4",
-        "summary": "Expand the backend data model to track all standard NFL Combine statistics for each entry, ensuring every measurement and drill result is captured: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan",
+        "id": "REQ-1",
+        "summary": "Create a separate admin page at /admin route that displays a list of all users who have attempted to sign in, showing their username/principal and current payment status",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/AdminPayment.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/components/layout/AppShell.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/AdminPayment.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/components/layout/AppShell.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Add toggle controls on the admin page to mark users as paid or unpaid, with immediate persistence to backend state",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/AdminPayment.tsx",
+          "frontend/src/hooks/usePaymentAdmin.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/AdminPayment.tsx",
+          "frontend/src/hooks/usePaymentAdmin.ts"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Implement backend payment status storage and validation that tracks which users are marked as paid, defaulting new users to unpaid status",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
+        "id": "REQ-4",
+        "summary": "Block unpaid users from accessing the app after Internet Identity authentication, showing the message: 'Please contact admin for access @thenewbruce1 on IG or iPhone 📱 txt 3527348440'",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/auth/PaymentGate.tsx",
+          "frontend/src/components/layout/AppShell.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/auth/PaymentGate.tsx",
+          "frontend/src/components/layout/AppShell.tsx",
+          "frontend/src/hooks/useQueries.ts"
+        ]
+      },
+      {
         "id": "REQ-5",
-        "summary": "Update the frontend CombineEntryForm to include input fields for all NFL Combine statistics: 40-yard dash, bench press reps, vertical jump, broad jump, 3-cone drill, 20-yard shuttle, 60-yard shuttle, height, weight, arm length, hand size, and wingspan with appropriate validation",
+        "summary": "Modify AppShell or authentication flow to enforce payment check on every app load, redirecting unpaid users to the blocked access message",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/combine/CombineEntryForm.tsx",
-          "frontend/src/utils/combineValidation.ts"
+          "frontend/src/components/layout/AppShell.tsx",
+          "frontend/src/App.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/combine/CombineEntryForm.tsx",
-          "frontend/src/utils/combineValidation.ts"
-        ]
-      },
-      {
-        "id": "REQ-6",
-        "summary": "Display all tracked NFL Combine statistics in the EntryDetail and PublicEntry views, showing every recorded measurement and drill result for the entry",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/combine/EntryDetail.tsx",
-          "frontend/src/pages/combine/PublicEntry.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/combine/EntryDetail.tsx",
-          "frontend/src/pages/combine/PublicEntry.tsx"
-        ]
-      },
-      {
-        "id": "REQ-7",
-        "summary": "Enhance the Published page leaderboard to display usernames alongside each entry and rank all public entries numerically from best to worst based on the selected sorting metric",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/combine/Published.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/combine/Published.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ]
-      },
-      {
-        "id": "REQ-8",
-        "summary": "Update benchmark comparison logic to support all newly tracked NFL Combine statistics, providing performance level indicators (elite, above-average, average, below-average) for each drill and measurement",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/utils/combineBenchmarks.ts",
-          "frontend/src/components/combine/BenchmarkComparison.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/utils/combineBenchmarks.ts",
-          "frontend/src/components/combine/BenchmarkComparison.tsx"
-        ]
-      },
-      {
-        "id": "REQ-9",
-        "summary": "Extend the guest mode localStorage implementation to support all newly tracked NFL Combine statistics, ensuring feature parity between authenticated and guest users",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/utils/combineGuestStorage.ts",
-          "frontend/src/hooks/useCombine.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/utils/combineGuestStorage.ts",
-          "frontend/src/hooks/useCombine.ts"
+          "frontend/src/components/layout/AppShell.tsx",
+          "frontend/src/App.tsx"
         ]
       }
     ]
@@ -91,23 +82,17 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/src/App.tsx",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/components/combine/BenchmarkComparison.tsx",
-    "frontend/src/components/combine/CombineEntryForm.tsx",
-    "frontend/src/components/combine/CombineTrendsPanel.tsx",
+    "frontend/src/components/auth/PaymentGate.tsx",
+    "frontend/src/components/auth/ProfileSetupDialog.tsx",
+    "frontend/src/components/layout/AppShell.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useCombine.ts",
+    "frontend/src/hooks/usePaymentAdmin.ts",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/combine/Dashboard.tsx",
-    "frontend/src/pages/combine/EntryDetail.tsx",
-    "frontend/src/pages/combine/PublicEntry.tsx",
-    "frontend/src/pages/combine/Published.tsx",
-    "frontend/src/pages/combine/ShareCard.tsx",
-    "frontend/src/utils/combineBenchmarks.ts",
-    "frontend/src/utils/combineGuestStorage.ts",
-    "frontend/src/utils/combineValidation.ts",
+    "frontend/src/pages/AdminPayment.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

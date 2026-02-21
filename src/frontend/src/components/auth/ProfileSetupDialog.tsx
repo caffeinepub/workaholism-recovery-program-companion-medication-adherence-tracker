@@ -18,8 +18,13 @@ export default function ProfileSetupDialog() {
     }
 
     try {
-      await saveProfile.mutateAsync({ name: name.trim() });
-      toast.success('Welcome! Your profile has been created.');
+      await saveProfile.mutateAsync({
+        name: name.trim(),
+        subscriptionStatus: { __kind__: 'Pending', Pending: null },
+        isAdmin: false,
+        hasPaid: false,
+      } as any);
+      toast.success('Welcome! Your profile has been created. Waiting for payment approval.');
     } catch (error) {
       toast.error('Failed to save profile. Please try again.');
       console.error('Profile save error:', error);
@@ -30,7 +35,7 @@ export default function ProfileSetupDialog() {
     <Dialog open={true}>
       <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Welcome to Recovery Companion</DialogTitle>
+          <DialogTitle>Welcome to NFL Combine Tracker</DialogTitle>
           <DialogDescription>
             Let's get started by setting up your profile. What should we call you?
           </DialogDescription>

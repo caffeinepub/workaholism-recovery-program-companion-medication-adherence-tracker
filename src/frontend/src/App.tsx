@@ -9,6 +9,8 @@ import CombineEntryDetail from './pages/combine/EntryDetail';
 import CombineShareCard from './pages/combine/ShareCard';
 import CombinePublicEntry from './pages/combine/PublicEntry';
 import CombinePublished from './pages/combine/Published';
+import Admin from './pages/Admin';
+import AdminPayment from './pages/AdminPayment';
 import AppShell from './components/layout/AppShell';
 import ProfileSetupDialog from './components/auth/ProfileSetupDialog';
 import { Toaster } from '@/components/ui/sonner';
@@ -92,6 +94,18 @@ const publishedRoute = createRoute({
   component: CombinePublished,
 });
 
+const adminRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin',
+  component: Admin,
+});
+
+const adminPaymentRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin/payment',
+  component: AdminPayment,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   dashboardRoute,
@@ -101,6 +115,8 @@ const routeTree = rootRoute.addChildren([
   shareCardRoute,
   publicEntryRoute,
   publishedRoute,
+  adminRoute,
+  adminPaymentRoute,
 ]);
 
 const router = createRouter({ routeTree });

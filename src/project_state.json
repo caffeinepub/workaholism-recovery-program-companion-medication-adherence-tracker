@@ -1,31 +1,61 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "NFL Combine Tracker with manual Zelle payment verification system and admin access control",
+  "summary": "NFL Combine Performance Tracker - A comprehensive fitness tracking app with payment-based access control, leaderboard rankings, and training resources",
   "architectural_notes": [
-    "Manual payment verification workflow via Zelle - admin toggles users to 'Paid' status after receiving payment",
-    "Admin-only access control at /admin route with user management interface",
-    "Payment gate blocks sign-in functionality until user marked as 'Paid' by admin",
-    "Internet Identity authentication integrated with payment status checks"
+    "Payment system: $1.00 per month (31 days) via Zelle to phone 3527348440",
+    "Admin contact: Matt Rossin (@thenewbruce1 on Instagram, 3527348440 phone, thenewbruce1@gmail.com)",
+    "Principal ID for admin: i67ts-e55ut-cg7iv-w4qa6-f63qo-pgevo-7zqec-cevgk-5nm7d-xjryz-mae",
+    "Payment toggle controls authentication - unpaid users cannot log in",
+    "LeaderBoard uses AI ranking based on NFL Combine performance metrics",
+    "All NFL Combine drills tracked (40-yard dash, vertical jump, bench press, etc.)",
+    "Social sharing to multiple platforms required for entries",
+    "Monthly Honor Code signature required with immediate removal for violations",
+    "Strict positivity enforcement in chat - negativity results in permanent ban"
   ],
   "known_issues": [
-    "Admin page showing 'Access denied' error for authenticated admin user - authorization logic not properly registering or verifying admin Principal ID"
+    "Build complexity causing failures - need to implement features incrementally",
+    "Complex feature set may require phased deployment approach"
   ],
   "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-fix-admin-page-authorization-to-properly-register-and-verify-the-admin-principal-id-the-first-user-to-visit-admin-should-be-stored-as-the-authorized-admin-and-all-subsequent-visits-should-validate-against-this-stored-principal-ensure-the-backend-correctly-persists-the-admin-principal-and-the-frontend-properly-waits-for-authentication-before-checking-admin-status",
-      "title": "Fix admin page authorization to properly register and verify the admin Principal ID. The first user to visit /admin should be stored as the authorized admin, and all subsequent visits should validate against this stored Principal. Ensure the backend correctly persists the admin Principal and the frontend properly waits for authentication before checking admin status.",
+      "id": "feature-create-admin-panel-page-that-displays-all-users-in-a-table-with-their-current-payment-status-paid-unpaid-and-provides-toggle-switches-to-change-each-user-s-payment-status-between-paid-and-unpaid",
+      "title": "Create admin panel page that displays all users in a table with their current payment status (paid/unpaid) and provides toggle switches to change each user's payment status between paid and unpaid",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-user-management-interface-to-the-admin-page-that-displays-all-registered-users-with-their-current-paid-status-provide-toggle-controls-for-each-user-that-allow-the-admin-to-mark-users-as-paid-or-unpaid-this-enables-manual-zelle-payment-verification-workflow-where-the-admin-receives-zelle-payment-then-toggles-the-user-to-paid-status-after-which-the-user-can-sign-in",
-      "title": "Add user management interface to the admin page that displays all registered users with their current 'Paid' status. Provide toggle controls for each user that allow the admin to mark users as 'Paid' or 'Unpaid'. This enables manual Zelle payment verification workflow where the admin receives Zelle payment, then toggles the user to 'Paid' status, after which the user can sign in.",
+      "id": "feature-implement-authentication-gate-that-blocks-unpaid-users-from-logging-in-and-displays-error-message-must-pay-in-full-to-receive-each-month-31-days-sign-in-ability-and-access-to-the-app-each-payment-of-1-00-via-zelle-earns-a-user-one-more-month-or-31-more-days-paid-sign-in-ability-and-full-access-to-the-app-and-its-features",
+      "title": "Implement authentication gate that blocks unpaid users from logging in and displays error message: 'must pay in full to receive each month (31 days) sign in ability and access to the app. Each payment of $1.00 via Zelle earns a user one more month or 31 more days \"paid\" sign in ability and full access to the app and its features'",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-landing-page-message-displaying-payment-instructions-please-add-all-contact-card-info-or-contact-card-itself-in-your-description-of-the-zelle-payment-s-you-send-to-the-following-individual-matt-rossin-at-zelle-phone-number-3527348440",
+      "title": "Add landing page message displaying payment instructions: 'please add all contact card info or contact card itself in your description of the Zelle payment(s) you send to the following individual (Matt Rossin) at Zelle phone number 3527348440'",
       "reqIds": [
         "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-contact-information-message-to-landing-page-if-you-have-any-issues-contact-the-admin-matt-thenewbruce1-on-instagram-or-via-txt-or-facetime-at-the-iphone-number-3527348440-my-email-is-thenewbruce1-gmail-com-or-mattarmor1111-gmail-com-but-is-rarely-checked",
+      "title": "Add contact information message to landing page: 'If you have any issues contact the admin Matt @thenewbruce1 on Instagram or via Txt or FaceTime at the 📲 iPhone number 3527348440. My email is thenewbruce1@gmail.com or mattarmor1111@gmail.com but is rarely checked.'",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-contact-card-page-where-users-can-enter-and-display-their-real-name-nfl-combine-tracker-username-display-name-and-any-contact-information-they-wish-to-share",
+      "title": "Create Contact Card page where users can enter and display their real name, NFL Combine Tracker username (display name), and any contact information they wish to share",
+      "reqIds": [
+        "REQ-6"
       ],
       "version": 1
     }
@@ -33,38 +63,96 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Fix admin page access - user unable to access /admin despite proper authentication",
+      "summary": "Admin panel with payment status toggle (paid/unpaid) that controls user login access",
       "reqIds": [],
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": "AR-2",
-      "summary": "Implement payment gate - users cannot sign in without 'Paid' status",
+      "summary": "User authentication system that blocks unpaid users from logging in with error message",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Add admin page user management with toggle controls for 'Paid' status",
+      "summary": "Contact Card page for user profile information and NFL Combine Tracker username",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-4",
-      "summary": "Show error message 'No sign in without up to date payment' for unpaid users attempting sign-in",
+      "summary": "New Entry page for uploading NFL Combine stats, photos, videos, and notes",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "LeaderBoard with AI-powered ranking system based on NFL Combine performance",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-6",
-      "summary": "Block all sign-in functionality for users who do not have 'Paid' status. Users attempting to sign in without being marked as 'Paid' by the admin must see the error message: 'No sign in without up to date payment'. The sign-in button or Internet Identity flow should only be available to users who have been toggled to 'Paid' status in the admin panel.",
+      "summary": "Social sharing functionality for posts to LinkedIn, Instagram, Facebook, etc.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Instagram link integration for user profiles",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "YouTube page link for training videos and educational content",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Admin Trainers pages with 24/7 access and tipping functionality",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Honor Code page with monthly signature requirement and enforcement",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Chatter page with DMs and group chat with positivity enforcement",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Store and display admin principal ID (i67ts-e55ut-cg7iv-w4qa6-f63qo-pgevo-7zqec-cevgk-5nm7d-xjryz-mae) in backend for access control and admin identification",
       "reqIds": [
-        "REQ-2"
+        "REQ-5"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Create New Entry page allowing users to input NFL Combine statistics for all standard combine drills with notes field for additional context",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Implement basic LeaderBoard page that displays all users ranked by their combine performance with ranking from #1 to lowest, showing key performance metrics for each user",
+      "reqIds": [
+        "REQ-8"
       ],
       "status": "pending"
     }
   ],
-  "projectName": "NFL Combine Tracker",
+  "projectName": "NFL Combine Performance Tracker",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

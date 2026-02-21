@@ -1,6 +1,6 @@
 import LoginButton from '../components/auth/LoginButton';
 import { useNavigate } from '@tanstack/react-router';
-import { Activity, TrendingUp, Share2, Trophy, DollarSign } from 'lucide-react';
+import { Activity, TrendingUp, Share2, Trophy, DollarSign, Instagram, Phone, Mail } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -58,15 +58,15 @@ export default function Landing() {
       <main className="container mx-auto px-4 py-16">
         <div className="max-w-6xl mx-auto">
           {/* Payment Information Banner */}
-          <Alert className="mb-12 border-2 border-primary bg-primary/5">
+          <Alert className="mb-8 border-2 border-primary bg-primary/5">
             <DollarSign className="h-5 w-5 text-primary" />
             <AlertTitle className="text-xl font-bold text-foreground mb-3">
-              Payment Information - Subscription Required
+              Payment Information - $1.00 per Month
             </AlertTitle>
             <AlertDescription className="space-y-3 text-base">
               <div className="space-y-2">
                 <p className="font-semibold text-foreground">
-                  To access full features, send payment via Zelle:
+                  Please add all contact card info or contact card itself in your description of the Zelle payment(s) you send to the following individual (Matt Rossin) at Zelle phone number 3527348440
                 </p>
                 <div className="bg-background/80 p-4 rounded-lg border border-border space-y-2">
                   <p className="text-foreground">
@@ -76,16 +76,39 @@ export default function Landing() {
                     <span className="font-semibold">Recipient Name:</span> Matt Rossin
                   </p>
                   <p className="text-foreground">
-                    <span className="font-semibold">Payment Description (Required):</span>
-                  </p>
-                  <p className="text-sm text-muted-foreground ml-4">
-                    Include your username, real name, and "NFL Combine Tracker" in the payment description
+                    <span className="font-semibold">Payment Amount:</span> $1.00 per month (31 days)
                   </p>
                 </div>
                 <p className="text-sm text-muted-foreground mt-3">
-                  After payment, your subscription will be activated by an admin. You'll receive access to all features including data sync and public sharing.
+                  Each payment of $1.00 via Zelle earns a user one more month or 31 more days "paid" sign in ability and full access to the app and its features
                 </p>
               </div>
+            </AlertDescription>
+          </Alert>
+
+          {/* Contact Information Banner */}
+          <Alert className="mb-12 border-2 border-blue-500 bg-blue-500/5">
+            <Phone className="h-5 w-5 text-blue-600" />
+            <AlertTitle className="text-xl font-bold text-foreground mb-3">
+              Need Help? Contact Admin
+            </AlertTitle>
+            <AlertDescription className="space-y-3 text-base">
+              <p className="text-foreground">
+                If you have any issues contact the admin Matt <span className="font-semibold">@thenewbruce1</span> on Instagram or via Txt or FaceTime at the 📲 iPhone number <span className="font-mono font-semibold">3527348440</span>.
+              </p>
+              <div className="flex flex-wrap gap-4 mt-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <Instagram className="h-4 w-4 text-pink-600" />
+                  <span className="font-semibold">@thenewbruce1</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Phone className="h-4 w-4 text-blue-600" />
+                  <span className="font-semibold">3527348440</span>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground mt-3">
+                <span className="font-semibold">Email:</span> thenewbruce1@gmail.com or mattarmor1111@gmail.com <span className="italic">(but is rarely checked)</span>
+              </p>
             </AlertDescription>
           </Alert>
 

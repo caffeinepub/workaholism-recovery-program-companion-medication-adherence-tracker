@@ -1,97 +1,79 @@
-import { createRouter, RouterProvider, createRoute, createRootRoute, Outlet } from '@tanstack/react-router';
-import { useInternetIdentity } from './hooks/useInternetIdentity';
-import { useGetCallerUserProfile } from './hooks/useQueries';
+import { RouterProvider, createRouter, createRoute, createRootRoute } from '@tanstack/react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from 'next-themes';
+import { Toaster } from '@/components/ui/sonner';
+import AppShell from './components/layout/AppShell';
 import Landing from './pages/Landing';
-import CombineDashboard from './pages/combine/Dashboard';
-import CombineNewEntry from './pages/combine/NewEntry';
-import CombineHistory from './pages/combine/History';
-import CombineEntryDetail from './pages/combine/EntryDetail';
-import CombineShareCard from './pages/combine/ShareCard';
-import CombinePublicEntry from './pages/combine/PublicEntry';
-import CombinePublished from './pages/combine/Published';
+import Dashboard from './pages/combine/Dashboard';
+import NewEntry from './pages/combine/NewEntry';
+import History from './pages/combine/History';
+import EntryDetail from './pages/combine/EntryDetail';
+import ShareCard from './pages/combine/ShareCard';
+import PublicEntry from './pages/combine/PublicEntry';
+import Published from './pages/combine/Published';
 import Admin from './pages/Admin';
 import AdminPayment from './pages/AdminPayment';
-import AppShell from './components/layout/AppShell';
-import ProfileSetupDialog from './components/auth/ProfileSetupDialog';
-import { Toaster } from '@/components/ui/sonner';
-import { ThemeProvider } from 'next-themes';
+import ContactCard from './pages/ContactCard';
 
-function Layout() {
-  const { identity } = useInternetIdentity();
-  const { data: userProfile, isLoading: profileLoading, isFetched } = useGetCallerUserProfile();
-
-  const isAuthenticated = !!identity;
-  const showProfileSetup = isAuthenticated && !profileLoading && isFetched && userProfile === null;
-
-  if (showProfileSetup) {
-    return <ProfileSetupDialog />;
-  }
-
-  return (
-    <AppShell>
-      <Outlet />
-    </AppShell>
-  );
-}
-
-const rootRoute = createRootRoute({
-  component: Layout,
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      refetchOnWindowFocus: false,
+    },
+  },
 });
 
-function IndexComponent() {
-  const { identity } = useInternetIdentity();
-  if (!identity) {
-    return <Landing />;
-  }
-  return <CombineDashboard />;
-}
+const rootRoute = createRootRoute({
+  component: () => <AppShell />,
+});
 
-const indexRoute = createRoute({
+const landingRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
-  component: IndexComponent,
+  component: Landing,
 });
 
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/dashboard',
-  component: CombineDashboard,
+  component: Dashboard,
 });
 
 const newEntryRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/new-entry',
-  component: CombineNewEntry,
+  component: NewEntry,
 });
 
 const historyRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/history',
-  component: CombineHistory,
+  component: History,
 });
 
 const entryDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/entry/$entryId',
-  component: CombineEntryDetail,
+  component: EntryDetail,
 });
 
 const shareCardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/share/$entryId',
-  component: CombineShareCard,
+  component: ShareCard,
 });
 
 const publicEntryRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/public/$entryId',
-  component: CombinePublicEntry,
+  component: PublicEntry,
 });
 
 const publishedRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/published',
-  component: CombinePublished,
+  component: Published,
 });
 
 const adminRoute = createRoute({
@@ -106,8 +88,14 @@ const adminPaymentRoute = createRoute({
   component: AdminPayment,
 });
 
+const contactCardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/contact-card',
+  component: ContactCard,
+});
+
 const routeTree = rootRoute.addChildren([
-  indexRoute,
+  landingRoute,
   dashboardRoute,
   newEntryRoute,
   historyRoute,
@@ -117,6 +105,7 @@ const routeTree = rootRoute.addChildren([
   publishedRoute,
   adminRoute,
   adminPaymentRoute,
+  contactCardRoute,
 ]);
 
 const router = createRouter({ routeTree });
@@ -130,8 +119,10 @@ declare module '@tanstack/react-router' {
 export default function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <RouterProvider router={router} />
-      <Toaster />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <Toaster />
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

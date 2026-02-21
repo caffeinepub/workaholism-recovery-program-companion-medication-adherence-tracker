@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { CallerUserProfile } from '../backend';
 import { Principal } from '@dfinity/principal';
+import type { CallerUserProfile } from '../backend';
 
 export function useGetCallerUserProfile() {
   const { actor, isFetching: actorFetching } = useActor();
@@ -55,42 +55,49 @@ export function useGetUserProfile(user: Principal) {
 export function useBatchGetUserProfiles(principals: Principal[]) {
   const { actor, isFetching: actorFetching } = useActor();
 
-  return useQuery<Map<string, CallerUserProfile | null>>({
-    queryKey: ['userProfiles', principals.map((p) => p.toString()).sort()],
+  return useQuery<Map<string, CallerUserProfile>>({
+    queryKey: ['batchUserProfiles', principals.map((p) => p.toString()).sort()],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
-      const results = new Map<string, CallerUserProfile | null>();
+
+      const profileMap = new Map<string, CallerUserProfile>();
+
       await Promise.all(
         principals.map(async (principal) => {
           try {
             const profile = await actor.getUserProfile(principal);
-            results.set(principal.toString(), profile);
+            if (profile) {
+              profileMap.set(principal.toString(), profile);
+            }
           } catch (error) {
             console.error(`Failed to fetch profile for ${principal.toString()}:`, error);
-            results.set(principal.toString(), null);
           }
         })
       );
-      return results;
+
+      return profileMap;
     },
     enabled: !!actor && !actorFetching && principals.length > 0,
     retry: false,
+    staleTime: 1000 * 60 * 5,
   });
 }
 
 export function useIsAdmin() {
   const { actor, isFetching: actorFetching } = useActor();
-  const { identity } = useInternetIdentity();
 
   return useQuery<boolean>({
     queryKey: ['isAdmin'],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.isAdminCaller();
+      if (!actor) return false;
+      try {
+        return await actor.isAdminCaller();
+      } catch (error) {
+        console.error('Admin check failed:', error);
+        return false;
+      }
     },
-    enabled: !!actor && !actorFetching && !!identity,
+    enabled: !!actor && !actorFetching,
     retry: false,
   });
 }
-
-import { useInternetIdentity } from './useInternetIdentity';

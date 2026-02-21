@@ -1,93 +1,180 @@
 {
   "kind": "build_request",
-  "title": "Fix admin access and implement manual payment gate with Zelle verification",
+  "title": "Build core NFL Combine Tracker with payment toggle and basic tracking",
   "projectName": "NFL Combine Tracker",
-  "priority": "high",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Fix admin page authorization to properly register and verify the admin Principal ID. The first user to visit /admin should be stored as the authorized admin, and all subsequent visits should validate against this stored Principal. Ensure the backend correctly persists the admin Principal and the frontend properly waits for authentication before checking admin status.",
+      "text": "Create admin panel page that displays all users in a table with their current payment status (paid/unpaid) and provides toggle switches to change each user's payment status between paid and unpaid",
       "target": "both",
       "source": {
         "messageIds": [
-          "msg-1",
-          "msg-2",
-          "msg-3"
+          "msg-user-final"
         ],
         "quotes": [
-          "Access denied",
-          "you're signed in with Internet Identity, visiting the `/admin` page, and seeing 'Access denied'",
-          "The backend isn't properly storing your Principal ID as the admin on first visit"
+          "the admin panel toggles users from \"unpaid\" to \"paid\" and possibly back to \"unpaid\" or \"paid\" based on disciplinary action"
         ]
       },
       "acceptanceCriteria": [
-        "Admin can successfully access /admin page after signing in with Internet Identity",
-        "First user to visit /admin is automatically registered as the authorized admin",
-        "Admin Principal ID is correctly stored in backend state",
-        "Authorization check properly validates current user's Principal against stored admin Principal",
-        "No 'Access denied' error for authenticated admin user"
+        "Admin panel displays all registered users",
+        "Each user row shows current payment status",
+        "Toggle switch allows admin to change status between paid and unpaid",
+        "Status changes persist in backend"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Block all sign-in functionality for users who do not have 'Paid' status. Users attempting to sign in without being marked as 'Paid' by the admin must see the error message: 'No sign in without up to date payment'. The sign-in button or Internet Identity flow should only be available to users who have been toggled to 'Paid' status in the admin panel.",
+      "text": "Implement authentication gate that blocks unpaid users from logging in and displays error message: 'must pay in full to receive each month (31 days) sign in ability and access to the app. Each payment of $1.00 via Zelle earns a user one more month or 31 more days \"paid\" sign in ability and full access to the app and its features'",
       "target": "both",
       "source": {
         "messageIds": [
-          "msg-9",
-          "msg-10"
+          "msg-user-final"
         ],
         "quotes": [
-          "No sign in at all without being in 'paid' status and an error message reading 'no sign without up to date payment'",
-          "Users trying to sign in without 'Paid' status see error: 'No sign in without up to date payment'"
+          "\"unpaid\" users unable to physically even sign in who also receive an error message if they try to login with \"unpaid\" toggled on"
         ]
       },
       "acceptanceCriteria": [
-        "Users without 'Paid' status cannot initiate Internet Identity sign-in flow",
-        "Error message 'No sign in without up to date payment' is displayed to unpaid users attempting sign-in",
-        "Only users marked as 'Paid' in the admin panel can successfully sign in",
-        "Payment status check occurs before allowing authentication flow to proceed"
+        "Unpaid users cannot proceed past login screen",
+        "Error message displays exact payment instructions",
+        "Paid users can access app normally",
+        "Payment status check happens on login attempt"
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Add user management interface to the admin page that displays all registered users with their current 'Paid' status. Provide toggle controls for each user that allow the admin to mark users as 'Paid' or 'Unpaid'. This enables manual Zelle payment verification workflow where the admin receives Zelle payment, then toggles the user to 'Paid' status, after which the user can sign in.",
-      "target": "both",
+      "text": "Add landing page message displaying payment instructions: 'please add all contact card info or contact card itself in your description of the Zelle payment(s) you send to the following individual (Matt Rossin) at Zelle phone number 3527348440'",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-9",
-          "msg-10",
-          "msg-11"
+          "msg-user-final"
         ],
         "quotes": [
-          "just need access to my admin page to toggle those who make payments via Zelle into 'paid' status",
-          "You receive Zelle payment → Toggle user to 'Paid' in admin → User can sign in",
-          "Admin page shows all users with toggle controls for 'Paid' status"
+          "On the cover it should have a message stating \"please add all contact card info...\""
         ]
       },
       "acceptanceCriteria": [
-        "Admin page displays a list of all registered users",
-        "Each user entry shows their current 'Paid' status (Paid/Unpaid)",
-        "Toggle control is available for each user to switch between Paid and Unpaid states",
-        "Changes to payment status are immediately persisted to backend",
-        "Payment status changes take effect immediately for sign-in access control"
+        "Payment instructions appear prominently on landing/cover page",
+        "Zelle phone number 3527348440 is displayed",
+        "Instructions mention Matt Rossin as recipient",
+        "Message requests contact card info in payment description"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Add contact information message to landing page: 'If you have any issues contact the admin Matt @thenewbruce1 on Instagram or via Txt or FaceTime at the 📲 iPhone number 3527348440. My email is thenewbruce1@gmail.com or mattarmor1111@gmail.com but is rarely checked.'",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-final"
+        ],
+        "quotes": [
+          "Another message should read \"If you have any issues contact the admin Matt @thenewbruce1 on Instagram...\""
+        ]
+      },
+      "acceptanceCriteria": [
+        "Contact information displays on landing page",
+        "Instagram handle @thenewbruce1 is shown",
+        "Phone number 3527348440 is displayed",
+        "Both email addresses are listed with note about rare checking"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Store and display admin principal ID (i67ts-e55ut-cg7iv-w4qa6-f63qo-pgevo-7zqec-cevgk-5nm7d-xjryz-mae) in backend for access control and admin identification",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-user-final"
+        ],
+        "quotes": [
+          "Principal ID: i67ts-e55ut-cg7iv-w4qa6-f63qo-pgevo-7zqec-cevgk-5nm7d-xjryz-mae"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Admin principal ID is stored in backend",
+        "Admin status is verified using this principal",
+        "Only this principal can access admin panel",
+        "Admin privileges include payment status toggling"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Create Contact Card page where users can enter and display their real name, NFL Combine Tracker username (display name), and any contact information they wish to share",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-user-final"
+        ],
+        "quotes": [
+          "1) \"Contact Card\" Page - where absolutely any and all contact info including real name and \"NFL Combine Tracker\" (the username or name a particular user would like to be called by on the app)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Page allows users to input real name",
+        "Users can set NFL Combine Tracker username/display name",
+        "Form accepts optional contact information fields",
+        "Contact card data is saved to user profile"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Create New Entry page allowing users to input NFL Combine statistics for all standard combine drills with notes field for additional context",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-user-final"
+        ],
+        "quotes": [
+          "2)\"New Entry Page\" where up to date NFL Combine Statistics can be loaded up",
+          "A \"notes\" can also be added on the athlete or \"user\" with each \"New  Entry"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Form includes input fields for all NFL Combine drill results",
+        "Notes field allows users to add context to their entries",
+        "Entries are saved with timestamp",
+        "Users can view their submitted entries"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Implement basic LeaderBoard page that displays all users ranked by their combine performance with ranking from #1 to lowest, showing key performance metrics for each user",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-user-final"
+        ],
+        "quotes": [
+          "3)\"The LeaderBoard\" - publicly displays the ranks of all users from #1 to the lowest possible number"
+        ]
+      },
+      "acceptanceCriteria": [
+        "LeaderBoard displays all users with combine entries",
+        "Users are ranked from #1 down based on performance",
+        "Each entry shows username and key stats",
+        "Rankings are visible to all paid users"
       ]
     }
   ],
   "constraints": [
-    "Do not integrate Stripe or any external payment processing APIs",
-    "Payment verification is manual only - admin receives Zelle payments externally and manually toggles users",
-    "Preserve existing NFL Combine Tracker functionality and data structures",
-    "Maintain single-actor Motoko backend architecture",
-    "Do not modify immutable frontend paths: useInternetIdentity.ts, useInternetIdentity.tsx, useActor.ts, main.tsx, components/ui"
+    "Use existing CombineEntry and user profile data structures from backend/main.mo",
+    "Maintain existing Internet Identity authentication system",
+    "Keep payment status toggle functionality restricted to admin principal only",
+    "Do not modify existing combine entry form and validation logic",
+    "Preserve existing published/leaderboard functionality while adding payment gates"
   ],
   "nonGoals": [
-    "Automated payment processing or Stripe integration",
-    "Zelle API integration",
-    "Subscription duration tracking or expiration dates",
-    "Email notifications for payment status changes",
-    "Payment history or transaction logging",
-    "Refund processing"
+    "Instagram, YouTube, or social media integrations (future phase)",
+    "Photo and video upload functionality (future phase)",
+    "Social sharing to external platforms (future phase)",
+    "Admin Trainers pages (future phase)",
+    "Honor Code signature system (future phase)",
+    "Chatter/messaging system (future phase)",
+    "AI-powered automatic ranking system (start with simple metric-based ranking)",
+    "Zelle payment API integration (manual payment verification only)",
+    "Automatic payment expiration after 31 days (manual admin control only)"
   ],
   "imageRequirements": {
     "required": [],

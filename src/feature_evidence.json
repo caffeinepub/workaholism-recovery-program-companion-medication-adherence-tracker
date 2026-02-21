@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-fix-admin-page-authorization-to-properly-register-and-verify-the-admin-principal-id-the-first-user-to-visit-admin-should-be-stored-as-the-authorized-admin-and-all-subsequent-visits-should-validate-against-this-stored-principal-ensure-the-backend-correctly-persists-the-admin-principal-and-the-frontend-properly-waits-for-authentication-before-checking-admin-status",
-      "featureTitle": "Fix admin page authorization to properly register and verify the admin Principal ID. The first user to visit /admin should be stored as the authorized admin, and all subsequent visits should validate against this stored Principal. Ensure the backend correctly persists the admin Principal and the frontend properly waits for authentication before checking admin status.",
+      "featureId": "feature-create-admin-panel-page-that-displays-all-users-in-a-table-with-their-current-payment-status-paid-unpaid-and-provides-toggle-switches-to-change-each-user-s-payment-status-between-paid-and-unpaid",
+      "featureTitle": "Create admin panel page that displays all users in a table with their current payment status (paid/unpaid) and provides toggle switches to change each user's payment status between paid and unpaid",
       "files": [
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/Admin.tsx"
+        "frontend/src/App.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -22,10 +21,30 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-user-management-interface-to-the-admin-page-that-displays-all-registered-users-with-their-current-paid-status-provide-toggle-controls-for-each-user-that-allow-the-admin-to-mark-users-as-paid-or-unpaid-this-enables-manual-zelle-payment-verification-workflow-where-the-admin-receives-zelle-payment-then-toggles-the-user-to-paid-status-after-which-the-user-can-sign-in",
-      "featureTitle": "Add user management interface to the admin page that displays all registered users with their current 'Paid' status. Provide toggle controls for each user that allow the admin to mark users as 'Paid' or 'Unpaid'. This enables manual Zelle payment verification workflow where the admin receives Zelle payment, then toggles the user to 'Paid' status, after which the user can sign in.",
+      "featureId": "feature-implement-authentication-gate-that-blocks-unpaid-users-from-logging-in-and-displays-error-message-must-pay-in-full-to-receive-each-month-31-days-sign-in-ability-and-access-to-the-app-each-payment-of-1-00-via-zelle-earns-a-user-one-more-month-or-31-more-days-paid-sign-in-ability-and-full-access-to-the-app-and-its-features",
+      "featureTitle": "Implement authentication gate that blocks unpaid users from logging in and displays error message: 'must pay in full to receive each month (31 days) sign in ability and access to the app. Each payment of $1.00 via Zelle earns a user one more month or 31 more days \"paid\" sign in ability and full access to the app and its features'",
       "files": [
-        "frontend/src/pages/Admin.tsx"
+        "frontend/src/components/layout/AppShell.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-landing-page-message-displaying-payment-instructions-please-add-all-contact-card-info-or-contact-card-itself-in-your-description-of-the-zelle-payment-s-you-send-to-the-following-individual-matt-rossin-at-zelle-phone-number-3527348440",
+      "featureTitle": "Add landing page message displaying payment instructions: 'please add all contact card info or contact card itself in your description of the Zelle payment(s) you send to the following individual (Matt Rossin) at Zelle phone number 3527348440'",
+      "files": [
+        "frontend/src/pages/Landing.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -37,6 +56,46 @@
       ],
       "testIds": [
         "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-contact-information-message-to-landing-page-if-you-have-any-issues-contact-the-admin-matt-thenewbruce1-on-instagram-or-via-txt-or-facetime-at-the-iphone-number-3527348440-my-email-is-thenewbruce1-gmail-com-or-mattarmor1111-gmail-com-but-is-rarely-checked",
+      "featureTitle": "Add contact information message to landing page: 'If you have any issues contact the admin Matt @thenewbruce1 on Instagram or via Txt or FaceTime at the 📲 iPhone number 3527348440. My email is thenewbruce1@gmail.com or mattarmor1111@gmail.com but is rarely checked.'",
+      "files": [
+        "frontend/src/pages/Landing.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-contact-card-page-where-users-can-enter-and-display-their-real-name-nfl-combine-tracker-username-display-name-and-any-contact-information-they-wish-to-share",
+      "featureTitle": "Create Contact Card page where users can enter and display their real name, NFL Combine Tracker username (display name), and any contact information they wish to share",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/layout/AppShell.tsx",
+        "frontend/src/pages/ContactCard.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
       ],
       "confidence": "high"
     }

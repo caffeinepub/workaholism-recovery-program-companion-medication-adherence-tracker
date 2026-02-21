@@ -6,7 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
-export default function ProfileSetupDialog() {
+interface ProfileSetupDialogProps {
+  open: boolean;
+}
+
+export default function ProfileSetupDialog({ open }: ProfileSetupDialogProps) {
   const [name, setName] = useState('');
   const saveProfile = useSaveCallerUserProfile();
 
@@ -32,7 +36,7 @@ export default function ProfileSetupDialog() {
   };
 
   return (
-    <Dialog open={true}>
+    <Dialog open={open}>
       <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Welcome to NFL Combine Tracker</DialogTitle>

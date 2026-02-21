@@ -1,11 +1,15 @@
 # Specification
 
 ## Summary
-**Goal:** Fix admin authorization and implement manual payment gate with Zelle verification workflow.
+**Goal:** Build core NFL Combine Tracker functionality with admin payment management, authentication gates, user contact cards, combine entry tracking, and a basic leaderboard.
 
 **Planned changes:**
-- Fix admin page authorization to properly register and verify the admin Principal ID on first visit
-- Block sign-in functionality for users without 'Paid' status and display error message "No sign in without up to date payment"
-- Add user management interface to admin page showing all registered users with toggle controls to mark users as Paid/Unpaid
+- Add admin panel page displaying all users with payment status toggle switches (paid/unpaid)
+- Implement authentication gate blocking unpaid users from login with payment instructions error message
+- Add landing page with Zelle payment instructions (Matt Rossin, phone 3527348440) and contact information (Instagram @thenewbruce1, phone/email details)
+- Store admin principal ID (i67ts-e55ut-cg7iv-w4qa6-f63qo-pgevo-7zqec-cevgk-5nm7d-xjryz-mae) for access control
+- Create Contact Card page for users to enter real name, NFL Combine Tracker username, and optional contact information
+- Create New Entry page for users to input NFL Combine drill statistics with notes field
+- Implement basic LeaderBoard page displaying all users ranked by combine performance from #1 down
 
-**User-visible outcome:** Admin can access the admin panel after signing in, manually toggle users to 'Paid' status after receiving Zelle payments, and only users marked as 'Paid' can sign in to the application.
+**User-visible outcome:** Users see payment instructions and contact info on landing page. Unpaid users cannot login and receive payment error message. Paid users can create contact cards, submit combine entries with notes, and view ranked leaderboard. Admin can toggle any user's payment status in admin panel.

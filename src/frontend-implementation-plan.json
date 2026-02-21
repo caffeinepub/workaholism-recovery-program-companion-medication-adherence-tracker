@@ -1,83 +1,159 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix admin access and implement manual payment gate with Zelle verification",
+  "title": "NFL Combine Tracker - Payment System & Core Features Frontend Implementation",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Fix admin page authorization to properly register and verify the admin Principal ID",
+      "summary": "Create admin panel UI displaying all users with payment status toggles",
       "acceptanceCriteria": [
-        "Admin can successfully access /admin page after signing in with Internet Identity",
-        "First user to visit /admin is automatically registered as the authorized admin",
-        "Admin Principal ID is correctly stored in backend state",
-        "Authorization check properly validates current user's Principal against stored admin Principal",
-        "No 'Access denied' error for authenticated admin user"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/Admin.tsx",
-          "operation": "modify",
-          "description": "Update admin page to properly wait for authentication and actor initialization before checking admin status. Add loading state that shows spinner while authentication is in progress. Only perform admin check after identity and actor are both ready. Display clear error messaging if admin check fails after authentication completes."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Add useIsAdmin hook that checks admin status using the isCallerAdmin backend method. Hook should only enable the query when both actor and identity are available. Return loading states that account for both actor initialization and query execution."
-        }
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "summary": "Block all sign-in functionality for users who do not have 'Paid' status",
-      "acceptanceCriteria": [
-        "Users without 'Paid' status cannot initiate Internet Identity sign-in flow",
-        "Error message 'No sign in without up to date payment' is displayed to unpaid users attempting sign-in",
-        "Only users marked as 'Paid' in the admin panel can successfully sign in",
-        "Payment status check occurs before allowing authentication flow to proceed"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/auth/LoginButton.tsx",
-          "operation": "modify",
-          "description": "Add payment status check before allowing login. Before initiating Internet Identity flow, check if the current principal (if already cached/known) has payment status. If attempting to login and payment check returns false, display error toast/alert with exact message: 'No sign in without up to date payment' and prevent the login flow from proceeding. Handle the case where payment status cannot be determined pre-authentication by checking immediately after successful authentication and logging user out if they are not paid."
-        },
-        {
-          "path": "frontend/src/hooks/useInternetIdentity.ts",
-          "operation": "modify",
-          "description": "Add payment validation hook into the authentication flow. After successful Internet Identity authentication, immediately check getUserPaymentStatus backend method. If user is not paid, clear the authentication state and show error message 'No sign in without up to date payment'. Ensure this check happens before any other queries or data fetching occurs."
-        },
-        {
-          "path": "frontend/src/components/layout/AppShell.tsx",
-          "operation": "modify",
-          "description": "Update the payment gate logic to enforce payment status check immediately after authentication. If authenticated user lacks payment status, display PaymentGate component and prevent access to any authenticated routes. Ensure payment status is rechecked after any login attempt."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Add user management interface to the admin page that displays all registered users with their current 'Paid' status",
-      "acceptanceCriteria": [
-        "Admin page displays a list of all registered users",
-        "Each user entry shows their current 'Paid' status (Paid/Unpaid)",
-        "Toggle control is available for each user to switch between Paid and Unpaid states",
-        "Changes to payment status are immediately persisted to backend",
-        "Payment status changes take effect immediately for sign-in access control"
+        "Admin panel displays all registered users",
+        "Each user row shows current payment status",
+        "Toggle switch allows admin to change status between paid and unpaid",
+        "Status changes persist in backend"
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/AdminPayment.tsx",
           "operation": "modify",
-          "description": "Enhance the existing admin payment page to display all users with their payment status in a clear table/list format. Show user principal (or name if profile exists), current hasPaid boolean status as a badge (Paid/Unpaid), and a toggle switch for each user. Wire the toggle to call the togglePaymentStatus backend method from usePaymentAdmin hook. Add optimistic updates and refresh the user list after successful toggle. Include loading states during toggle operations and error handling with user-friendly messages."
+          "description": "Update admin payment panel to use payment status (hasPaid boolean) instead of subscription system. Replace subscription-based UI elements with simple paid/unpaid toggle switches. Use the authorization component to restrict access to admin principal only. Display users in a table format with username, principal (truncated), and current payment status. Wire toggle switches to call adminTogglePaymentStatus backend function via usePaymentAdmin hook. Add loading states and error handling for toggle operations."
+        },
+        {
+          "path": "frontend/src/hooks/usePaymentAdmin.ts",
+          "operation": "modify",
+          "description": "Verify the hook properly wraps the togglePaymentStatus backend function and adminListAllUsers query. Ensure it returns proper TypeScript types matching UserProfileWithPrincipal from backend interface. Add mutation for toggling payment status with optimistic updates and cache invalidation."
         },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Ensure the /admin/payment route is properly registered and accessible from the admin navigation. Verify that the route is protected by admin authorization check and redirects unauthorized users to the dashboard."
+          "description": "Verify AdminPayment route is registered and accessible. Ensure the route path matches navigation references throughout the app."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Implement authentication gate blocking unpaid users with payment instructions",
+      "acceptanceCriteria": [
+        "Unpaid users cannot proceed past login screen",
+        "Error message displays exact payment instructions",
+        "Paid users can access app normally",
+        "Payment status check happens on login attempt"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/auth/PaymentGate.tsx",
+          "operation": "modify",
+          "description": "Update payment gate to check hasPaid boolean from user profile instead of subscription status. Display the exact error message: 'must pay in full to receive each month (31 days) sign in ability and access to the app. Each payment of $1.00 via Zelle earns a user one more month or 31 more days \"paid\" sign in ability and full access to the app and its features'. Keep existing Zelle payment instructions (phone 3527348440, recipient Matt Rossin) and contact information. Gate should activate immediately after authentication if hasPaid is false."
         },
         {
-          "path": "frontend/src/pages/Admin.tsx",
+          "path": "frontend/src/components/layout/AppShell.tsx",
           "operation": "modify",
-          "description": "Add navigation link or button to the payment management page (/admin/payment) from the main admin panel. Label it clearly as 'Payment Management' or 'User Payment Status' so admins can easily access the user payment toggle interface."
+          "description": "Update payment gate enforcement to check user.hasPaid boolean instead of subscription status. Remove subscription-specific alerts and badges. Show PaymentGate component when user is authenticated but hasPaid is false. Ensure payment gate blocks all app navigation except logout."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Verify getCallerUserProfile hook properly returns CallerUserProfile with hasPaid boolean field. Ensure the query is enabled only when actor is available and user is authenticated."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Add landing page payment instructions message",
+      "acceptanceCriteria": [
+        "Payment instructions appear prominently on landing/cover page",
+        "Zelle phone number 3527348440 is displayed",
+        "Instructions mention Matt Rossin as recipient",
+        "Message requests contact card info in payment description"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/Landing.tsx",
+          "operation": "modify",
+          "description": "Add a prominent payment instructions section to the landing page displaying: 'please add all contact card info or contact card itself in your description of the Zelle payment(s) you send to the following individual (Matt Rossin) at Zelle phone number 3527348440'. Position this message prominently near the top of the page, above or alongside the feature cards. Use an alert or card component with appropriate styling to ensure visibility."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Add contact information message to landing page",
+      "acceptanceCriteria": [
+        "Contact information displays on landing page",
+        "Instagram handle @thenewbruce1 is shown",
+        "Phone number 3527348440 is displayed",
+        "Both email addresses are listed with note about rare checking"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/Landing.tsx",
+          "operation": "modify",
+          "description": "Add a contact information section displaying: 'If you have any issues contact the admin Matt @thenewbruce1 on Instagram or via Txt or FaceTime at the 📲 iPhone number 3527348440. My email is thenewbruce1@gmail.com or mattarmor1111@gmail.com but is rarely checked.' Place this in a dedicated contact section or info card on the landing page, positioned after the payment instructions but before the feature cards or in a footer area."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Create Contact Card page for users to enter personal and contact information",
+      "acceptanceCriteria": [
+        "Page allows users to input real name",
+        "Users can set NFL Combine Tracker username/display name",
+        "Form accepts optional contact information fields",
+        "Contact card data is saved to user profile"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/ContactCard.tsx",
+          "operation": "create",
+          "description": "Create a Contact Card page where users can view and edit their contact information. Include fields for real name (separate from the name used in CallerUserProfile), NFL Combine Tracker username/display name, and optional contact fields (phone, email, social media handles). Use a form layout with input fields and a save button. Call saveCallerUserProfile when saving, ensuring the profile name field is used for the display name. Add validation for required fields. Display current values from getCallerUserProfile on load. Use authorization component to ensure only authenticated users can access this page."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register the /contact-card route in the router configuration and wire it to the ContactCard page component. Ensure the route is protected and requires authentication."
+        },
+        {
+          "path": "frontend/src/components/layout/AppShell.tsx",
+          "operation": "modify",
+          "description": "Add a navigation link to the Contact Card page in the sidebar or navigation menu. Label it 'Contact Card' or 'Profile'. Position it logically within the existing navigation structure."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Verify New Entry page supports all NFL Combine drills with notes field",
+      "acceptanceCriteria": [
+        "Form includes input fields for all NFL Combine drill results",
+        "Notes field allows users to add context to their entries",
+        "Entries are saved with timestamp",
+        "Users can view their submitted entries"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/combine/NewEntry.tsx",
+          "operation": "modify",
+          "description": "Verify the New Entry page uses CombineEntryForm component which includes all standard NFL Combine measurements (height, weight, wingspan, hand size, arm length, 40-yard dash, vertical jump, broad jump, bench press, etc.) as defined in the backend CombineResult interface. Ensure the form includes a notes/developerNotes field for additional context. Confirm entries are saved via saveCombineResult backend function and include timestamp. Verify navigation to entry detail or history page after successful save. No changes needed if current implementation is complete."
+        },
+        {
+          "path": "frontend/src/components/combine/CombineEntryForm.tsx",
+          "operation": "modify",
+          "description": "Verify all NFL Combine drill fields from backend CombineResult interface are present in the form (bmi, weight, height, wingspan, handSize, armLength, standingReach, bodyFatPercentage, dash40yd, dash20yd, dash10yd, verticalJump, broadJump, benchPressReps, squat, powerClean, seatedRow, threeConeDrill, shuttleProAgility, shuttle20yd, shuttle60yd, passedMedical). Confirm a notes field (developerNotes) exists. Verify form validation matches backend expectations. No changes needed if current implementation is complete."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Verify LeaderBoard page displays ranked users with combine performance",
+      "acceptanceCriteria": [
+        "LeaderBoard displays all users with combine entries",
+        "Users are ranked from #1 down based on performance",
+        "Each entry shows username and key stats",
+        "Rankings are visible to all paid users"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/combine/Published.tsx",
+          "operation": "modify",
+          "description": "Verify the Published/LeaderBoard page displays all public combine entries retrieved via getAllPublicCombineEntries backend function. Confirm entries are ranked/sorted (currently supports sorting by various metrics via combineSorting utility). Ensure each entry card displays the athlete name (athleteName field) and key performance statistics. Verify the page is accessible to authenticated paid users only (payment gate should handle this). Add explicit ranking numbers (#1, #2, etc.) to each entry card if not already present, based on the current sort order. Consider adding a default sort that represents overall combine performance ranking."
         }
       ]
     }
